@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
       if (data.role === 'buyer') {
         await tx.buyerProfile.create({ data: { organization_id: organization.id } });
       } else {
-        const anonymized_id = await generateAnonymizedId();
+        const anonymized_id = await generateAnonymizedId(tx);
         const supplierProfile = await tx.supplierProfile.create({
           data: { organization_id: organization.id, anonymized_id },
         });
