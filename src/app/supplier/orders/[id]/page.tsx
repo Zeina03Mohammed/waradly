@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Shell } from '@/components/Shell';
 import { useRequireRole } from '@/lib/client/useRequireRole';
 import { api, ApiError } from '@/lib/client/apiClient';
@@ -16,6 +17,7 @@ interface OrderDetail {
 
 export default function SupplierOrderDetailPage({ params }: { params: { id: string } }) {
   const { user, loading } = useRequireRole('supplier');
+  const router = useRouter();
   const [order, setOrder] = useState<OrderDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -65,6 +67,22 @@ export default function SupplierOrderDetailPage({ params }: { params: { id: stri
     }
   }
 
+  async function handleMessage() {
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await api<{ conversation: { id: string } }>('/api/conversations', {
+        method: 'POST',
+        body: { order_id: params.id },
+      });
+      router.push(`/messages/${res.conversation.id}`);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Could not open conversation.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
     <Shell>
       <div className="mb-4 flex items-center justify-between">
@@ -103,6 +121,9 @@ export default function SupplierOrderDetailPage({ params }: { params: { id: stri
             Mark Production Completed
           </button>
         )}
+        <button disabled={busy} onClick={handleMessage} className="btn-secondary">
+          Message Buyer
+        </button>
       </div>
 
       <p className="mt-6 text-xs text-gray-500">

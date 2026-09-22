@@ -8,7 +8,14 @@ import { api, ApiError } from '@/lib/client/apiClient';
 
 interface Offer {
   id: string;
-  supplier: { display_name: string | null; anonymized_id: string; completed_orders_count: number; average_rating: string | null; general_region: string };
+  supplier: {
+    supplier_id: string;
+    display_name: string | null;
+    anonymized_id: string;
+    completed_orders_count: number;
+    average_rating: string | null;
+    general_region: string;
+  };
   unit_price: string;
   moq: string;
   production_lead_time_days: number;
@@ -27,6 +34,7 @@ export default function OfferComparisonPage({ params }: { params: { id: string }
   const [offers, setOffers] = useState<Offer[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [accepting, setAccepting] = useState<string | null>(null);
+  const [messaging, setMessaging] = useState<string | null>(null);
 
   function load() {
     api<{ offers: Offer[] }>(`/api/rfqs/${params.id}/offers`).then((d) => setOffers(d.offers));
@@ -56,6 +64,22 @@ export default function OfferComparisonPage({ params }: { params: { id: string }
       }
     } finally {
       setAccepting(null);
+    }
+  }
+
+  async function handleMessage(supplierId: string) {
+    setMessaging(supplierId);
+    setError(null);
+    try {
+      const res = await api<{ conversation: { id: string } }>('/api/conversations', {
+        method: 'POST',
+        body: { rfq_id: params.id, supplier_id: supplierId },
+      });
+      router.push(`/messages/${res.conversation.id}`);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Could not open conversation.');
+    } finally {
+      setMessaging(null);
     }
   }
 
@@ -93,7 +117,7 @@ export default function OfferComparisonPage({ params }: { params: { id: string }
                   <td>{o.sample_availability ? 'Yes' : 'No'}</td>
                   <td>{o.supplier.average_rating ?? '—'}</td>
                   <td>{o.supplier.completed_orders_count}</td>
-                  <td>
+                  <td className="space-x-2 whitespace-nowrap">
                     {o.status === 'SUBMITTED' || o.status === 'UNDER_REVIEW' ? (
                       <button onClick={() => handleAccept(o.id)} disabled={accepting === o.id} className="btn-primary">
                         {accepting === o.id ? 'Accepting…' : 'Accept'}
@@ -101,6 +125,13 @@ export default function OfferComparisonPage({ params }: { params: { id: string }
                     ) : (
                       <span className="badge">{o.status}</span>
                     )}
+                    <button
+                      onClick={() => handleMessage(o.supplier.supplier_id)}
+                      disabled={messaging === o.supplier.supplier_id}
+                      className="btn-secondary"
+                    >
+                      Message
+                    </button>
                   </td>
                 </tr>
               ))}

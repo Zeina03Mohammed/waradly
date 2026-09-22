@@ -61,6 +61,22 @@ export default function BuyerOrderDetailPage({ params }: { params: { id: string 
     }
   }
 
+  async function handleMessage() {
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await api<{ conversation: { id: string } }>('/api/conversations', {
+        method: 'POST',
+        body: { order_id: params.id },
+      });
+      router.push(`/messages/${res.conversation.id}`);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Could not open conversation.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
     <Shell>
       <div className="mb-4 flex items-center justify-between">
@@ -100,6 +116,9 @@ export default function BuyerOrderDetailPage({ params }: { params: { id: string 
         <Link href={`/buyer/orders/${order.id}/tracking`} className="btn-secondary">
           View Tracking
         </Link>
+        <button disabled={busy} onClick={handleMessage} className="btn-secondary">
+          Message Supplier
+        </button>
         {(order.status === 'DELIVERED' || order.status === 'COMPLETED') && !order.rating && (
           <Link href={`/buyer/orders/${order.id}/rate`} className="btn-primary">
             Rate Supplier

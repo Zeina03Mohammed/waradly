@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Shell } from '@/components/Shell';
 import { useRequireRole } from '@/lib/client/useRequireRole';
-import { api } from '@/lib/client/apiClient';
+import { api, ApiError } from '@/lib/client/apiClient';
 
 interface RfqDetail {
   id: string;
@@ -28,8 +29,11 @@ interface MyOffer {
 
 export default function SupplierRfqDetailPage({ params }: { params: { id: string } }) {
   const { user, loading } = useRequireRole('supplier');
+  const router = useRouter();
   const [rfq, setRfq] = useState<RfqDetail | null>(null);
   const [myOffer, setMyOffer] = useState<MyOffer | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [messaging, setMessaging] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -41,6 +45,22 @@ export default function SupplierRfqDetailPage({ params }: { params: { id: string
   if (!rfq) return <Shell>Loading…</Shell>;
 
   const deadlinePassed = rfq.offer_deadline_at ? new Date(rfq.offer_deadline_at) < new Date() : false;
+
+  async function handleMessage() {
+    setMessaging(true);
+    setError(null);
+    try {
+      const res = await api<{ conversation: { id: string } }>('/api/conversations', {
+        method: 'POST',
+        body: { rfq_id: params.id },
+      });
+      router.push(`/messages/${res.conversation.id}`);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Could not open conversation.');
+    } finally {
+      setMessaging(false);
+    }
+  }
 
   return (
     <Shell>
@@ -72,17 +92,24 @@ export default function SupplierRfqDetailPage({ params }: { params: { id: string
         </p>
       </div>
 
-      {!deadlinePassed && !myOffer && (
-        <Link href={`/supplier/rfqs/${rfq.id}/offer/new`} className="btn-primary">
-          Submit Offer
-        </Link>
-      )}
-      {myOffer && (
-        <Link href="/supplier/offers" className="btn-secondary">
-          View My Offer
-        </Link>
-      )}
-      {deadlinePassed && !myOffer && <p className="text-gray-600">This RFQ is no longer accepting offers.</p>}
+      {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
+
+      <div className="flex flex-wrap gap-3">
+        {!deadlinePassed && !myOffer && (
+          <Link href={`/supplier/rfqs/${rfq.id}/offer/new`} className="btn-primary">
+            Submit Offer
+          </Link>
+        )}
+        {myOffer && (
+          <Link href="/supplier/offers" className="btn-secondary">
+            View My Offer
+          </Link>
+        )}
+        <button disabled={messaging} onClick={handleMessage} className="btn-secondary">
+          Message Buyer
+        </button>
+      </div>
+      {deadlinePassed && !myOffer && <p className="mt-3 text-gray-600">This RFQ is no longer accepting offers.</p>}
     </Shell>
   );
 }
