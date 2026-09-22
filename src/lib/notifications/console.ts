@@ -10,4 +10,3 @@ export class ConsoleNotificationChannel implements NotificationChannel {
   }
 }
 
-export const emailChannel: NotificationChannel = new ConsoleNotificationChannel();

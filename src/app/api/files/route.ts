@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { errorResponse, Errors } from '@/lib/http';
 import { authenticate, requireRole } from '@/lib/auth/session';
 import { ALLOWED_MIME_TYPES, isAllowedMimeType, MAX_FILE_SIZE_BYTES } from '@/lib/files/constraints';
-import { storageProvider } from '@/lib/storage/local';
+import { storageProvider } from '@/lib/storage';
 import { audit } from '@/lib/audit';
 
 /** Generic file upload — SPEC.md Section 16 (POST /files). Used by RFQ/offer attachment

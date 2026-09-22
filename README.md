@@ -18,13 +18,16 @@ permissions matrix, and API contract. This README only covers running the app.
   refresh tokens (30d, revocable independently of the JWT's own expiry).
 - **Styling:** Tailwind CSS, deliberately plain (internal-tool-grade, not a polished consumer
   product).
-- **File storage:** A `StorageProvider` interface with a local-filesystem implementation
-  (`./storage/`, gitignored) behind HMAC-signed, 5-minute-expiry URLs — designed so an
-  S3-compatible provider is a one-file swap later.
+- **File storage:** A `StorageProvider` interface behind HMAC-signed, 5-minute-expiry URLs.
+  `lib/storage/index.ts` picks the implementation automatically: local filesystem (`./storage/`,
+  gitignored) when no R2 credentials are set, or Cloudflare R2 (S3-compatible, via
+  `@aws-sdk/client-s3`) when they are — required for any hosting platform without a persistent
+  disk (serverless/most PaaS).
 - **Watermarking:** `sharp` (images) and `pdf-lib` (PDFs) generate a "Wardly Confidential"
   overlay once at upload time for identity-risk RFQ attachments.
-- **Email:** A `NotificationChannel` interface with a console/dev implementation — every
-  Section 14 event is already wired to it, so a real provider is a one-file swap later.
+- **Email:** A `NotificationChannel` interface. `lib/notifications/index.ts` picks Resend when
+  `RESEND_API_KEY` is set, otherwise a console/dev channel that just logs. Every Section 14
+  event is already wired to whichever one is active.
 - **Scheduled jobs:** `scripts/expire-rfqs.ts`, a plain Node script (not a job queue) for the
   RFQ-expiry rule.
 - **Testing:** Vitest, covering the RFQ/Offer/Order state machines (every invalid transition is
@@ -72,6 +75,39 @@ To skip re-logging-in between roles while testing manually, set `NEXT_PUBLIC_SKI
 `.env` (see `.env.example`) — this adds quick-switch buttons to the nav bar that log in as the
 three demo accounts above through the real `/auth/login` endpoint. It is **not** an auth
 bypass and must never be enabled outside local development.
+
+## Deploying (giving this to a client)
+
+Local dev (above) runs on your own machine only. To put this on a real URL someone else can
+reach, you need a host for the app and a host for the database, plus the two managed services
+above configured (R2 for files, Resend for email) — without those, uploads and emails silently
+break on most hosting platforms.
+
+1. **Database — [Neon](https://neon.tech)** (or Supabase/Railway): create a project, copy its
+   connection string into `DATABASE_URL`.
+2. **File storage — [Cloudflare R2](https://dash.cloudflare.com/?to=/:account/r2)**: create a
+   bucket and an API token (R2 → Manage API Tokens), fill in `R2_ACCOUNT_ID`,
+   `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET_NAME`.
+3. **Email — [Resend](https://resend.com/api-keys)**: create an API key, fill in
+   `RESEND_API_KEY`. For real deliverability, verify your own sending domain in Resend and set
+   `EMAIL_FROM` to an address on it; the sandbox `onboarding@resend.dev` address only delivers
+   to your own Resend account email, fine for testing but not for a client's real users.
+4. **App hosting — [Vercel](https://vercel.com)** (simplest for Next.js): import this repo,
+   set all the env vars from `.env.example` (with real values, not the placeholders) in the
+   project's Environment Variables settings, and deploy. Vercel builds and serves the app; no
+   separate server process to manage.
+5. Run migrations against the production database once, from your machine, before the first
+   deploy is used:
+   ```bash
+   DATABASE_URL="<your production connection string>" npx prisma migrate deploy
+   ```
+6. Set `APP_BASE_URL` to your real deployed URL (used in email links) and leave
+   `NEXT_PUBLIC_SKIP_AUTH` unset — that dev-only role switcher must never be enabled here.
+7. Optionally run `npm run seed` once against production if you want a real admin account to
+   start from (or create one directly via `psql`/your DB provider's SQL console — admin
+   accounts are never self-registrable, per Section 4).
+8. Schedule `npm run expire-rfqs` to run periodically (Vercel Cron, or any external scheduler
+   hitting a small wrapper endpoint) — it isn't automatic.
 
 ## Running tests, lint, and type checks
 

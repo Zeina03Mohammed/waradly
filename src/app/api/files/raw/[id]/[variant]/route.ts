@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { resolveFileAccess } from '@/lib/files/access';
 import { verifySignedFileUrl, type FileVariant } from '@/lib/storage/signedUrl';
-import { storageProvider } from '@/lib/storage/local';
+import { storageProvider } from '@/lib/storage';
 import { audit } from '@/lib/audit';
 
 /**

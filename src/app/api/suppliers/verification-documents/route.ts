@@ -5,7 +5,7 @@ import type { VerificationDocumentType } from '@prisma/client';
 import { errorResponse, Errors } from '@/lib/http';
 import { authenticate, requireRole } from '@/lib/auth/session';
 import { ALLOWED_MIME_TYPES, isAllowedMimeType, MAX_FILE_SIZE_BYTES } from '@/lib/files/constraints';
-import { storageProvider } from '@/lib/storage/local';
+import { storageProvider } from '@/lib/storage';
 import { audit } from '@/lib/audit';
 
 const ALLOWED_DOC_TYPES: VerificationDocumentType[] = ['commercial_registration', 'certificate', 'other'];

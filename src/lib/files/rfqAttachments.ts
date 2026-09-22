@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import type { Prisma, RfqAttachmentType } from '@prisma/client';
-import { storageProvider } from '@/lib/storage/local';
+import { storageProvider } from '@/lib/storage';
 import { generateWatermarkedCopy } from '@/lib/files/watermark';
 
 export interface AttachmentInput {

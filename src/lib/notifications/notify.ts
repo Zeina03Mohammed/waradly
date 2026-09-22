@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma';
-import { emailChannel } from '@/lib/notifications/console';
+import { emailChannel } from '@/lib/notifications';
 
 /**
  * Wires a Section 14 event to the notifications table. Each row carries exactly one channel
