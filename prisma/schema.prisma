@@ -591,11 +591,17 @@ model File {
   mime_type              String
   size_bytes             Int
   is_preview_watermarked Boolean   @default(false)
+  // Self-reference: when an original identity-risk file is uploaded, a watermarked derivative
+  // is generated once at upload time (SPEC.md Section 12) and linked back to its original here,
+  // so the preview endpoint can find "the watermarked copy of this file" without a new table.
+  preview_of_file_id     String?   @unique
   deleted_at             DateTime?
   created_at             DateTime  @default(now())
   updated_at             DateTime  @updatedAt
 
   uploader              User                   @relation(fields: [uploader_id], references: [id], onDelete: Restrict)
+  preview_of            File?                  @relation("FilePreviewDerivative", fields: [preview_of_file_id], references: [id], onDelete: SetNull)
+  preview_derivative     File?                 @relation("FilePreviewDerivative")
   organizations_as_logo Organization[]
   rfq_attachments       RfqAttachment[]
   offer_attachments     OfferAttachment[]

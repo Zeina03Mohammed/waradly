@@ -399,6 +399,7 @@ CREATE TABLE "files" (
     "mime_type" TEXT NOT NULL,
     "size_bytes" INTEGER NOT NULL,
     "is_preview_watermarked" BOOLEAN NOT NULL DEFAULT false,
+    "preview_of_file_id" TEXT,
     "deleted_at" TIMESTAMP(3),
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
@@ -524,6 +525,9 @@ CREATE UNIQUE INDEX "conversations_rfq_id_supplier_id_key" ON "conversations"("r
 
 -- CreateIndex
 CREATE INDEX "messages_conversation_id_created_at_idx" ON "messages"("conversation_id", "created_at");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "files_preview_of_file_id_key" ON "files"("preview_of_file_id");
 
 -- CreateIndex
 CREATE INDEX "audit_logs_entity_type_entity_id_idx" ON "audit_logs"("entity_type", "entity_id");
@@ -668,6 +672,9 @@ ALTER TABLE "message_flags" ADD CONSTRAINT "message_flags_reviewed_by_fkey" FORE
 
 -- AddForeignKey
 ALTER TABLE "files" ADD CONSTRAINT "files_uploader_id_fkey" FOREIGN KEY ("uploader_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "files" ADD CONSTRAINT "files_preview_of_file_id_fkey" FOREIGN KEY ("preview_of_file_id") REFERENCES "files"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "audit_logs" ADD CONSTRAINT "audit_logs_actor_id_fkey" FOREIGN KEY ("actor_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
