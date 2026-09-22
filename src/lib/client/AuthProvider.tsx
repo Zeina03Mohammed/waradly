@@ -17,7 +17,22 @@ interface AuthContextValue {
   login: (email: string, password: string) => Promise<CurrentUser>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
+  switchDevRole: (role: 'buyer' | 'supplier' | 'admin') => Promise<CurrentUser>;
 }
+
+/** Dev-only convenience: when set, Shell renders buttons to instantly switch between the
+ * three seeded demo accounts (see prisma/seed.ts) instead of logging out/in by hand. This is
+ * NOT an auth bypass — switching still calls the real /auth/login endpoint with the seeded
+ * demo credentials, so the API's normal auth/RBAC checks still apply. Gate it behind an env
+ * flag so it never renders unless explicitly enabled for local development. */
+export const SKIP_AUTH = process.env.NEXT_PUBLIC_SKIP_AUTH === 'true';
+
+const DEMO_PASSWORD = 'Password123';
+const DEMO_CREDENTIALS: Record<'buyer' | 'supplier' | 'admin', { email: string; password: string }> = {
+  buyer: { email: 'buyer@wardly.test', password: DEMO_PASSWORD },
+  supplier: { email: 'supplier@wardly.test', password: DEMO_PASSWORD },
+  admin: { email: 'admin@wardly.test', password: DEMO_PASSWORD },
+};
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
@@ -65,7 +80,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
   }, []);
 
-  return <AuthContext.Provider value={{ user, loading, login, logout, refreshUser }}>{children}</AuthContext.Provider>;
+  const switchDevRole = useCallback(
+    async (role: 'buyer' | 'supplier' | 'admin') => {
+      if (!SKIP_AUTH) throw new Error('switchDevRole is only available when NEXT_PUBLIC_SKIP_AUTH=true.');
+      const { email, password } = DEMO_CREDENTIALS[role];
+      return login(email, password);
+    },
+    [login],
+  );
+
+  return (
+    <AuthContext.Provider value={{ user, loading, login, logout, refreshUser, switchDevRole }}>{children}</AuthContext.Provider>
+  );
 }
 
 export function useAuth() {
