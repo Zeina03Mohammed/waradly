@@ -27,6 +27,13 @@ export async function POST(request: NextRequest) {
 
   const buyerProfile = await getBuyerProfileForUser(auth.user.id);
   if (!buyerProfile) return Errors.notFound();
+  // NOTE: Section 2's permissions matrix lists "Verified buyer account" as a condition for RFQ
+  // creation, and buyer_profiles.verified exists for it — but unlike supplier verification
+  // (Section 6.3/7.3: document upload + admin review screen), no workflow, endpoint, or admin
+  // screen for setting it is described anywhere in the spec. Gating RFQ creation on it would
+  // permanently lock out every real buyer with no way to ever become verified. We don't
+  // enforce it here; email verification (Section 4, checked at /rfqs/{id}/submit) is the one
+  // verification gate the spec actually describes a mechanism for.
 
   if (data.category_id) {
     const category = await prisma.category.findUnique({ where: { id: data.category_id } });
