@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: wardly
+      POSTGRES_PASSWORD: wardly
+      POSTGRES_DB: wardly
+    ports:
+      - '5432:5432'
+    volumes:
+      - wardly_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U wardly']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  wardly_postgres_data:

@@ -1,0 +1,646 @@
+// Wardly MVP schema — implements SPEC.md Section 3 exactly.
+// NOTE: `disputes` is not enumerated as its own table in Section 3, but Sections 2, 7.13,
+// 10, and 16 all require dispute open/resolve with fields (order, raised_by, category,
+// description, status, resolution outcome/notes) that Section 3's other tables don't carry.
+// This table fills that structural gap using only the fields the API contract already implies.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------- Enums ----------
+
+enum UserRole {
+  buyer
+  supplier
+  admin
+}
+
+enum UserStatus {
+  active
+  suspended
+  banned
+}
+
+enum OrgType {
+  buyer
+  supplier
+}
+
+enum VerificationStatus {
+  pending
+  verified
+  rejected
+}
+
+enum VerificationDocumentType {
+  commercial_registration
+  certificate
+  other
+}
+
+enum CategoryStatus {
+  active
+  coming_soon
+}
+
+enum RfqStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  REJECTED
+  PUBLISHED
+  RECEIVING_OFFERS
+  EXPIRED
+  CANCELLED
+  AWARDED
+  CLOSED
+}
+
+enum RfqAttachmentType {
+  design
+  certificate
+  other
+}
+
+enum OfferStatus {
+  SUBMITTED
+  UNDER_REVIEW
+  ACCEPTED
+  REJECTED
+  WITHDRAWN
+  EXPIRED
+}
+
+enum OfferAttachmentType {
+  certificate
+  photo
+  other
+}
+
+enum OrderStatus {
+  OFFER_SELECTED
+  PENDING_PAYMENT
+  PAYMENT_CONFIRMED
+  PRODUCTION
+  SAMPLE_REVIEW
+  PRODUCTION_COMPLETED
+  RECEIVED_AT_HUB
+  QC_COMPLETED
+  READY_FOR_DELIVERY
+  IN_TRANSIT
+  DELIVERED
+  COMPLETED
+  CANCELLED
+  DISPUTED
+}
+
+enum NotificationChannel {
+  in_app
+  email
+}
+
+enum MessageFlagPatternType {
+  phone
+  email
+  url
+  other
+}
+
+enum MessageFlagStatus {
+  pending_review
+  warning
+  strike
+  suspension
+  ban
+  dismissed
+}
+
+enum DisputeStatus {
+  open
+  resolved
+}
+
+enum DisputeOutcome {
+  reopen_production
+  refund_manual
+  close_no_action
+}
+
+// ---------- Models ----------
+
+model User {
+  id               String     @id @default(uuid())
+  email            String     @unique
+  password_hash    String
+  role             UserRole
+  status           UserStatus @default(active)
+  email_verified_at DateTime?
+  last_login_at    DateTime?
+  created_at       DateTime   @default(now())
+  updated_at       DateTime   @updatedAt
+
+  failed_login_attempts Int       @default(0)
+  locked_until           DateTime?
+
+  organizations       Organization[]
+  refresh_tokens      RefreshToken[]
+  password_reset_tokens PasswordResetToken[]
+  email_verification_tokens EmailVerificationToken[]
+  uploaded_files      File[]
+  notifications       Notification[]
+  sent_messages       Message[]
+  audit_logs          AuditLog[]
+  order_status_changes OrderStatusHistory[]
+  reviewed_verifications SupplierVerification[] @relation("VerificationReviewer")
+  reviewed_message_flags MessageFlag[] @relation("MessageFlagReviewer")
+  raised_disputes     Dispute[] @relation("DisputeRaisedBy")
+  resolved_disputes   Dispute[] @relation("DisputeResolvedBy")
+
+  @@index([role, status])
+  @@map("users")
+}
+
+model RefreshToken {
+  id         String   @id @default(uuid())
+  user_id    String
+  token_hash String   @unique
+  revoked    Boolean  @default(false)
+  expires_at DateTime
+  created_at DateTime @default(now())
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@map("refresh_tokens")
+}
+
+model PasswordResetToken {
+  id         String   @id @default(uuid())
+  user_id    String
+  token_hash String   @unique
+  used       Boolean  @default(false)
+  expires_at DateTime
+  created_at DateTime @default(now())
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@map("password_reset_tokens")
+}
+
+model EmailVerificationToken {
+  id         String   @id @default(uuid())
+  user_id    String
+  token_hash String   @unique
+  used       Boolean  @default(false)
+  expires_at DateTime
+  created_at DateTime @default(now())
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@map("email_verification_tokens")
+}
+
+model Organization {
+  id             String   @id @default(uuid())
+  owner_user_id  String
+  type           OrgType
+  legal_name     String
+  display_name   String?
+  country        String
+  general_region String
+  exact_address  String?
+  tax_id         String?
+  logo_file_id   String?
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+
+  owner    User            @relation(fields: [owner_user_id], references: [id], onDelete: Restrict)
+  logo_file File?          @relation(fields: [logo_file_id], references: [id], onDelete: SetNull)
+  buyer_profile    BuyerProfile?
+  supplier_profile SupplierProfile?
+
+  @@index([type])
+  @@map("organizations")
+}
+
+model BuyerProfile {
+  id              String   @id @default(uuid())
+  organization_id String   @unique
+  verified        Boolean  @default(false)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  organization Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  rfqs         Rfq[]
+  orders       Order[]
+  ratings      Rating[]
+  conversations Conversation[]
+
+  @@map("buyer_profiles")
+}
+
+model SupplierProfile {
+  id                      String              @id @default(uuid())
+  organization_id         String              @unique
+  anonymized_id           String              @unique
+  verification_status     VerificationStatus  @default(pending)
+  completed_orders_count  Int                 @default(0)
+  average_rating          Decimal?            @db.Decimal(3, 2)
+  created_at              DateTime            @default(now())
+  updated_at              DateTime            @updatedAt
+
+  organization    Organization           @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  categories      SupplierCategory[]
+  verifications   SupplierVerification[]
+  offers          Offer[]
+  orders          Order[]
+  ratings         Rating[]
+  conversations   Conversation[]
+
+  @@index([verification_status])
+  @@map("supplier_profiles")
+}
+
+model Category {
+  id         String         @id @default(uuid())
+  name       String         @unique
+  status     CategoryStatus @default(coming_soon)
+  phase      Int            @default(1)
+  created_at DateTime       @default(now())
+  updated_at DateTime       @updatedAt
+
+  supplier_categories SupplierCategory[]
+  rfqs                Rfq[]
+
+  @@map("categories")
+}
+
+model SupplierCategory {
+  id                   String    @id @default(uuid())
+  supplier_id          String
+  category_id          String
+  approved             Boolean   @default(false)
+  approved_at          DateTime?
+  production_capacity  String?
+  materials_supported  String[]
+  created_at           DateTime  @default(now())
+  updated_at           DateTime  @updatedAt
+
+  supplier SupplierProfile @relation(fields: [supplier_id], references: [id], onDelete: Cascade)
+  category Category        @relation(fields: [category_id], references: [id], onDelete: Restrict)
+
+  @@unique([supplier_id, category_id])
+  @@map("supplier_categories")
+}
+
+model SupplierVerification {
+  id                String              @id @default(uuid())
+  supplier_id       String
+  document_type     VerificationDocumentType
+  file_id           String
+  status            VerificationStatus  @default(pending)
+  reviewed_by       String?
+  reviewed_at       DateTime?
+  rejection_reason  String?
+  created_at        DateTime            @default(now())
+  updated_at        DateTime            @updatedAt
+
+  supplier SupplierProfile @relation(fields: [supplier_id], references: [id], onDelete: Cascade)
+  file     File            @relation(fields: [file_id], references: [id], onDelete: Restrict)
+  reviewer User?           @relation("VerificationReviewer", fields: [reviewed_by], references: [id], onDelete: SetNull)
+
+  @@map("supplier_verifications")
+}
+
+model Rfq {
+  id                             String     @id @default(uuid())
+  buyer_id                       String
+  category_id                    String
+  title                          String
+  quantity                       Decimal    @db.Decimal(18, 3)
+  unit                           String
+  dimensions                     String?
+  material                       String?
+  technical_specs                Json?
+  printing_customization         String?
+  delivery_deadline              DateTime
+  delivery_region                String
+  quality_requirements           String?
+  sample_required                Boolean    @default(false)
+  certifications_required        String?
+  legal_compliance_requirements  String?
+  status                         RfqStatus  @default(DRAFT)
+  rejection_reason               String?
+  admin_notes                    String?
+  offer_deadline_at              DateTime
+  published_at                   DateTime?
+  source_rfq_id                  String?
+  created_at                     DateTime   @default(now())
+  updated_at                     DateTime   @updatedAt
+
+  buyer         BuyerProfile   @relation(fields: [buyer_id], references: [id], onDelete: Restrict)
+  category      Category       @relation(fields: [category_id], references: [id], onDelete: Restrict)
+  source_rfq    Rfq?           @relation("Reorder", fields: [source_rfq_id], references: [id], onDelete: SetNull)
+  reorders      Rfq[]          @relation("Reorder")
+  items         RfqItem[]
+  attachments   RfqAttachment[]
+  offers        Offer[]
+  order         Order?
+  conversations Conversation[]
+
+  @@index([buyer_id, status])
+  @@index([category_id, status])
+  @@map("rfqs")
+}
+
+model RfqItem {
+  id         String   @id @default(uuid())
+  rfq_id     String
+  item_name  String
+  quantity   Decimal  @db.Decimal(18, 3)
+  unit       String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  rfq         Rfq          @relation(fields: [rfq_id], references: [id], onDelete: Cascade)
+  offer_items OfferItem[]
+
+  @@map("rfq_items")
+}
+
+model RfqAttachment {
+  id                     String            @id @default(uuid())
+  rfq_id                 String
+  file_id                String
+  type                   RfqAttachmentType
+  contains_identity_risk Boolean           @default(false)
+  created_at             DateTime          @default(now())
+  updated_at             DateTime          @updatedAt
+
+  rfq  Rfq  @relation(fields: [rfq_id], references: [id], onDelete: Cascade)
+  file File @relation(fields: [file_id], references: [id], onDelete: Restrict)
+
+  @@map("rfq_attachments")
+}
+
+model Offer {
+  id                            String      @id @default(uuid())
+  rfq_id                        String
+  supplier_id                   String
+  unit_price                    Decimal     @db.Decimal(18, 2)
+  moq                           Decimal     @db.Decimal(18, 3)
+  production_lead_time_days     Int
+  delivery_time_estimate_days   Int
+  shipping_estimate_notes       String?
+  sample_availability           Boolean     @default(false)
+  sample_terms                  String?
+  payment_terms                 String?
+  technical_specs_notes         String?
+  quality_notes                 String?
+  status                        OfferStatus @default(SUBMITTED)
+  submitted_at                  DateTime    @default(now())
+  withdrawn_at                  DateTime?
+  admin_flag_note               String?
+  created_at                    DateTime    @default(now())
+  updated_at                    DateTime    @updatedAt
+
+  rfq         Rfq              @relation(fields: [rfq_id], references: [id], onDelete: Cascade)
+  supplier    SupplierProfile  @relation(fields: [supplier_id], references: [id], onDelete: Cascade)
+  items       OfferItem[]
+  attachments OfferAttachment[]
+  order       Order?
+
+  @@unique([rfq_id, supplier_id])
+  @@index([rfq_id, status])
+  @@index([supplier_id, status])
+  @@map("offers")
+}
+
+model OfferItem {
+  id           String   @id @default(uuid())
+  offer_id     String
+  rfq_item_id  String?
+  description  String
+  unit_price   Decimal  @db.Decimal(18, 2)
+  quantity     Decimal  @db.Decimal(18, 3)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  offer    Offer    @relation(fields: [offer_id], references: [id], onDelete: Cascade)
+  rfq_item RfqItem? @relation(fields: [rfq_item_id], references: [id], onDelete: SetNull)
+
+  @@map("offer_items")
+}
+
+model OfferAttachment {
+  id         String              @id @default(uuid())
+  offer_id   String
+  file_id    String
+  type       OfferAttachmentType
+  created_at DateTime            @default(now())
+  updated_at DateTime            @updatedAt
+
+  offer Offer @relation(fields: [offer_id], references: [id], onDelete: Cascade)
+  file  File  @relation(fields: [file_id], references: [id], onDelete: Restrict)
+
+  @@map("offer_attachments")
+}
+
+model Order {
+  id              String      @id @default(uuid())
+  rfq_id          String      @unique
+  offer_id        String      @unique
+  buyer_id        String
+  supplier_id     String
+  status          OrderStatus @default(OFFER_SELECTED)
+  sample_required Boolean     @default(false)
+  admin_notes     String?
+  created_at      DateTime    @default(now())
+  updated_at      DateTime    @updatedAt
+
+  rfq           Rfq                  @relation(fields: [rfq_id], references: [id], onDelete: Restrict)
+  offer         Offer                @relation(fields: [offer_id], references: [id], onDelete: Restrict)
+  buyer         BuyerProfile         @relation(fields: [buyer_id], references: [id], onDelete: Restrict)
+  supplier      SupplierProfile      @relation(fields: [supplier_id], references: [id], onDelete: Restrict)
+  status_history OrderStatusHistory[]
+  rating        Rating?
+  conversations Conversation[]
+  disputes      Dispute[]
+
+  @@index([buyer_id, status])
+  @@index([supplier_id, status])
+  @@map("orders")
+}
+
+model OrderStatusHistory {
+  id               String       @id @default(uuid())
+  order_id         String
+  from_status      OrderStatus?
+  to_status        OrderStatus
+  changed_by       String
+  evidence_file_id String?
+  note             String?
+  changed_at       DateTime     @default(now())
+
+  order         Order  @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  changed_by_user User @relation(fields: [changed_by], references: [id], onDelete: Restrict)
+  evidence_file File?  @relation(fields: [evidence_file_id], references: [id], onDelete: SetNull)
+
+  @@index([order_id, changed_at])
+  @@map("order_status_history")
+}
+
+model Rating {
+  id          String   @id @default(uuid())
+  order_id    String   @unique
+  buyer_id    String
+  supplier_id String
+  score       Int
+  comment     String?
+  created_at  DateTime @default(now())
+
+  order    Order           @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  buyer    BuyerProfile    @relation(fields: [buyer_id], references: [id], onDelete: Restrict)
+  supplier SupplierProfile @relation(fields: [supplier_id], references: [id], onDelete: Restrict)
+
+  @@map("ratings")
+}
+
+model Notification {
+  id         String              @id @default(uuid())
+  user_id    String
+  event_type String
+  channel    NotificationChannel @default(in_app)
+  message    String
+  link       String?
+  read       Boolean             @default(false)
+  sent_at    DateTime            @default(now())
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id, read])
+  @@map("notifications")
+}
+
+model Conversation {
+  id          String   @id @default(uuid())
+  rfq_id      String?
+  order_id    String?
+  buyer_id    String
+  supplier_id String
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  rfq      Rfq?            @relation(fields: [rfq_id], references: [id], onDelete: Cascade)
+  order    Order?          @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  buyer    BuyerProfile    @relation(fields: [buyer_id], references: [id], onDelete: Restrict)
+  supplier SupplierProfile @relation(fields: [supplier_id], references: [id], onDelete: Restrict)
+  messages Message[]
+
+  @@unique([rfq_id, supplier_id])
+  @@map("conversations")
+}
+
+model Message {
+  id              String   @id @default(uuid())
+  conversation_id String
+  sender_id       String
+  content         String
+  masked_content  String?
+  flagged         Boolean  @default(false)
+  created_at      DateTime @default(now())
+
+  conversation Conversation  @relation(fields: [conversation_id], references: [id], onDelete: Cascade)
+  sender       User          @relation(fields: [sender_id], references: [id], onDelete: Restrict)
+  flags        MessageFlag[]
+
+  @@index([conversation_id, created_at])
+  @@map("messages")
+}
+
+model MessageFlag {
+  id                    String                  @id @default(uuid())
+  message_id            String
+  detected_pattern_type MessageFlagPatternType
+  matched_text          String
+  status                MessageFlagStatus       @default(pending_review)
+  reviewed_by           String?
+  reviewed_at           DateTime?
+  created_at            DateTime                @default(now())
+
+  message  Message @relation(fields: [message_id], references: [id], onDelete: Cascade)
+  reviewer User?   @relation("MessageFlagReviewer", fields: [reviewed_by], references: [id], onDelete: SetNull)
+
+  @@map("message_flags")
+}
+
+model File {
+  id                     String    @id @default(uuid())
+  uploader_id            String
+  storage_key            String
+  original_filename      String
+  mime_type              String
+  size_bytes             Int
+  is_preview_watermarked Boolean   @default(false)
+  deleted_at             DateTime?
+  created_at             DateTime  @default(now())
+  updated_at             DateTime  @updatedAt
+
+  uploader              User                   @relation(fields: [uploader_id], references: [id], onDelete: Restrict)
+  organizations_as_logo Organization[]
+  rfq_attachments       RfqAttachment[]
+  offer_attachments     OfferAttachment[]
+  supplier_verifications SupplierVerification[]
+  order_status_evidence OrderStatusHistory[]
+
+  @@map("files")
+}
+
+model AuditLog {
+  id            String   @id @default(uuid())
+  actor_id      String?
+  action        String
+  entity_type   String
+  entity_id     String
+  before_state  Json?
+  after_state   Json?
+  created_at    DateTime @default(now())
+
+  actor User? @relation(fields: [actor_id], references: [id], onDelete: SetNull)
+
+  @@index([entity_type, entity_id])
+  @@index([actor_id, created_at])
+  @@map("audit_logs")
+}
+
+// Dispute — see file header note. Backs Sections 2, 7.13, 10, 16.
+model Dispute {
+  id                 String          @id @default(uuid())
+  order_id           String
+  raised_by          String
+  category           String
+  description        String
+  status             DisputeStatus   @default(open)
+  resolution_outcome DisputeOutcome?
+  resolution_notes   String?
+  resolved_by        String?
+  resolved_at        DateTime?
+  created_at         DateTime        @default(now())
+  updated_at         DateTime        @updatedAt
+
+  order          Order @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  raised_by_user User  @relation("DisputeRaisedBy", fields: [raised_by], references: [id], onDelete: Restrict)
+  resolved_by_user User? @relation("DisputeResolvedBy", fields: [resolved_by], references: [id], onDelete: SetNull)
+
+  @@index([order_id])
+  @@index([status])
+  @@map("disputes")
+}
