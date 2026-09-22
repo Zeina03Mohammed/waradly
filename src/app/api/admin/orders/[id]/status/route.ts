@@ -6,6 +6,7 @@ import { adminOrderStatusSchema } from '@/lib/validation/order';
 import { zodFieldErrors } from '@/lib/validation/auth';
 import { canTransitionOrder, EVIDENCE_REQUIRED_STATUSES } from '@/lib/stateMachines/order';
 import { allFilesOwnedBy } from '@/lib/files/ownership';
+import { applyOrderCompletionSideEffects } from '@/lib/order/completion';
 import { audit } from '@/lib/audit';
 import { notify } from '@/lib/notifications/notify';
 
@@ -59,6 +60,11 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
 
     if (to_status === 'CANCELLED') {
       await tx.rfq.update({ where: { id: order.rfq_id }, data: { status: 'CLOSED' } });
+    }
+    if (to_status === 'COMPLETED') {
+      // Admin closing the order directly (e.g. after a ratings timeout) applies the same
+      // side-effects a buyer's rating would (Section 10.1 #12).
+      await applyOrderCompletionSideEffects(tx, order);
     }
     if (to_status === 'DISPUTED') {
       await tx.dispute.create({
