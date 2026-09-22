@@ -58,6 +58,7 @@ CREATE TABLE "users" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "failed_login_attempts" INTEGER NOT NULL DEFAULT 0,
+    "last_failed_login_at" TIMESTAMP(3),
     "locked_until" TIMESTAMP(3),
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")

@@ -39,3 +39,12 @@ export async function authenticate(request: NextRequest): Promise<AuthResult> {
 export function hasRole(user: User, ...roles: UserRole[]): boolean {
   return roles.includes(user.role);
 }
+
+/** Returns an error response if the user's role isn't allowed, otherwise null. Callers do:
+ *  `const denied = requireRole(user, 'admin'); if (denied) return denied;` */
+export function requireRole(user: User, ...roles: UserRole[]) {
+  if (!hasRole(user, ...roles)) {
+    return Errors.forbidden();
+  }
+  return null;
+}

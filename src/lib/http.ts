@@ -26,4 +26,9 @@ export const Errors = {
     errorResponse(403, 'FORBIDDEN', 'Your account has been suspended. Please contact support.'),
   lockedOut: () =>
     errorResponse(429, 'RATE_LIMITED', 'Too many failed attempts. Try again in 15 minutes.'),
+  invalidCredentials: () => errorResponse(401, 'UNAUTHENTICATED', 'Invalid email or password.'),
+  invalidToken: (message = 'This link is invalid or has expired.') =>
+    errorResponse(400, 'VALIDATION_ERROR', message),
+  duplicateEmail: () =>
+    errorResponse(409, 'CONFLICT', 'An account with this email already exists.'),
 };

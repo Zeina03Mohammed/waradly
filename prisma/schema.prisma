@@ -146,6 +146,7 @@ model User {
   updated_at       DateTime   @updatedAt
 
   failed_login_attempts Int       @default(0)
+  last_failed_login_at  DateTime?
   locked_until           DateTime?
 
   organizations       Organization[]
