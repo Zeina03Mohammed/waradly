@@ -70,7 +70,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
       link: `/buyer/orders/${order.id}`,
       email: {
         to: buyerOwner.email,
-        subject: 'Sample ready for review on Wardly',
+        subject: 'Sample ready for review on Waradly',
         body: `A sample for your order "${order.rfq.title}" is ready for review. Please log in to approve or reject it.`,
       },
     });

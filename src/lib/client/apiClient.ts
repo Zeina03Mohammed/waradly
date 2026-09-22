@@ -27,12 +27,14 @@ export class ApiError extends Error {
   status: number;
   code?: string;
   fields?: Record<string, string>;
+  data?: Record<string, unknown>;
 
-  constructor(status: number, message: string, code?: string, fields?: Record<string, string>) {
+  constructor(status: number, message: string, code?: string, fields?: Record<string, string>, data?: Record<string, unknown>) {
     super(message);
     this.status = status;
     this.code = code;
     this.fields = fields;
+    this.data = data;
   }
 }
 
@@ -87,7 +89,8 @@ export async function api<T = unknown>(path: string, options: ApiOptions = {}): 
 
   if (!res.ok) {
     const message = data?.error?.message ?? `Request failed (${res.status})`;
-    throw new ApiError(res.status, message, data?.error?.code, data?.error?.fields);
+    const { code, fields, message: _msg, ...rest } = data?.error ?? {};
+    throw new ApiError(res.status, message, code, fields, rest);
   }
 
   return data as T;

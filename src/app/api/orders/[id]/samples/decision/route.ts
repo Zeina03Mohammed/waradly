@@ -73,7 +73,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
       link: `/supplier/orders/${order.id}`,
       email: {
         to: supplierOwner.email,
-        subject: approved ? 'Your Wardly sample was approved' : 'Your Wardly sample was rejected',
+        subject: approved ? 'Your Waradly sample was approved' : 'Your Waradly sample was rejected',
         body: approved
           ? `Your sample for "${order.rfq.title}" was approved. You can resume production.`
           : `Your sample for "${order.rfq.title}" was rejected. A dispute has been opened for review.`,

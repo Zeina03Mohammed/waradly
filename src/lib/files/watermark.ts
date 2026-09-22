@@ -1,7 +1,7 @@
 import sharp from 'sharp';
 import { PDFDocument, rgb, degrees, StandardFonts } from 'pdf-lib';
 
-const WATERMARK_TEXT = 'WARDLY CONFIDENTIAL';
+const WATERMARK_TEXT = 'WARADLY CONFIDENTIAL';
 
 /** Simple static diagonal text overlay — SPEC.md Section 12 ("no OCR involved"). */
 async function watermarkImage(buffer: Buffer): Promise<Buffer> {

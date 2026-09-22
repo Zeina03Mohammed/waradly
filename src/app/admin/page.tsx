@@ -34,7 +34,14 @@ export default function AdminDashboard() {
 
   return (
     <Shell>
-      <h1 className="mb-6 text-xl font-semibold">Admin Dashboard</h1>
+      <h1 className="mb-4 text-xl font-semibold">Admin Dashboard</h1>
+      <nav className="mb-6 flex flex-wrap gap-4 border-b border-gray-200 pb-3 text-sm">
+        {MORE_LINKS.map((l) => (
+          <Link key={l.href} href={l.href} className="text-gray-600 hover:text-gray-900">
+            {l.label}
+          </Link>
+        ))}
+      </nav>
       <div className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
         {cards.map((c) => (
           <Link key={c.label} href={c.href} className="card">
@@ -45,7 +52,7 @@ export default function AdminDashboard() {
       </div>
 
       <h2 className="mb-3 text-lg font-medium">Orders by status</h2>
-      <div className="flex flex-wrap gap-3">
+      <div className="mb-8 flex flex-wrap gap-3">
         {Object.entries(data.orders_by_status).map(([status, count]) => (
           <div key={status} className="card">
             <p className="text-xs text-gray-500">{status}</p>
@@ -56,3 +63,12 @@ export default function AdminDashboard() {
     </Shell>
   );
 }
+
+const MORE_LINKS = [
+  { href: '/admin/categories', label: 'Categories' },
+  { href: '/admin/rfqs/review', label: 'RFQ Review' },
+  { href: '/admin/offers', label: 'Offers' },
+  { href: '/admin/orders', label: 'Orders' },
+  { href: '/admin/messages/flags', label: 'Message Flags' },
+  { href: '/admin/disputes', label: 'Disputes' },
+];

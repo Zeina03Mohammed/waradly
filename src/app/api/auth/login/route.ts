@@ -51,7 +51,14 @@ export async function POST(request: NextRequest) {
   }
 
   if (user.status !== 'active') {
-    return Errors.suspended();
+    return Errors.suspended(user.status, user.status_reason);
+  }
+
+  // Deviates from SPEC.md Section 4 ("account can log in but cannot publish an RFQ/offer until
+  // verified") — product decision: block login entirely until the email is verified, rather
+  // than letting unverified accounts in and only gating RFQ/offer actions.
+  if (!user.email_verified_at) {
+    return Errors.emailNotVerified();
   }
 
   const accessToken = signAccessToken({ sub: user.id, role: user.role });

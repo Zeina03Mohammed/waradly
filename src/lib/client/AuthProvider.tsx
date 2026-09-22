@@ -6,6 +6,9 @@ import { api, clearTokens, getAccessToken, setTokens } from '@/lib/client/apiCli
 interface CurrentUser {
   id: string;
   email: string;
+  phone: string | null;
+  username: string | null;
+  has_avatar: boolean;
   role: 'buyer' | 'supplier' | 'admin';
   status: string;
   email_verified_at: string | null;

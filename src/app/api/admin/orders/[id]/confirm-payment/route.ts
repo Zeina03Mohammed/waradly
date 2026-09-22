@@ -49,7 +49,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
       link: `/orders/${order.id}`,
       email: {
         to: owner.email,
-        subject: 'Payment confirmed on Wardly',
+        subject: 'Payment confirmed on Waradly',
         body: `Payment has been confirmed for the order "${order.rfq.title}". Production can now proceed.`,
       },
     });

@@ -16,6 +16,8 @@ export default function RegisterPage() {
   const { user, refreshUser } = useAuth();
   const [role, setRole] = useState<'buyer' | 'supplier'>('buyer');
   const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [legalName, setLegalName] = useState('');
@@ -52,6 +54,8 @@ export default function RegisterPage() {
         method: 'POST',
         body: {
           email,
+          username,
+          phone,
           password,
           role,
           legal_name: legalName,
@@ -109,6 +113,12 @@ export default function RegisterPage() {
 
         <Field label="Email" error={errors.email}>
           <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="input" />
+        </Field>
+        <Field label="Username" error={errors.username}>
+          <input required value={username} onChange={(e) => setUsername(e.target.value)} className="input" />
+        </Field>
+        <Field label="Phone number" error={errors.phone}>
+          <input type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} className="input" />
         </Field>
         <Field label="Password" error={errors.password}>
           <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} className="input" />

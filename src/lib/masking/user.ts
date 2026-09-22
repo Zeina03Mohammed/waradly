@@ -5,6 +5,9 @@
 export interface UserRecord {
   id: string;
   email: string;
+  phone: string | null;
+  username: string | null;
+  avatar_storage_key: string | null;
   role: 'buyer' | 'supplier' | 'admin';
   status: 'active' | 'suspended' | 'banned';
   email_verified_at: Date | null;
@@ -15,6 +18,9 @@ export interface UserRecord {
 export interface SelfUserView {
   id: string;
   email: string;
+  phone: string | null;
+  username: string | null;
+  has_avatar: boolean;
   role: string;
   status: string;
   email_verified_at: Date | null;
@@ -25,6 +31,9 @@ export function toSelfUserView(user: UserRecord): SelfUserView {
   return {
     id: user.id,
     email: user.email,
+    phone: user.phone,
+    username: user.username,
+    has_avatar: user.avatar_storage_key !== null,
     role: user.role,
     status: user.status,
     email_verified_at: user.email_verified_at,

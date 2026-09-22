@@ -110,7 +110,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
         link: `/buyer/rfqs/${rfq.id}/offers`,
         email: {
           to: buyerOwner.email,
-          subject: 'New offer on your Wardly RFQ',
+          subject: 'New offer on your Waradly RFQ',
           body: `A supplier submitted a new offer on your RFQ "${rfq.title}". Log in to compare offers.`,
         },
       });

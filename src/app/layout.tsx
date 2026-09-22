@@ -3,7 +3,7 @@ import './globals.css';
 import { AuthProvider } from '@/lib/client/AuthProvider';
 
 export const metadata: Metadata = {
-  title: 'Wardly',
+  title: 'Waradly',
   description: 'B2B procurement marketplace',
 };
 

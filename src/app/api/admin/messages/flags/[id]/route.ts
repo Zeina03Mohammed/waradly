@@ -69,8 +69,8 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
       message: `Your account received a ${parsed.data.action} for a policy violation in a message.`,
       email: {
         to: sender.email,
-        subject: 'Wardly policy notice',
-        body: `Your account received a ${parsed.data.action} regarding a message that appeared to contain contact information, which is against Wardly's Anti-Circumvention Policy.`,
+        subject: 'Waradly policy notice',
+        body: `Your account received a ${parsed.data.action} regarding a message that appeared to contain contact information, which is against Waradly's Anti-Circumvention Policy.`,
       },
     });
   }

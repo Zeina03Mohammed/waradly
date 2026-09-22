@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
       message: 'A password reset was requested for your account.',
       email: {
         to: user.email,
-        subject: 'Reset your Wardly password',
+        subject: 'Reset your Waradly password',
         body: `A password reset was requested for your account.\n\nReset your password: ${resetLink}\n\nThis link expires in 1 hour and can only be used once. If you didn't request this, you can ignore this email.`,
       },
     });

@@ -116,7 +116,7 @@ async function notifyOrderStatusChange(
       message: `Your order for "${order.rfq.title}" is now ${toStatus.replace(/_/g, ' ').toLowerCase()}.`,
       link: `/buyer/orders/${order.id}/tracking`,
       ...(withEmail
-        ? { email: { to: buyerOwner.email, subject: 'Wardly order status update', body: `Your order for "${order.rfq.title}" is now ${toStatus}.` } }
+        ? { email: { to: buyerOwner.email, subject: 'Waradly order status update', body: `Your order for "${order.rfq.title}" is now ${toStatus}.` } }
         : {}),
     });
   }
@@ -134,7 +134,7 @@ async function notifyOrderStatusChange(
         message: `Order for "${order.rfq.title}" is now ${toStatus.replace(/_/g, ' ').toLowerCase()}.`,
         link: `/supplier/orders/${order.id}`,
         ...(withEmail
-          ? { email: { to: supplierOwner.email, subject: 'Wardly order status update', body: `Order for "${order.rfq.title}" is now ${toStatus}.` } }
+          ? { email: { to: supplierOwner.email, subject: 'Waradly order status update', body: `Order for "${order.rfq.title}" is now ${toStatus}.` } }
           : {}),
       });
     }

@@ -13,7 +13,7 @@ export interface AttachmentInput {
  * Reconciles an RFQ's rfq_attachments rows to match the given list (RFQ is only ever editable
  * pre-publish, so add/remove is safe). For any newly-added attachment flagged
  * contains_identity_risk, generates its watermarked preview derivative once, per SPEC.md
- * Section 12 ("Wardly Confidential" overlay, generated once at upload time).
+ * Section 12 ("Waradly Confidential" overlay, generated once at upload time).
  */
 export async function syncRfqAttachments(
   tx: Prisma.TransactionClient,

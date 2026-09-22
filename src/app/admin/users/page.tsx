@@ -18,6 +18,8 @@ export default function AdminUsersPage() {
   const { user, loading } = useRequireRole('admin');
   const [users, setUsers] = useState<User[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [pending, setPending] = useState<{ id: string; kind: 'suspend' | 'ban' } | null>(null);
+  const [reason, setReason] = useState('');
 
   function load() {
     api<{ users: User[] }>('/api/admin/users').then((d) => setUsers(d.users));
@@ -31,25 +33,15 @@ export default function AdminUsersPage() {
 
   if (loading || !user) return null;
 
-  async function handleSuspend(id: string) {
-    const reason = prompt('Reason for suspension:');
-    if (!reason) return;
+  async function submitReason() {
+    if (!pending || !reason.trim()) return;
     try {
-      await api(`/api/admin/users/${id}/suspend`, { method: 'PATCH', body: { reason } });
+      await api(`/api/admin/users/${pending.id}/${pending.kind}`, { method: 'PATCH', body: { reason } });
+      setPending(null);
+      setReason('');
       load();
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Could not suspend.');
-    }
-  }
-
-  async function handleBan(id: string) {
-    const reason = prompt('Reason for ban:');
-    if (!reason) return;
-    try {
-      await api(`/api/admin/users/${id}/ban`, { method: 'PATCH', body: { reason } });
-      load();
-    } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Could not ban.');
+      setError(err instanceof ApiError ? err.message : `Could not ${pending.kind}.`);
     }
   }
 
@@ -90,10 +82,22 @@ export default function AdminUsersPage() {
               <td className="space-x-2">
                 {u.status === 'active' && (
                   <>
-                    <button onClick={() => handleSuspend(u.id)} className="text-yellow-700 underline">
+                    <button
+                      onClick={() => {
+                        setPending({ id: u.id, kind: 'suspend' });
+                        setReason('');
+                      }}
+                      className="text-yellow-700 underline"
+                    >
                       Suspend
                     </button>
-                    <button onClick={() => handleBan(u.id)} className="text-red-600 underline">
+                    <button
+                      onClick={() => {
+                        setPending({ id: u.id, kind: 'ban' });
+                        setReason('');
+                      }}
+                      className="text-red-600 underline"
+                    >
                       Ban
                     </button>
                   </>
@@ -108,6 +112,39 @@ export default function AdminUsersPage() {
           ))}
         </tbody>
       </table>
+
+      {pending && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/40 p-4">
+          <div className="w-full max-w-sm rounded bg-white p-6 shadow-lg">
+            <h2 className="mb-3 text-lg font-semibold capitalize">Reason for {pending.kind}</h2>
+            <textarea
+              autoFocus
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              className="input mb-4 w-full"
+              rows={3}
+            />
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => {
+                  setPending(null);
+                  setReason('');
+                }}
+                className="rounded border border-gray-300 px-3 py-1.5 text-sm"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={submitReason}
+                disabled={!reason.trim()}
+                className="rounded bg-gray-900 px-3 py-1.5 text-sm text-white disabled:opacity-50"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </Shell>
   );
 }

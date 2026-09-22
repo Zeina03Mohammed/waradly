@@ -8,9 +8,12 @@ import { api } from '@/lib/client/apiClient';
 interface LogEntry {
   id: string;
   actor_id: string | null;
+  actor: { email: string; phone: string | null } | null;
   action: string;
   entity_type: string;
+  entity_type_label: string;
   entity_id: string;
+  entity_label: string | null;
   created_at: string;
   before_state: unknown;
   after_state: unknown;
@@ -45,10 +48,20 @@ export default function AdminAuditLogsPage() {
           {logs.map((l) => (
             <tr key={l.id}>
               <td>{new Date(l.created_at).toLocaleString()}</td>
-              <td>{l.actor_id ?? 'system'}</td>
+              <td>
+                {l.actor ? (
+                  <>
+                    {l.actor.email}
+                    {l.actor.phone && <span className="text-gray-500"> · {l.actor.phone}</span>}
+                  </>
+                ) : (
+                  'system'
+                )}
+              </td>
               <td>{l.action}</td>
               <td>
-                {l.entity_type}:{l.entity_id.slice(0, 8)}
+                {l.entity_label ?? `${l.entity_type_label} (deleted)`}
+                <span className="text-gray-400"> · {l.entity_type_label}</span>
               </td>
               <td>
                 <button onClick={() => setExpanded(expanded === l.id ? null : l.id)} className="text-blue-600 underline">

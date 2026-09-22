@@ -60,7 +60,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
     link: '/supplier/verification',
     email: {
       to: (await prisma.user.findUnique({ where: { id: supplier.organization.owner_user_id } }))!.email,
-      subject: status === 'verified' ? 'Your Wardly supplier account is verified' : 'Your Wardly verification was rejected',
+      subject: status === 'verified' ? 'Your Waradly supplier account is verified' : 'Your Waradly verification was rejected',
       body:
         status === 'verified'
           ? 'Congratulations — your supplier account has been verified. You can now browse and quote on RFQs in your approved categories.'

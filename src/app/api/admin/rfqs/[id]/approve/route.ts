@@ -49,7 +49,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
       link: `/buyer/rfqs/${rfq.id}`,
       email: {
         to: buyerOwner.email,
-        subject: 'Your Wardly RFQ was approved',
+        subject: 'Your Waradly RFQ was approved',
         body: `Your RFQ "${rfq.title}" was approved and is now visible to eligible suppliers.`,
       },
     });

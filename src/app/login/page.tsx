@@ -17,6 +17,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [suspension, setSuspension] = useState<{ status: string; reason: string | null } | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -26,12 +27,17 @@ export default function LoginPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    setSuspension(null);
     setSubmitting(true);
     try {
       const loggedInUser = await login(email, password);
       router.replace(DASHBOARD_BY_ROLE[loggedInUser.role] ?? '/');
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Something went wrong.');
+      if (err instanceof ApiError && err.code === 'FORBIDDEN' && err.data?.status) {
+        setSuspension({ status: err.data.status as string, reason: (err.data.reason as string | null) ?? null });
+      } else {
+        setError(err instanceof ApiError ? err.message : 'Something went wrong.');
+      }
     } finally {
       setSubmitting(false);
     }
@@ -65,6 +71,23 @@ export default function LoginPage() {
           Forgot password?
         </a>
       </p>
+
+      {suspension && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/40 p-4">
+          <div className="w-full max-w-sm rounded bg-white p-6 shadow-lg">
+            <h2 className="mb-3 text-lg font-semibold capitalize text-red-600">Account {suspension.status}</h2>
+            <p className="mb-4 text-sm text-gray-700">
+              {suspension.reason ?? 'No reason was recorded.'}
+            </p>
+            <p className="mb-4 text-sm text-gray-500">Contact support if you believe this is a mistake.</p>
+            <div className="flex justify-end">
+              <button onClick={() => setSuspension(null)} className="rounded bg-gray-900 px-3 py-1.5 text-sm text-white">
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

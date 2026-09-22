@@ -9,7 +9,7 @@ async function setUserStatus(userId: string, actorId: string, status: UserStatus
   const before = { status: user.status };
 
   await prisma.$transaction([
-    prisma.user.update({ where: { id: userId }, data: { status } }),
+    prisma.user.update({ where: { id: userId }, data: { status, status_reason: reason ?? null } }),
     prisma.refreshToken.updateMany({ where: { user_id: userId }, data: { revoked: true } }),
   ]);
 

@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
   try {
     const result = await prisma.$transaction(async (tx) => {
       const user = await tx.user.create({
-        data: { email: data.email, password_hash, role: data.role },
+        data: { email: data.email, phone: data.phone, username: data.username, password_hash, role: data.role },
       });
 
       const organization = await tx.organization.create({
@@ -86,12 +86,12 @@ export async function POST(request: NextRequest) {
     await notify({
       userId: result.user.id,
       eventType: 'account.created',
-      message: 'Welcome to Wardly — please verify your email to get started.',
+      message: 'Welcome to Waradly — please verify your email to get started.',
       link: '/verify-email',
       email: {
         to: result.user.email,
-        subject: 'Welcome to Wardly — verify your email',
-        body: `Welcome to Wardly!\n\nPlease verify your email by visiting:\n${verifyLink}\n\nThis link expires in 24 hours.`,
+        subject: 'Welcome to Waradly — verify your email',
+        body: `Welcome to Waradly!\n\nPlease verify your email by visiting:\n${verifyLink}\n\nThis link expires in 24 hours.`,
       },
     });
 

@@ -1,7 +1,7 @@
 import { Resend } from 'resend';
 import type { NotificationChannel, NotificationPayload } from '@/lib/notifications/channel';
 
-const FROM_ADDRESS = process.env.EMAIL_FROM ?? 'Wardly <onboarding@resend.dev>';
+const FROM_ADDRESS = process.env.EMAIL_FROM ?? 'Waradly <onboarding@resend.dev>';
 
 /** Real email delivery via Resend — the one-file swap the console channel was designed to
  * make easy. Selected automatically by the factory in lib/notifications/index.ts when

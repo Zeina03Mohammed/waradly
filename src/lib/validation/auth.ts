@@ -8,9 +8,17 @@ const passwordSchema = z
   .regex(/[A-Za-z]/, 'Password must contain at least one letter.')
   .regex(/[0-9]/, 'Password must contain at least one number.');
 const legalNameSchema = z.string().trim().min(1, 'Company legal name is required.').max(200);
+const phoneSchema = z
+  .string()
+  .trim()
+  .min(1, 'Phone number is required.')
+  .regex(/^\+?[0-9()\-\s]{6,20}$/, 'Enter a valid phone number.');
+export const usernameSchema = z.string().trim().min(1, 'Username is required.').max(50);
 
 export const registerSchema = z.object({
   email: emailSchema,
+  phone: phoneSchema,
+  username: usernameSchema,
   password: passwordSchema,
   role: z.enum(['buyer', 'supplier']),
   legal_name: legalNameSchema,

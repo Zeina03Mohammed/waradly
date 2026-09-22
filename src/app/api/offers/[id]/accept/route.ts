@@ -83,7 +83,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
       link: `/supplier/orders/${order.id}`,
       email: {
         to: winner.email,
-        subject: 'Your Wardly offer was accepted',
+        subject: 'Your Waradly offer was accepted',
         body: `Your offer on "${offer.rfq.title}" was accepted.`,
       },
     });
@@ -96,7 +96,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
       link: `/supplier/orders/${order.id}`,
       email: {
         to: winner.email,
-        subject: 'Your Wardly order has been created',
+        subject: 'Your Waradly order has been created',
         body: `An order has been created for "${offer.rfq.title}". Log in to view next steps.`,
       },
     });
@@ -122,8 +122,8 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
     link: `/buyer/orders/${order.id}`,
     email: {
       to: auth.user.email,
-      subject: 'Your Wardly order has been created',
-      body: `Your order for "${offer.rfq.title}" has been created. Please follow the payment instructions agreed with the Wardly team to proceed.`,
+      subject: 'Your Waradly order has been created',
+      body: `Your order for "${offer.rfq.title}" has been created. Please follow the payment instructions agreed with the Waradly team to proceed.`,
     },
   });
 

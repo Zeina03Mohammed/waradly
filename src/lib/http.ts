@@ -22,8 +22,15 @@ export const Errors = {
   conflict: (message: string) => errorResponse(409, 'CONFLICT', message),
   validation: (fields: Record<string, string>) =>
     errorResponse(422, 'VALIDATION_ERROR', 'Validation failed.', { fields }),
-  suspended: () =>
-    errorResponse(403, 'FORBIDDEN', 'Your account has been suspended. Please contact support.'),
+  suspended: (status: 'suspended' | 'banned', reason: string | null) =>
+    errorResponse(403, 'FORBIDDEN', `Your account has been ${status}. Please contact support.`, {
+      status,
+      reason,
+    }),
+  emailNotVerified: () =>
+    errorResponse(403, 'FORBIDDEN', 'Please verify your email before logging in. Check your inbox for the verification link.', {
+      reason: 'email_not_verified',
+    }),
   lockedOut: () =>
     errorResponse(429, 'RATE_LIMITED', 'Too many failed attempts. Try again in 15 minutes.'),
   invalidCredentials: () => errorResponse(401, 'UNAUTHENTICATED', 'Invalid email or password.'),

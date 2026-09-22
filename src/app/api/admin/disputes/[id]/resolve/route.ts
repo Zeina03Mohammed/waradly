@@ -73,7 +73,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
       link: `/orders/${dispute.order_id}`,
       email: {
         to: owner.email,
-        subject: 'Your Wardly dispute has been resolved',
+        subject: 'Your Waradly dispute has been resolved',
         body: `The dispute on your order "${dispute.order.rfq.title}" has been resolved.\n\nOutcome: ${parsed.data.outcome}\n${parsed.data.notes ? `Notes: ${parsed.data.notes}` : ''}`,
       },
     });
