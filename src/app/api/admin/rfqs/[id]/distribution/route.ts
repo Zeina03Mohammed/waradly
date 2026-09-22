@@ -11,12 +11,42 @@ const distributionSchema = z.object({
   supplier_ids: z.array(z.string().uuid()),
 });
 
+/** Lists suppliers approved for this RFQ's category plus their current include/exclude
+ * override, backing the Section 7.7 distribution screen's toggle table. */
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+  const auth = await authenticate(request);
+  if (!auth.ok) return auth.response;
+  const denied = requireRole(auth.user, 'admin');
+  if (denied) return denied;
+
+  const rfq = await prisma.rfq.findUnique({ where: { id: params.id } });
+  if (!rfq) return Errors.notFound();
+  if (!rfq.category_id) return NextResponse.json({ suppliers: [] });
+
+  const [approvedIds, distributions] = await Promise.all([
+    getApprovedSupplierIdsForCategory(rfq.category_id),
+    prisma.rfqDistribution.findMany({ where: { rfq_id: rfq.id } }),
+  ]);
+
+  const overrideMap = new Map(distributions.map((d) => [d.supplier_id, d.included]));
+  const allIds = new Set([...approvedIds, ...distributions.map((d) => d.supplier_id)]);
+
+  const suppliers = await prisma.supplierProfile.findMany({ where: { id: { in: Array.from(allIds) } } });
+
+  return NextResponse.json({
+    suppliers: suppliers.map((s) => ({
+      id: s.id,
+      anonymized_id: s.anonymized_id,
+      approved_for_category: approvedIds.includes(s.id),
+      included: overrideMap.has(s.id) ? overrideMap.get(s.id) : approvedIds.includes(s.id),
+    })),
+  });
+}
+
 /**
  * SPEC.md Section 7.7: default distribution is "all approved suppliers for this category";
  * this endpoint lets Admin override it. `supplier_ids` is the desired final set of suppliers
- * who should see the RFQ. Approved-for-category suppliers left out of that set get an explicit
- * exclusion row; suppliers in the set who aren't otherwise approved get an explicit inclusion
- * row. Everyone else needs no override row (the default applies).
+ * who should see the RFQ.
  */
 export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
   const auth = await authenticate(request);
