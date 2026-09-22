@@ -190,16 +190,16 @@ CREATE TABLE "supplier_verifications" (
 CREATE TABLE "rfqs" (
     "id" TEXT NOT NULL,
     "buyer_id" TEXT NOT NULL,
-    "category_id" TEXT NOT NULL,
+    "category_id" TEXT,
     "title" TEXT NOT NULL,
-    "quantity" DECIMAL(18,3) NOT NULL,
-    "unit" TEXT NOT NULL,
+    "quantity" DECIMAL(18,3),
+    "unit" TEXT,
     "dimensions" TEXT,
     "material" TEXT,
     "technical_specs" JSONB,
     "printing_customization" TEXT,
-    "delivery_deadline" TIMESTAMP(3) NOT NULL,
-    "delivery_region" TEXT NOT NULL,
+    "delivery_deadline" TIMESTAMP(3),
+    "delivery_region" TEXT,
     "quality_requirements" TEXT,
     "sample_required" BOOLEAN NOT NULL DEFAULT false,
     "certifications_required" TEXT,
@@ -207,7 +207,7 @@ CREATE TABLE "rfqs" (
     "status" "RfqStatus" NOT NULL DEFAULT 'DRAFT',
     "rejection_reason" TEXT,
     "admin_notes" TEXT,
-    "offer_deadline_at" TIMESTAMP(3) NOT NULL,
+    "offer_deadline_at" TIMESTAMP(3),
     "published_at" TIMESTAMP(3),
     "source_rfq_id" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -422,6 +422,18 @@ CREATE TABLE "audit_logs" (
 );
 
 -- CreateTable
+CREATE TABLE "rfq_distributions" (
+    "id" TEXT NOT NULL,
+    "rfq_id" TEXT NOT NULL,
+    "supplier_id" TEXT NOT NULL,
+    "included" BOOLEAN NOT NULL DEFAULT true,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "rfq_distributions_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "disputes" (
     "id" TEXT NOT NULL,
     "order_id" TEXT NOT NULL,
@@ -534,6 +546,9 @@ CREATE INDEX "audit_logs_entity_type_entity_id_idx" ON "audit_logs"("entity_type
 
 -- CreateIndex
 CREATE INDEX "audit_logs_actor_id_created_at_idx" ON "audit_logs"("actor_id", "created_at");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "rfq_distributions_rfq_id_supplier_id_key" ON "rfq_distributions"("rfq_id", "supplier_id");
 
 -- CreateIndex
 CREATE INDEX "disputes_order_id_idx" ON "disputes"("order_id");
@@ -678,6 +693,12 @@ ALTER TABLE "files" ADD CONSTRAINT "files_preview_of_file_id_fkey" FOREIGN KEY (
 
 -- AddForeignKey
 ALTER TABLE "audit_logs" ADD CONSTRAINT "audit_logs_actor_id_fkey" FOREIGN KEY ("actor_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "rfq_distributions" ADD CONSTRAINT "rfq_distributions_rfq_id_fkey" FOREIGN KEY ("rfq_id") REFERENCES "rfqs"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "rfq_distributions" ADD CONSTRAINT "rfq_distributions_supplier_id_fkey" FOREIGN KEY ("supplier_id") REFERENCES "supplier_profiles"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "disputes" ADD CONSTRAINT "disputes_order_id_fkey" FOREIGN KEY ("order_id") REFERENCES "orders"("id") ON DELETE CASCADE ON UPDATE CASCADE;

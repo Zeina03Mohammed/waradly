@@ -265,6 +265,7 @@ model SupplierProfile {
   orders          Order[]
   ratings         Rating[]
   conversations   Conversation[]
+  rfq_distributions RfqDistribution[]
 
   @@index([verification_status])
   @@map("supplier_profiles")
@@ -321,19 +322,26 @@ model SupplierVerification {
   @@map("supplier_verifications")
 }
 
+// NOTE: category_id/quantity/unit/delivery_deadline/delivery_region/offer_deadline_at are
+// marked "Req: Yes" in Section 3's table, but Section 16's API spec explicitly says "required
+// fields for DRAFT save = title only; full set required to submit" — an internal spec
+// contradiction. We keep title required (matching both sections) and make the rest nullable
+// so a DRAFT can genuinely hold only a title without inventing placeholder data; the full-set
+// requirement is enforced at submit time by validateRfqForSubmit (lib/validation/rfq.ts),
+// which is the more specific, more explicit statement of intent.
 model Rfq {
   id                             String     @id @default(uuid())
   buyer_id                       String
-  category_id                    String
+  category_id                    String?
   title                          String
-  quantity                       Decimal    @db.Decimal(18, 3)
-  unit                           String
+  quantity                       Decimal?   @db.Decimal(18, 3)
+  unit                           String?
   dimensions                     String?
   material                       String?
   technical_specs                Json?
   printing_customization         String?
-  delivery_deadline              DateTime
-  delivery_region                String
+  delivery_deadline              DateTime?
+  delivery_region                String?
   quality_requirements           String?
   sample_required                Boolean    @default(false)
   certifications_required        String?
@@ -341,14 +349,14 @@ model Rfq {
   status                         RfqStatus  @default(DRAFT)
   rejection_reason               String?
   admin_notes                    String?
-  offer_deadline_at              DateTime
+  offer_deadline_at              DateTime?
   published_at                   DateTime?
   source_rfq_id                  String?
   created_at                     DateTime   @default(now())
   updated_at                     DateTime   @updatedAt
 
   buyer         BuyerProfile   @relation(fields: [buyer_id], references: [id], onDelete: Restrict)
-  category      Category       @relation(fields: [category_id], references: [id], onDelete: Restrict)
+  category      Category?      @relation(fields: [category_id], references: [id], onDelete: Restrict)
   source_rfq    Rfq?           @relation("Reorder", fields: [source_rfq_id], references: [id], onDelete: SetNull)
   reorders      Rfq[]          @relation("Reorder")
   items         RfqItem[]
@@ -356,6 +364,7 @@ model Rfq {
   offers        Offer[]
   order         Order?
   conversations Conversation[]
+  distributions RfqDistribution[]
 
   @@index([buyer_id, status])
   @@index([category_id, status])
@@ -626,6 +635,25 @@ model AuditLog {
   @@index([entity_type, entity_id])
   @@index([actor_id, created_at])
   @@map("audit_logs")
+}
+
+// RfqDistribution — like Dispute, not enumerated in Section 3, but Section 7.7 and the
+// PATCH /admin/rfqs/{id}/distribution endpoint (Section 16) require Admin to add/remove
+// specific suppliers on top of the default "all approved suppliers in category" rule. This
+// table stores only the overrides; absence of a row means the default applies.
+model RfqDistribution {
+  id          String   @id @default(uuid())
+  rfq_id      String
+  supplier_id String
+  included    Boolean  @default(true)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  rfq      Rfq             @relation(fields: [rfq_id], references: [id], onDelete: Cascade)
+  supplier SupplierProfile @relation(fields: [supplier_id], references: [id], onDelete: Cascade)
+
+  @@unique([rfq_id, supplier_id])
+  @@map("rfq_distributions")
 }
 
 // Dispute — see file header note. Backs Sections 2, 7.13, 10, 16.

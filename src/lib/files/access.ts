@@ -51,6 +51,7 @@ export async function resolveFileAccess(
       if (variant === 'preview') {
         const eligible =
           (rfq.status === 'PUBLISHED' || rfq.status === 'RECEIVING_OFFERS') &&
+          rfq.category_id !== null &&
           (await isSupplierApprovedForCategory(supplierProfile.id, rfq.category_id));
         if (eligible) return { allowed: true, servedFileId };
       }
