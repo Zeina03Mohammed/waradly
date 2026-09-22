@@ -10,6 +10,21 @@ import { isOfferEditable } from '@/lib/stateMachines/offer';
 import { serializeOfferForSupplier } from '@/lib/offer/serialize';
 import { audit } from '@/lib/audit';
 
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+  const auth = await authenticate(request);
+  if (!auth.ok) return auth.response;
+  const denied = requireRole(auth.user, 'supplier');
+  if (denied) return denied;
+
+  const supplierProfile = await getSupplierProfileForUser(auth.user.id);
+  if (!supplierProfile) return Errors.notFound();
+
+  const offer = await prisma.offer.findUnique({ where: { id: params.id }, include: { attachments: true } });
+  if (!offer || offer.supplier_id !== supplierProfile.id) return Errors.notFound();
+
+  return NextResponse.json({ offer: serializeOfferForSupplier(offer) });
+}
+
 export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
   const auth = await authenticate(request);
   if (!auth.ok) return auth.response;
