@@ -79,12 +79,25 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
     await notify({
       userId: winner.id,
       eventType: 'offer.accepted',
-      message: `Your offer on "${offer.rfq.title}" was accepted! An order has been created.`,
+      message: `Your offer on "${offer.rfq.title}" was accepted!`,
       link: `/supplier/orders/${order.id}`,
       email: {
         to: winner.email,
         subject: 'Your Wardly offer was accepted',
-        body: `Your offer on "${offer.rfq.title}" was accepted. An order has been created — log in to view next steps.`,
+        body: `Your offer on "${offer.rfq.title}" was accepted.`,
+      },
+    });
+    // SPEC.md Section 14: "Order created | Buyer + Supplier | In-app + email | High | Confirmation"
+    // — a distinct event from "Offer accepted", both required by the table.
+    await notify({
+      userId: winner.id,
+      eventType: 'order.created',
+      message: `An order has been created for "${offer.rfq.title}".`,
+      link: `/supplier/orders/${order.id}`,
+      email: {
+        to: winner.email,
+        subject: 'Your Wardly order has been created',
+        body: `An order has been created for "${offer.rfq.title}". Log in to view next steps.`,
       },
     });
   }
