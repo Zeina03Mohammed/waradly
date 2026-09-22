@@ -25,7 +25,8 @@ export interface SupplierProfileRecord {
   anonymized_id: string;
   verification_status: string;
   completed_orders_count: number;
-  average_rating: number | string | null;
+  // Prisma's Decimal type has a toString(); we only ever project it, never do arithmetic here.
+  average_rating: { toString(): string } | number | string | null;
 }
 
 /** What a counterpart (the other role) is ever allowed to see of an organization. */
@@ -42,7 +43,7 @@ export interface PublicSupplierView extends PublicOrganizationView {
   supplier_id: string;
   anonymized_id: string;
   completed_orders_count: number;
-  average_rating: number | string | null;
+  average_rating: { toString(): string } | number | string | null;
 }
 
 /** Full view — only ever returned to the organization's own owner. */
