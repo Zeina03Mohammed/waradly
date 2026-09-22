@@ -1,6 +1,6 @@
 /**
  * Seed script — creates one admin, one active category, and a demo buyer + supplier so the
- * app is usable immediately after `docker compose up && npm run seed`.
+ * app is usable immediately after `npm run seed` (against a running Postgres instance).
  *
  * Demo login (all accounts share this password): Password123
  */

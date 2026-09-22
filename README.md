@@ -34,8 +34,8 @@ permissions matrix, and API contract. This README only covers running the app.
 ## Prerequisites
 
 - Node.js 20+
-- Docker Desktop (for the local Postgres container) — or any Postgres 14+ instance you point
-  `DATABASE_URL` at instead.
+- A running PostgreSQL 14+ instance (local install or hosted) — create an empty database and
+  user for the app to use.
 
 ## Setup
 
@@ -43,19 +43,16 @@ permissions matrix, and API contract. This README only covers running the app.
 # 1. Install dependencies
 npm install
 
-# 2. Copy the env template and adjust if needed (defaults match docker-compose.yml)
+# 2. Copy the env template and point DATABASE_URL at your Postgres instance
 cp .env.example .env
 
-# 3. Start Postgres
-docker compose up -d
-
-# 4. Run migrations
+# 3. Run migrations
 npx prisma migrate deploy
 
-# 5. Seed demo data (one admin, one active category, a verified demo buyer + supplier)
+# 4. Seed demo data (one admin, one active category, a verified demo buyer + supplier)
 npm run seed
 
-# 6. Start the app
+# 5. Start the app
 npm run dev
 ```
 
