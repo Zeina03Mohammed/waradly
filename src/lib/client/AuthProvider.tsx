@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
-import { api, clearTokens, getAccessToken, setTokens } from '@/lib/client/apiClient';
+import { api, clearTokens, getAccessToken, getRefreshToken, setTokens } from '@/lib/client/apiClient';
 
 interface CurrentUser {
   id: string;
@@ -75,9 +75,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = useCallback(async () => {
     try {
-      await api('/api/auth/logout', { method: 'POST' });
+      await api('/api/auth/logout', { method: 'POST', body: { refresh_token: getRefreshToken() } });
     } catch {
-      // ignore
+      // ignore — still clear local tokens below even if the revoke call itself failed
     }
     clearTokens();
     setUser(null);

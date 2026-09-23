@@ -46,9 +46,16 @@ async function tryRefresh(): Promise<boolean> {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ refresh_token: refreshToken }),
   });
-  if (!res.ok) return false;
+  if (!res.ok) {
+    // Refresh tokens rotate on every use (see /api/auth/refresh) — a 401 here means this one
+    // was already used, expired, or revoked (e.g. reuse-detection kicked in and killed every
+    // session). Either way the stale pair is unusable; drop it rather than retrying with it.
+    clearTokens();
+    return false;
+  }
   const data = await res.json();
   window.localStorage.setItem(ACCESS_KEY, data.access_token);
+  window.localStorage.setItem(REFRESH_KEY, data.refresh_token);
   return true;
 }
 

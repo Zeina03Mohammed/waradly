@@ -3,7 +3,13 @@ import { randomUUID } from 'node:crypto';
 import { prisma } from '@/lib/prisma';
 import { errorResponse, Errors } from '@/lib/http';
 import { authenticate, requireRole } from '@/lib/auth/session';
-import { ALLOWED_MIME_TYPES, isAllowedMimeType, MAX_FILE_SIZE_BYTES } from '@/lib/files/constraints';
+import {
+  ALLOWED_MIME_TYPES,
+  isAllowedMimeType,
+  matchesFileSignature,
+  MAX_FILE_SIZE_BYTES,
+  sanitizeFilename,
+} from '@/lib/files/constraints';
 import { storageProvider } from '@/lib/storage';
 import { audit } from '@/lib/audit';
 
@@ -34,8 +40,15 @@ export async function POST(request: NextRequest) {
   }
 
   const buffer = Buffer.from(await fileEntry.arrayBuffer());
+  if (!matchesFileSignature(buffer, fileEntry.type)) {
+    return errorResponse(422, 'VALIDATION_ERROR', 'File content does not match its declared type.', {
+      fields: { file: 'File content does not match its declared type.' },
+    });
+  }
+
+  const safeFilename = sanitizeFilename(fileEntry.name);
   const id = randomUUID();
-  const key = `${auth.user.id}/${id}-${fileEntry.name}`;
+  const key = `${auth.user.id}/${id}-${safeFilename}`;
 
   try {
     await storageProvider.save(key, buffer);
@@ -48,7 +61,7 @@ export async function POST(request: NextRequest) {
       id,
       uploader_id: auth.user.id,
       storage_key: key,
-      original_filename: fileEntry.name,
+      original_filename: safeFilename,
       mime_type: fileEntry.type,
       size_bytes: fileEntry.size,
     },

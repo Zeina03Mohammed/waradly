@@ -1,8 +1,9 @@
 import jwt from 'jsonwebtoken';
 import type { UserRole } from '@prisma/client';
+import { requiredSecret } from '@/lib/env';
 
-const ACCESS_SECRET = process.env.JWT_ACCESS_SECRET ?? 'dev-access-secret-change-me';
-const REFRESH_SECRET = process.env.JWT_REFRESH_SECRET ?? 'dev-refresh-secret-change-me';
+const ACCESS_SECRET = requiredSecret('JWT_ACCESS_SECRET', 'dev-access-secret-change-me');
+const REFRESH_SECRET = requiredSecret('JWT_REFRESH_SECRET', 'dev-refresh-secret-change-me');
 
 // SPEC.md Section 4: access token 24h expiry, refresh token 30 days.
 const ACCESS_TOKEN_TTL = '24h';

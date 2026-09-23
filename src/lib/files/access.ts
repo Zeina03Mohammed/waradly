@@ -38,7 +38,8 @@ export async function resolveFileAccess(
   }
 
   if (file.rfq_attachments.length > 0) {
-    const rfq = file.rfq_attachments[0].rfq;
+    const attachment = file.rfq_attachments[0];
+    const rfq = attachment.rfq;
 
     if (user.role === 'buyer' && (await isOwnerOfBuyerProfile(user.id, rfq.buyer_id))) {
       return { allowed: true, servedFileId };
@@ -53,7 +54,16 @@ export async function resolveFileAccess(
           (rfq.status === 'PUBLISHED' || rfq.status === 'RECEIVING_OFFERS') &&
           rfq.category_id !== null &&
           (await isSupplierApprovedForCategory(supplierProfile.id, rfq.category_id));
-        if (eligible) return { allowed: true, servedFileId };
+        if (eligible) {
+          // A file flagged identity-risk must never reach a non-awarded supplier without its
+          // watermark. If the derivative is missing (generation failed, or hasn't run yet),
+          // fail closed instead of silently falling back to the true original — the whole
+          // point of this masking layer is that the original is never the fallback.
+          if (attachment.contains_identity_risk && !file.preview_derivative) {
+            return { allowed: false, reason: 'forbidden' };
+          }
+          return { allowed: true, servedFileId };
+        }
       }
 
       if (variant === 'original') {

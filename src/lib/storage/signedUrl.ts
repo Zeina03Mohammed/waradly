@@ -1,6 +1,7 @@
 import crypto from 'node:crypto';
+import { requiredSecret } from '@/lib/env';
 
-const SECRET = process.env.FILE_URL_SECRET ?? 'dev-file-secret-change-me';
+const SECRET = requiredSecret('FILE_URL_SECRET', 'dev-file-secret-change-me');
 export const SIGNED_URL_TTL_MS = 5 * 60 * 1000; // SPEC.md tech-stack decision: 5-minute expiry.
 
 export type FileVariant = 'preview' | 'original';

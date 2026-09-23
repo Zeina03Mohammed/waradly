@@ -1,11 +1,15 @@
 import sharp from 'sharp';
 import { PDFDocument, rgb, degrees, StandardFonts } from 'pdf-lib';
+import { MAX_IMAGE_PIXELS, MAX_PDF_PAGES } from '@/lib/files/constraints';
 
 const WATERMARK_TEXT = 'WARADLY CONFIDENTIAL';
 
-/** Simple static diagonal text overlay — SPEC.md Section 12 ("no OCR involved"). */
+/** Simple static diagonal text overlay — SPEC.md Section 12 ("no OCR involved").
+ * `limitInputPixels` makes sharp refuse to decode a decompression-bomb-style image (a small
+ * file that claims an enormous pixel count) before doing any expensive work, rather than
+ * attempting to allocate a buffer for it. */
 async function watermarkImage(buffer: Buffer): Promise<Buffer> {
-  const image = sharp(buffer);
+  const image = sharp(buffer, { limitInputPixels: MAX_IMAGE_PIXELS });
   const metadata = await image.metadata();
   const width = metadata.width ?? 800;
   const height = metadata.height ?? 600;
@@ -24,6 +28,13 @@ async function watermarkImage(buffer: Buffer): Promise<Buffer> {
 
 async function watermarkPdf(buffer: Buffer): Promise<Buffer> {
   const pdfDoc = await PDFDocument.load(buffer);
+
+  // A malicious PDF could claim thousands of pages to burn CPU/memory drawing text on each one
+  // — cap it rather than trusting the page count is reasonable just because the file parsed.
+  if (pdfDoc.getPageCount() > MAX_PDF_PAGES) {
+    throw new Error(`PDF exceeds the ${MAX_PDF_PAGES}-page limit.`);
+  }
+
   const font = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
   for (const page of pdfDoc.getPages()) {

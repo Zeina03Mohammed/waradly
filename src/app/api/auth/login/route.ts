@@ -12,6 +12,12 @@ import { audit } from '@/lib/audit';
 const MAX_ATTEMPTS = 5;
 const LOCKOUT_WINDOW_MS = 15 * 60 * 1000;
 
+// Bcrypt hash of an arbitrary, unused string — never a real password. Comparing against this
+// when the account doesn't exist keeps the "no such user" path taking roughly as long as the
+// "wrong password" path (both run one bcrypt compare), so response timing can't be used to
+// enumerate which emails have accounts.
+const DUMMY_HASH = '$2a$12$C6UzMDM.H6dfI/f/IKcEeOeXpyzRw9F3o.0IiC.q0xhFqbYD4hZ0G'; // hash of a random string
+
 export async function POST(request: NextRequest) {
   const json = await request.json().catch(() => null);
   if (!json) return Errors.validation({ _: 'Invalid JSON body.' });
@@ -22,6 +28,7 @@ export async function POST(request: NextRequest) {
 
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) {
+    await verifyPassword(password, DUMMY_HASH);
     return Errors.invalidCredentials();
   }
 
