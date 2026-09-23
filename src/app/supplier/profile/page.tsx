@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { Shell } from '@/components/Shell';
+import { AccountPhotoUsername } from '@/components/AccountPhotoUsername';
 import { useRequireRole } from '@/lib/client/useRequireRole';
 import { api, ApiError } from '@/lib/client/apiClient';
+import { CountrySelect, RegionSelect } from '@/components/CountryRegionSelect';
 
 interface Org {
   legal_name: string;
@@ -53,7 +55,11 @@ export default function SupplierProfilePage() {
 
   return (
     <Shell>
-      <h1 className="mb-6 text-xl font-semibold">Company Profile</h1>
+      <h1 className="mb-6 text-xl font-semibold">Profile</h1>
+
+      <AccountPhotoUsername />
+
+      <h2 className="mb-4 text-lg font-medium">Company Profile</h2>
       {supplier && (
         <p className="mb-4 text-sm text-gray-600">
           Public ID: <span className="font-medium">{supplier.anonymized_id}</span> · Status:{' '}
@@ -69,11 +75,14 @@ export default function SupplierProfilePage() {
         </label>
         <label className="block text-sm">
           <span className="mb-1 block font-medium text-gray-700">Country</span>
-          <input className="input" value={org.country} onChange={(e) => setOrg({ ...org, country: e.target.value })} />
+          <CountrySelect
+            value={org.country}
+            onChange={(v) => setOrg({ ...org, country: v, general_region: '' })}
+          />
         </label>
         <label className="block text-sm">
           <span className="mb-1 block font-medium text-gray-700">General region</span>
-          <input className="input" value={org.general_region} onChange={(e) => setOrg({ ...org, general_region: e.target.value })} />
+          <RegionSelect country={org.country} value={org.general_region} onChange={(v) => setOrg({ ...org, general_region: v })} />
         </label>
         <label className="block text-sm">
           <span className="mb-1 block font-medium text-gray-700">Tax ID (optional)</span>

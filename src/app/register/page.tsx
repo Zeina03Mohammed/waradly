@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { api, ApiError } from '@/lib/client/apiClient';
 import { useAuth } from '@/lib/client/AuthProvider';
+import { CountrySelect, RegionSelect } from '@/components/CountryRegionSelect';
 
 interface Category {
   id: string;
@@ -136,10 +137,17 @@ export default function RegisterPage() {
           <input required value={legalName} onChange={(e) => setLegalName(e.target.value)} className="input" />
         </Field>
         <Field label="Country" error={errors.country}>
-          <input required value={country} onChange={(e) => setCountry(e.target.value)} className="input" />
+          <CountrySelect
+            value={country}
+            onChange={(v) => {
+              setCountry(v);
+              setGeneralRegion('');
+            }}
+            required
+          />
         </Field>
         <Field label="General region" error={errors.general_region}>
-          <input required value={generalRegion} onChange={(e) => setGeneralRegion(e.target.value)} className="input" />
+          <RegionSelect country={country} value={generalRegion} onChange={setGeneralRegion} required />
         </Field>
 
         {role === 'supplier' && (

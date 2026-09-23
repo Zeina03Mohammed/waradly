@@ -20,6 +20,12 @@ const DASHBOARD_BY_ROLE: Record<'buyer' | 'supplier' | 'admin', string> = {
   admin: '/admin',
 };
 
+const PROFILE_BY_ROLE: Record<'buyer' | 'supplier' | 'admin', string> = {
+  buyer: '/buyer/profile',
+  supplier: '/supplier/profile',
+  admin: '/admin/profile',
+};
+
 const NAV: Record<'buyer' | 'supplier' | 'admin', { href: string; label: string }[]> = {
   buyer: [
     { href: '/buyer/dashboard', label: 'Dashboard' },
@@ -48,7 +54,6 @@ export function Shell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const { user, logout, switchDevRole } = useAuth();
-  const links = user ? NAV[user.role] : [];
 
   async function handleDevRole(role: 'buyer' | 'supplier' | 'admin') {
     if (user?.role === role) {
@@ -78,82 +83,55 @@ export function Shell({ children }: { children: React.ReactNode }) {
     </div>
   );
 
-  if (user?.role === 'admin') {
-    return (
-      <div className="flex min-h-screen">
-        <aside className="flex w-56 shrink-0 flex-col border-r border-gray-200 bg-white">
-          <Link href="/admin" className="flex justify-center border-b border-gray-200 px-4 py-4">
-            <Logo />
-          </Link>
-          <nav className="flex flex-1 flex-col gap-1 p-3 text-sm">
-            {links.map((link) => {
-              const active = pathname === link.href;
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={
-                    active
-                      ? 'rounded bg-gray-900 px-3 py-2 text-white'
-                      : 'rounded px-3 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-                  }
-                >
-                  {link.label}
-                </Link>
-              );
-            })}
-          </nav>
-          <div className="space-y-3 border-t border-gray-200 p-3">
-            {devRoleSwitcher}
-            <button
-              onClick={() => logout()}
-              className="block w-full text-center text-base font-medium text-gray-500 transition-colors hover:text-red-600"
-            >
-              Log out
-            </button>
-          </div>
-        </aside>
-        <div className="flex flex-1 flex-col">
-          <div className="flex justify-end border-b border-gray-200 bg-white px-6 py-3">
-            <Link href="/admin/profile" className="flex items-center gap-2">
-              <Avatar userId={user.id} hasAvatar={user.has_avatar} label={displayName(user)} size={32} />
-              <span className="text-sm font-medium text-gray-700">{displayName(user)}</span>
-            </Link>
-          </div>
-          <main className="flex-1 px-6 py-6">{children}</main>
-        </div>
-      </div>
-    );
+  if (!user) {
+    return <main className="mx-auto max-w-6xl px-4 py-6">{children}</main>;
   }
 
+  const links = NAV[user.role];
+
   return (
-    <div className="min-h-screen">
-      <header className="border-b border-gray-200 bg-white">
-        <div className="mx-auto grid max-w-6xl grid-cols-[1fr_auto_1fr] items-center gap-4 px-4 py-3">
-          <nav className="flex flex-wrap gap-4 text-sm">
-            {links.map((link) => (
-              <Link key={link.href} href={link.href} className="text-gray-600 hover:text-gray-900">
+    <div className="flex min-h-screen">
+      <aside className="flex w-56 shrink-0 flex-col border-r border-gray-200 bg-white">
+        <Link href={DASHBOARD_BY_ROLE[user.role]} className="flex justify-center border-b border-gray-200 px-4 py-4">
+          <Logo />
+        </Link>
+        <nav className="flex flex-1 flex-col gap-1 p-3 text-sm">
+          {links.map((link) => {
+            const active = pathname === link.href;
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={
+                  active
+                    ? 'rounded bg-gray-900 px-3 py-2 text-white'
+                    : 'rounded px-3 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                }
+              >
                 {link.label}
               </Link>
-            ))}
-          </nav>
-          <Link href="/" className="justify-self-center">
-            <Logo />
-          </Link>
-          <div className="flex items-center justify-end gap-3">
-            {devRoleSwitcher}
-            {user && (
-              <>
-                <Avatar userId={user.id} hasAvatar={user.has_avatar} label={displayName(user)} size={32} />
-                <button onClick={() => logout()} className="text-base font-medium text-gray-500 transition-colors hover:text-red-600">
-                  Log out
-                </button>
-              </>
-            )}
-          </div>
+            );
+          })}
+        </nav>
+        <div className="space-y-3 border-t border-gray-200 p-3">
+          {devRoleSwitcher}
+          <button
+            onClick={() => logout()}
+            className="block w-full text-center text-base font-medium text-gray-500 transition-colors hover:text-red-600"
+          >
+            Log out
+          </button>
         </div>
-      </header>
-      <main className="mx-auto max-w-6xl px-4 py-6">{children}</main>
+      </aside>
+      <div className="flex flex-1 flex-col">
+        <div className="flex justify-end border-b border-gray-200 bg-white px-6 py-3">
+          <Link href={PROFILE_BY_ROLE[user.role]} className="flex items-center gap-2">
+            <Avatar userId={user.id} hasAvatar={user.has_avatar} label={displayName(user)} size={32} />
+            <span className="text-sm font-medium text-gray-700">{displayName(user)}</span>
+          </Link>
+        </div>
+        <main className="flex-1 px-6 py-6">{children}</main>
+      </div>
     </div>
   );
 }

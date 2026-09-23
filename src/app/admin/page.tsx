@@ -66,9 +66,6 @@ export default function AdminDashboard() {
 
 const MORE_LINKS = [
   { href: '/admin/categories', label: 'Categories' },
-  { href: '/admin/rfqs/review', label: 'RFQ Review' },
   { href: '/admin/offers', label: 'Offers' },
   { href: '/admin/orders', label: 'Orders' },
-  { href: '/admin/messages/flags', label: 'Message Flags' },
-  { href: '/admin/disputes', label: 'Disputes' },
 ];
