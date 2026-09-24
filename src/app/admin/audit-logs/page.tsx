@@ -33,7 +33,8 @@ export default function AdminAuditLogsPage() {
 
   return (
     <Shell>
-      <h1 className="mb-6 text-xl font-semibold">Audit Log</h1>
+      <h1 className="page-title mb-8">Audit Log</h1>
+      <div className="card overflow-x-auto p-0">
       <table className="table-base">
         <thead>
           <tr>
@@ -52,7 +53,7 @@ export default function AdminAuditLogsPage() {
                 {l.actor ? (
                   <>
                     {l.actor.email}
-                    {l.actor.phone && <span className="text-gray-500"> · {l.actor.phone}</span>}
+                    {l.actor.phone && <span className="text-navy-400"> · {l.actor.phone}</span>}
                   </>
                 ) : (
                   'system'
@@ -61,14 +62,14 @@ export default function AdminAuditLogsPage() {
               <td>{l.action}</td>
               <td>
                 {l.entity_label ?? `${l.entity_type_label} (deleted)`}
-                <span className="text-gray-400"> · {l.entity_type_label}</span>
+                <span className="text-navy-400"> · {l.entity_type_label}</span>
               </td>
               <td>
-                <button onClick={() => setExpanded(expanded === l.id ? null : l.id)} className="text-blue-600 underline">
+                <button onClick={() => setExpanded(expanded === l.id ? null : l.id)} className="font-medium text-navy-600 hover:text-navy-950">
                   {expanded === l.id ? 'Hide' : 'Diff'}
                 </button>
                 {expanded === l.id && (
-                  <pre className="mt-2 max-w-md overflow-x-auto rounded bg-gray-50 p-2 text-xs">
+                  <pre className="mt-2 max-w-md overflow-x-auto rounded-md bg-navy-50 p-2 text-xs text-navy-700">
                     {JSON.stringify({ before: l.before_state, after: l.after_state }, null, 2)}
                   </pre>
                 )}
@@ -77,6 +78,7 @@ export default function AdminAuditLogsPage() {
           ))}
         </tbody>
       </table>
+      </div>
     </Shell>
   );
 }

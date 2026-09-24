@@ -46,13 +46,14 @@ export default function AdminRfqDistributionPage({ params }: { params: { id: str
 
   return (
     <Shell>
-      <h1 className="mb-6 text-xl font-semibold">RFQ Distribution</h1>
+      <h1 className="page-title mb-8">RFQ Distribution</h1>
       {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
-      <p className="mb-4 text-sm text-gray-600">
+      <p className="mb-4 text-sm text-navy-400">
         Default: all suppliers approved for this category. Uncheck to exclude, or check a supplier not otherwise approved
         to include them anyway (visibility only — they still can&apos;t submit an offer without category approval).
       </p>
-      <table className="table-base mb-4">
+      <div className="card mb-4 overflow-x-auto p-0">
+      <table className="table-base">
         <thead>
           <tr>
             <th>Supplier</th>
@@ -72,6 +73,7 @@ export default function AdminRfqDistributionPage({ params }: { params: { id: str
           ))}
         </tbody>
       </table>
+      </div>
       <button onClick={handleSave} disabled={saving} className="btn-primary">
         {saving ? 'Saving…' : 'Save distribution list'}
       </button>

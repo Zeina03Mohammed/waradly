@@ -45,11 +45,12 @@ export default function AdminDisputesPage() {
 
   return (
     <Shell>
-      <h1 className="mb-6 text-xl font-semibold">Dispute Management</h1>
+      <h1 className="page-title mb-8">Dispute Management</h1>
       {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
       {disputes.length === 0 ? (
-        <p className="text-gray-600">No disputes.</p>
+        <p className="text-navy-400">No disputes.</p>
       ) : (
+        <div className="card overflow-x-auto p-0">
         <table className="table-base">
           <thead>
             <tr>
@@ -71,7 +72,7 @@ export default function AdminDisputesPage() {
                 <td>{new Date(d.created_at).toLocaleDateString()}</td>
                 <td>
                   {d.status === 'open' && (
-                    <button onClick={() => handleResolve(d.id)} className="text-blue-600 underline">
+                    <button onClick={() => handleResolve(d.id)} className="font-medium text-navy-600 hover:text-navy-950">
                       Resolve
                     </button>
                   )}
@@ -80,6 +81,7 @@ export default function AdminDisputesPage() {
             ))}
           </tbody>
         </table>
+        </div>
       )}
     </Shell>
   );

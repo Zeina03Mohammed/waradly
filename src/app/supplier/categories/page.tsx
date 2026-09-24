@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Shell } from '@/components/Shell';
 import { useRequireRole } from '@/lib/client/useRequireRole';
 import { api, ApiError } from '@/lib/client/apiClient';
+import { CategoryPicker } from '@/components/CategoryPicker';
 
 interface Category {
   id: string;
@@ -54,31 +55,24 @@ export default function SupplierCategoriesPage() {
 
   return (
     <Shell>
-      <h1 className="mb-6 text-xl font-semibold">Capabilities</h1>
+      <h1 className="page-title mb-8">Capabilities</h1>
       {message && <p className="mb-4 text-sm text-green-700">{message}</p>}
       {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
 
       <form onSubmit={handleApply} className="card max-w-md space-y-3">
         <label className="block text-sm">
-          <span className="mb-1 block font-medium text-gray-700">Category</span>
-          <select className="input" required value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
-            <option value="">Select a category</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
+          <span className="mb-1 block font-medium text-navy-400">Category</span>
+          <CategoryPicker categories={categories} value={categoryId} onChange={setCategoryId} />
         </label>
         <label className="block text-sm">
-          <span className="mb-1 block font-medium text-gray-700">Production capacity</span>
+          <span className="mb-1 block font-medium text-navy-400">Production capacity</span>
           <input className="input" placeholder="e.g. 50,000 units/month" value={productionCapacity} onChange={(e) => setProductionCapacity(e.target.value)} />
         </label>
         <label className="block text-sm">
-          <span className="mb-1 block font-medium text-gray-700">Materials supported (comma-separated)</span>
+          <span className="mb-1 block font-medium text-navy-400">Materials supported (comma-separated)</span>
           <input className="input" value={materials} onChange={(e) => setMaterials(e.target.value)} />
         </label>
-        <button type="submit" disabled={submitting} className="btn-primary">
+        <button type="submit" disabled={submitting || !categoryId} className="btn-primary">
           {submitting ? 'Submitting…' : 'Apply for Category'}
         </button>
       </form>

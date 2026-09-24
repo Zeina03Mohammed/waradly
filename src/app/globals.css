@@ -4,30 +4,36 @@
 
 @layer components {
   .input {
-    @apply w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none;
+    @apply w-full rounded-md border border-navy-100 bg-white px-3 py-2 text-sm text-navy-950 outline-none transition-colors duration-150 placeholder:text-navy-400/60 focus:border-navy-400 focus:ring-2 focus:ring-navy-400/15;
   }
   .btn-primary {
-    @apply rounded bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700 disabled:opacity-50;
+    @apply rounded-md bg-navy-950 px-4 py-2 text-sm font-medium text-white transition-colors duration-150 hover:bg-navy-700 disabled:opacity-50;
   }
   .btn-secondary {
-    @apply rounded border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50;
+    @apply rounded-md border border-navy-100 px-4 py-2 text-sm font-medium text-navy-600 transition-colors duration-150 hover:border-navy-400 hover:text-navy-950 disabled:opacity-50;
   }
   .btn-danger {
-    @apply rounded bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50;
+    @apply rounded-md bg-rose-600 px-4 py-2 text-sm font-medium text-white transition-colors duration-150 hover:bg-rose-700 disabled:opacity-50;
   }
   .card {
-    @apply rounded border border-gray-200 bg-white p-4 shadow-sm;
+    @apply rounded-xl bg-white p-5 shadow-soft;
   }
   .table-base {
     @apply w-full border-collapse text-sm;
   }
   .table-base th {
-    @apply border-b border-gray-200 px-3 py-2 text-left font-medium text-gray-600;
+    @apply border-b border-navy-100 px-3 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-navy-400;
   }
   .table-base td {
-    @apply border-b border-gray-100 px-3 py-2;
+    @apply border-b border-navy-50 px-3 py-3 text-navy-900;
+  }
+  .table-base tbody tr {
+    @apply transition-colors duration-150 hover:bg-navy-50/60;
   }
   .badge {
-    @apply inline-block rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700;
+    @apply inline-block rounded-full bg-navy-50 px-2.5 py-0.5 text-xs font-medium text-navy-700;
+  }
+  .page-title {
+    @apply text-[1.75rem] font-semibold tracking-tight text-navy-950;
   }
 }

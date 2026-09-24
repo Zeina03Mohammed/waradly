@@ -9,9 +9,10 @@ import { allFilesOwnedBy } from '@/lib/files/ownership';
 import { syncRfqAttachments } from '@/lib/files/rfqAttachments';
 import { serializeRfqForViewer } from '@/lib/rfq/serialize';
 import { isSupplierEligibleForRfqFeed } from '@/lib/rfq/eligibility';
+import { resolveCategoryIdFromName } from '@/lib/rfq/resolveCategory';
 import { audit } from '@/lib/audit';
 
-const RFQ_INCLUDE = { items: true, attachments: true } as const;
+const RFQ_INCLUDE = { items: true, attachments: true, category: { select: { name: true } } } as const;
 
 export async function POST(request: NextRequest) {
   const auth = await authenticate(request);
@@ -35,9 +36,11 @@ export async function POST(request: NextRequest) {
   // enforce it here; email verification (Section 4, checked at /rfqs/{id}/submit) is the one
   // verification gate the spec actually describes a mechanism for.
 
-  if (data.category_id) {
-    const category = await prisma.category.findUnique({ where: { id: data.category_id } });
-    if (!category) return Errors.validation({ category_id: 'Category not found.' });
+  let categoryId: string | undefined;
+  try {
+    categoryId = await resolveCategoryIdFromName(prisma, data.category_name);
+  } catch {
+    return Errors.validation({ category_name: 'Could not resolve that category, please try again.' });
   }
 
   if (data.attachments && data.attachments.length > 0) {
@@ -49,7 +52,7 @@ export async function POST(request: NextRequest) {
     const created = await tx.rfq.create({
       data: {
         buyer_id: buyerProfile.id,
-        category_id: data.category_id,
+        category_id: categoryId,
         title: data.title,
         quantity: data.quantity,
         unit: data.unit,

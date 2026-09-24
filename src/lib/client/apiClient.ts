@@ -65,7 +65,13 @@ interface ApiOptions {
   isFormData?: boolean;
 }
 
+// Paths where a 401 is a normal, expected, inline-handled response (wrong password, expired
+// reset link, etc.) — never the "your whole session just died" case the redirect below is for.
+const AUTH_FLOW_PATHS = ['/api/auth/login', '/api/auth/register', '/api/auth/refresh'];
+
 export async function api<T = unknown>(path: string, options: ApiOptions = {}): Promise<T> {
+  const hadAccessToken = Boolean(getAccessToken());
+
   const doFetch = async (): Promise<Response> => {
     const token = getAccessToken();
     const headers: Record<string, string> = {};
@@ -87,6 +93,16 @@ export async function api<T = unknown>(path: string, options: ApiOptions = {}): 
   if (res.status === 401 && getRefreshToken()) {
     const refreshed = await tryRefresh();
     if (refreshed) res = await doFetch();
+  }
+
+  // The request believed it had a live session (a token was attached) but still got rejected,
+  // and refreshing didn't fix it — the session is dead, not just this one call. Every page in
+  // the app fires requests from a bare `.then(setState)` with no `.catch`, so leaving this
+  // unhandled means the page just renders nothing forever (React state never updates) with no
+  // way back to login. Recover once here instead of chasing that same bug on every page.
+  if (res.status === 401 && hadAccessToken && !AUTH_FLOW_PATHS.includes(path) && typeof window !== 'undefined') {
+    clearTokens();
+    window.location.assign('/login');
   }
 
   if (res.status === 204) return undefined as T;

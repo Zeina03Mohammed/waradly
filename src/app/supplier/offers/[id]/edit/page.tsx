@@ -80,19 +80,19 @@ export default function EditOfferPage({ params }: { params: { id: string } }) {
 
   return (
     <Shell>
-      <h1 className="mb-6 text-xl font-semibold">Edit Offer</h1>
+      <h1 className="page-title mb-8">Edit Offer</h1>
       <form onSubmit={handleSave} className="card max-w-md space-y-3">
         {errors._ && <p className="text-sm text-red-600">{errors._}</p>}
         <label className="block text-sm">
-          <span className="mb-1 block font-medium text-gray-700">Unit price</span>
+          <span className="mb-1 block font-medium text-navy-400">Unit price</span>
           <input type="number" step="0.01" className="input" value={offer.unit_price} onChange={(e) => setOffer({ ...offer, unit_price: e.target.value })} />
         </label>
         <label className="block text-sm">
-          <span className="mb-1 block font-medium text-gray-700">MOQ</span>
+          <span className="mb-1 block font-medium text-navy-400">MOQ</span>
           <input type="number" className="input" value={offer.moq} onChange={(e) => setOffer({ ...offer, moq: e.target.value })} />
         </label>
         <label className="block text-sm">
-          <span className="mb-1 block font-medium text-gray-700">Production lead time (days)</span>
+          <span className="mb-1 block font-medium text-navy-400">Production lead time (days)</span>
           <input
             type="number"
             className="input"
@@ -101,7 +101,7 @@ export default function EditOfferPage({ params }: { params: { id: string } }) {
           />
         </label>
         <label className="block text-sm">
-          <span className="mb-1 block font-medium text-gray-700">Delivery time estimate (days)</span>
+          <span className="mb-1 block font-medium text-navy-400">Delivery time estimate (days)</span>
           <input
             type="number"
             className="input"

@@ -55,11 +55,12 @@ export default function AdminRfqReviewPage() {
 
   return (
     <Shell>
-      <h1 className="mb-6 text-xl font-semibold">RFQ Review</h1>
+      <h1 className="page-title mb-8">RFQ Review</h1>
       {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
       {rfqs.length === 0 ? (
-        <p className="text-gray-600">No RFQs awaiting review.</p>
+        <p className="text-navy-400">No RFQs awaiting review.</p>
       ) : (
+        <div className="card overflow-x-auto p-0">
         <table className="table-base">
           <thead>
             <tr>
@@ -93,6 +94,7 @@ export default function AdminRfqReviewPage() {
             ))}
           </tbody>
         </table>
+        </div>
       )}
     </Shell>
   );

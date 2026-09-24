@@ -109,8 +109,8 @@ export default function AdminOrderDetailPage({ params }: { params: { id: string 
 
   return (
     <Shell>
-      <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-xl font-semibold">{order.rfq_title}</h1>
+      <div className="mb-8 flex items-center justify-between gap-4">
+        <h1 className="page-title">{order.rfq_title}</h1>
         <span className="badge">{order.status}</span>
       </div>
 
@@ -163,14 +163,14 @@ export default function AdminOrderDetailPage({ params }: { params: { id: string 
       </button>
 
       <h2 className="mb-2 text-lg font-medium">Status history</h2>
-      <ol className="space-y-3 border-l border-gray-300 pl-4">
+      <ol className="space-y-3 border-l border-navy-100 pl-4">
         {(order.status_history ?? []).map((h) => (
           <li key={h.id}>
             <p className="text-sm font-medium">
               {h.from_status ?? '—'} → {h.to_status}
             </p>
-            <p className="text-xs text-gray-500">{new Date(h.changed_at).toLocaleString()}</p>
-            {h.note && <p className="text-sm text-gray-600">{h.note}</p>}
+            <p className="text-xs text-navy-400">{new Date(h.changed_at).toLocaleString()}</p>
+            {h.note && <p className="text-sm text-navy-400">{h.note}</p>}
           </li>
         ))}
       </ol>

@@ -23,17 +23,17 @@ export default function SupplierPerformancePage() {
 
   return (
     <Shell>
-      <h1 className="mb-6 text-xl font-semibold">Performance</h1>
+      <h1 className="page-title mb-8">Performance</h1>
       {!supplier ? (
-        <p className="text-gray-600">No completed orders yet.</p>
+        <p className="text-navy-400">No completed orders yet.</p>
       ) : (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-2">
           <div className="card">
-            <p className="text-sm text-gray-500">Completed orders</p>
+            <p className="text-sm text-navy-400">Completed orders</p>
             <p className="text-2xl font-semibold">{supplier.completed_orders_count}</p>
           </div>
           <div className="card">
-            <p className="text-sm text-gray-500">Average rating</p>
+            <p className="text-sm text-navy-400">Average rating</p>
             <p className="text-2xl font-semibold">{supplier.average_rating ?? '—'}</p>
           </div>
         </div>

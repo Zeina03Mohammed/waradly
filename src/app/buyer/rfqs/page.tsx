@@ -30,7 +30,7 @@ export default function BuyerRfqsPage() {
   return (
     <Shell>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-xl font-semibold">My RFQs</h1>
+        <h1 className="page-title">My RFQs</h1>
         <Link href="/buyer/rfqs/new" className="btn-primary">
           + Create RFQ
         </Link>
@@ -48,8 +48,9 @@ export default function BuyerRfqsPage() {
       </select>
 
       {rfqs.length === 0 ? (
-        <p className="text-gray-600">You haven&apos;t created any RFQs yet.</p>
+        <p className="text-navy-400">You haven&apos;t created any RFQs yet.</p>
       ) : (
+        <div className="card overflow-x-auto p-0">
         <table className="table-base">
           <thead>
             <tr>
@@ -68,7 +69,7 @@ export default function BuyerRfqsPage() {
                 </td>
                 <td>{new Date(r.created_at).toLocaleDateString()}</td>
                 <td>
-                  <Link href={`/buyer/rfqs/${r.id}`} className="text-blue-600 underline">
+                  <Link href={`/buyer/rfqs/${r.id}`} className="font-medium text-navy-600 hover:text-navy-950">
                     View
                   </Link>
                 </td>
@@ -76,6 +77,7 @@ export default function BuyerRfqsPage() {
             ))}
           </tbody>
         </table>
+        </div>
       )}
     </Shell>
   );

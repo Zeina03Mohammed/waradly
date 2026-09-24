@@ -26,10 +26,11 @@ export default function SupplierRfqFeedPage() {
 
   return (
     <Shell>
-      <h1 className="mb-6 text-xl font-semibold">Available RFQs</h1>
+      <h1 className="page-title mb-8">Available RFQs</h1>
       {rfqs.length === 0 ? (
-        <p className="text-gray-600">No RFQs available in your categories yet.</p>
+        <p className="text-navy-400">No RFQs available in your categories yet.</p>
       ) : (
+        <div className="card overflow-x-auto p-0">
         <table className="table-base">
           <thead>
             <tr>
@@ -48,7 +49,7 @@ export default function SupplierRfqFeedPage() {
                 </td>
                 <td>{r.offer_deadline_at ? new Date(r.offer_deadline_at).toLocaleString() : '—'}</td>
                 <td>
-                  <Link href={`/supplier/rfqs/${r.id}`} className="text-blue-600 underline">
+                  <Link href={`/supplier/rfqs/${r.id}`} className="font-medium text-navy-600 hover:text-navy-950">
                     View
                   </Link>
                 </td>
@@ -56,6 +57,7 @@ export default function SupplierRfqFeedPage() {
             ))}
           </tbody>
         </table>
+        </div>
       )}
     </Shell>
   );

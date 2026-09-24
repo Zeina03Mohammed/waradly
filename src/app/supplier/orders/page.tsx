@@ -27,10 +27,11 @@ export default function SupplierOrdersPage() {
 
   return (
     <Shell>
-      <h1 className="mb-6 text-xl font-semibold">Won Orders</h1>
+      <h1 className="page-title mb-8">Won Orders</h1>
       {orders.length === 0 ? (
-        <p className="text-gray-600">No orders yet.</p>
+        <p className="text-navy-400">No orders yet.</p>
       ) : (
+        <div className="card overflow-x-auto p-0">
         <table className="table-base">
           <thead>
             <tr>
@@ -51,7 +52,7 @@ export default function SupplierOrdersPage() {
                 </td>
                 <td>{new Date(o.created_at).toLocaleDateString()}</td>
                 <td>
-                  <Link href={`/supplier/orders/${o.id}`} className="text-blue-600 underline">
+                  <Link href={`/supplier/orders/${o.id}`} className="font-medium text-navy-600 hover:text-navy-950">
                     View
                   </Link>
                 </td>
@@ -59,6 +60,7 @@ export default function SupplierOrdersPage() {
             ))}
           </tbody>
         </table>
+        </div>
       )}
     </Shell>
   );

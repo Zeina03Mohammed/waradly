@@ -43,11 +43,12 @@ export default function AdminMessageFlagsPage() {
 
   return (
     <Shell>
-      <h1 className="mb-6 text-xl font-semibold">Message Flag Review</h1>
+      <h1 className="page-title mb-8">Message Flag Review</h1>
       {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
       {flags.length === 0 ? (
-        <p className="text-gray-600">No pending flagged messages.</p>
+        <p className="text-navy-400">No pending flagged messages.</p>
       ) : (
+        <div className="card overflow-x-auto p-0">
         <table className="table-base">
           <thead>
             <tr>
@@ -64,7 +65,7 @@ export default function AdminMessageFlagsPage() {
                 <td>{f.sender_email}</td>
                 <td>{f.detected_pattern_type}</td>
                 <td className="space-x-2 whitespace-nowrap">
-                  <button onClick={() => handleAction(f.id, 'dismiss')} className="text-gray-600 underline">
+                  <button onClick={() => handleAction(f.id, 'dismiss')} className="text-navy-400 underline">
                     Dismiss
                   </button>
                   <button onClick={() => handleAction(f.id, 'warning')} className="text-yellow-700 underline">
@@ -84,6 +85,7 @@ export default function AdminMessageFlagsPage() {
             ))}
           </tbody>
         </table>
+        </div>
       )}
     </Shell>
   );

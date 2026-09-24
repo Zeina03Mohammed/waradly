@@ -47,14 +47,14 @@ export default function SupplierVerificationPage() {
 
   return (
     <Shell>
-      <h1 className="mb-6 text-xl font-semibold">Verification Status</h1>
+      <h1 className="page-title mb-8">Verification Status</h1>
       {supplier && <span className="badge mb-4 inline-block capitalize">{supplier.verification_status}</span>}
 
       {message && <p className="mb-4 text-sm text-green-700">{message}</p>}
       {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
 
       <div className="card max-w-md space-y-3">
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-navy-400">
           Upload a commercial registration document (or other supporting certificate) for Admin to review.
         </p>
         <select className="input" value={docType} onChange={(e) => setDocType(e.target.value as typeof docType)}>

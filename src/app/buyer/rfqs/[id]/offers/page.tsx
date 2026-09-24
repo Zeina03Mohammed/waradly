@@ -85,13 +85,14 @@ export default function OfferComparisonPage({ params }: { params: { id: string }
 
   return (
     <Shell>
-      <h1 className="mb-6 text-xl font-semibold">Compare Offers</h1>
+      <h1 className="page-title mb-8">Compare Offers</h1>
       {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
 
       {offers.length === 0 ? (
-        <p className="text-gray-600">No offers received yet.</p>
+        <p className="text-navy-400">No offers received yet.</p>
       ) : (
         <div className="overflow-x-auto">
+          <div className="card overflow-x-auto p-0">
           <table className="table-base">
             <thead>
               <tr>
@@ -137,6 +138,7 @@ export default function OfferComparisonPage({ params }: { params: { id: string }
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
     </Shell>

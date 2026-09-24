@@ -65,7 +65,7 @@ export default function SupplierRfqDetailPage({ params }: { params: { id: string
   return (
     <Shell>
       <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-xl font-semibold">{rfq.title}</h1>
+        <h1 className="page-title">{rfq.title}</h1>
         <span className="badge">{rfq.status}</span>
       </div>
 
@@ -109,7 +109,7 @@ export default function SupplierRfqDetailPage({ params }: { params: { id: string
           Message Buyer
         </button>
       </div>
-      {deadlinePassed && !myOffer && <p className="mt-3 text-gray-600">This RFQ is no longer accepting offers.</p>}
+      {deadlinePassed && !myOffer && <p className="mt-3 text-navy-400">This RFQ is no longer accepting offers.</p>}
     </Shell>
   );
 }

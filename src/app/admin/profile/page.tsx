@@ -11,22 +11,22 @@ export default function AdminProfilePage() {
 
   return (
     <Shell>
-      <h1 className="mb-6 text-xl font-semibold">Profile</h1>
+      <h1 className="page-title mb-8">Profile</h1>
 
       <AccountPhotoUsername />
 
       <dl className="max-w-md space-y-4 text-sm">
         <div>
-          <dt className="font-medium text-gray-700">Email</dt>
-          <dd className="text-gray-900">{user.email}</dd>
+          <dt className="font-medium text-navy-400">Email</dt>
+          <dd className="text-navy-950">{user.email}</dd>
         </div>
         <div>
-          <dt className="font-medium text-gray-700">Phone</dt>
-          <dd className="text-gray-900">{user.phone ?? '—'}</dd>
+          <dt className="font-medium text-navy-400">Phone</dt>
+          <dd className="text-navy-950">{user.phone ?? '—'}</dd>
         </div>
         <div>
-          <dt className="font-medium text-gray-700">Role</dt>
-          <dd className="capitalize text-gray-900">{user.role}</dd>
+          <dt className="font-medium text-navy-400">Role</dt>
+          <dd className="capitalize text-navy-950">{user.role}</dd>
         </div>
       </dl>
     </Shell>

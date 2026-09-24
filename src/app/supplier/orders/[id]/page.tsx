@@ -86,7 +86,7 @@ export default function SupplierOrderDetailPage({ params }: { params: { id: stri
   return (
     <Shell>
       <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-xl font-semibold">{order.rfq_title}</h1>
+        <h1 className="page-title">{order.rfq_title}</h1>
         <span className="badge">{order.status}</span>
       </div>
 
@@ -126,7 +126,7 @@ export default function SupplierOrderDetailPage({ params }: { params: { id: stri
         </button>
       </div>
 
-      <p className="mt-6 text-xs text-gray-500">
+      <p className="mt-6 text-xs text-navy-400">
         Hub receipt, QC, courier hand-off, and delivery stages are managed by Admin and shown read-only here via the
         order status above.
       </p>

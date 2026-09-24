@@ -45,8 +45,9 @@ export default function AdminOffersPage() {
 
   return (
     <Shell>
-      <h1 className="mb-6 text-xl font-semibold">Offer Monitoring</h1>
+      <h1 className="page-title mb-8">Offer Monitoring</h1>
       {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
+      <div className="card overflow-x-auto p-0">
       <table className="table-base">
         <thead>
           <tr>
@@ -77,6 +78,7 @@ export default function AdminOffersPage() {
           ))}
         </tbody>
       </table>
+      </div>
     </Shell>
   );
 }

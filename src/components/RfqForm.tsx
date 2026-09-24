@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { api, ApiError } from '@/lib/client/apiClient';
 
 export interface RfqFormValues {
-  category_id: string;
+  category_name: string;
   title: string;
   quantity: string;
   unit: string;
@@ -28,13 +28,8 @@ export interface Attachment {
   contains_identity_risk: boolean;
 }
 
-interface Category {
-  id: string;
-  name: string;
-}
-
 const EMPTY_VALUES: RfqFormValues = {
-  category_id: '',
+  category_name: '',
   title: '',
   quantity: '',
   unit: '',
@@ -58,7 +53,7 @@ export function useRfqFormState(initial?: Partial<RfqFormValues>, initialAttachm
 
 function toApiBody(values: RfqFormValues, attachments: Attachment[]) {
   return {
-    category_id: values.category_id || undefined,
+    category_name: values.category_name || undefined,
     title: values.title,
     quantity: values.quantity ? Number(values.quantity) : undefined,
     unit: values.unit || undefined,
@@ -77,7 +72,6 @@ function toApiBody(values: RfqFormValues, attachments: Attachment[]) {
 }
 
 export function RfqForm({
-  categories,
   values,
   setValues,
   attachments,
@@ -85,7 +79,6 @@ export function RfqForm({
   rfqId,
   onSaved,
 }: {
-  categories: Category[];
   values: RfqFormValues;
   setValues: (v: RfqFormValues) => void;
   attachments: Attachment[];
@@ -156,15 +149,14 @@ export function RfqForm({
 
       <section className="card space-y-3">
         <h2 className="font-medium">Category &amp; product</h2>
-        <Field label="Category" error={errors.category_id}>
-          <select className="input" value={values.category_id} onChange={(e) => set('category_id', e.target.value)}>
-            <option value="">Select a category</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
+        <Field label="Category" error={errors.category_name}>
+          <input
+            className="input"
+            placeholder="e.g. Custom Packaging"
+            value={values.category_name}
+            onChange={(e) => set('category_name', e.target.value)}
+            maxLength={100}
+          />
         </Field>
         <Field label="Title" error={errors.title}>
           <input className="input" value={values.title} onChange={(e) => set('title', e.target.value)} maxLength={150} />
@@ -288,7 +280,7 @@ export function RfqForm({
 function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
   return (
     <label className="block text-sm">
-      <span className="mb-1 block font-medium text-gray-700">{label}</span>
+      <span className="mb-1 block font-medium text-navy-400">{label}</span>
       {children}
       {error && <span className="mt-1 block text-red-600">{error}</span>}
     </label>

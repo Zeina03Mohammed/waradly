@@ -56,8 +56,9 @@ export default function AdminUsersPage() {
 
   return (
     <Shell>
-      <h1 className="mb-6 text-xl font-semibold">User Management</h1>
+      <h1 className="page-title mb-8">User Management</h1>
       {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
+      <div className="card overflow-x-auto p-0">
       <table className="table-base">
         <thead>
           <tr>
@@ -112,11 +113,12 @@ export default function AdminUsersPage() {
           ))}
         </tbody>
       </table>
+      </div>
 
       {pending && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-sm rounded bg-white p-6 shadow-lg">
-            <h2 className="mb-3 text-lg font-semibold capitalize">Reason for {pending.kind}</h2>
+        <div className="fixed inset-0 flex items-center justify-center bg-navy-950/40 p-4 backdrop-blur-[2px]">
+          <div className="w-full max-w-sm rounded-xl bg-white p-6 shadow-soft-lg">
+            <h2 className="mb-3 text-lg font-semibold capitalize text-navy-950">Reason for {pending.kind}</h2>
             <textarea
               autoFocus
               value={reason}
@@ -130,15 +132,11 @@ export default function AdminUsersPage() {
                   setPending(null);
                   setReason('');
                 }}
-                className="rounded border border-gray-300 px-3 py-1.5 text-sm"
+                className="btn-secondary"
               >
                 Cancel
               </button>
-              <button
-                onClick={submitReason}
-                disabled={!reason.trim()}
-                className="rounded bg-gray-900 px-3 py-1.5 text-sm text-white disabled:opacity-50"
-              >
+              <button onClick={submitReason} disabled={!reason.trim()} className="btn-primary">
                 Confirm
               </button>
             </div>

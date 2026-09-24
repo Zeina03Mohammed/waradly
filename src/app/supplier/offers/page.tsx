@@ -27,10 +27,11 @@ export default function MyOffersPage() {
 
   return (
     <Shell>
-      <h1 className="mb-6 text-xl font-semibold">My Offers</h1>
+      <h1 className="page-title mb-8">My Offers</h1>
       {offers.length === 0 ? (
-        <p className="text-gray-600">You haven&apos;t submitted any offers yet.</p>
+        <p className="text-navy-400">You haven&apos;t submitted any offers yet.</p>
       ) : (
+        <div className="card overflow-x-auto p-0">
         <table className="table-base">
           <thead>
             <tr>
@@ -52,7 +53,7 @@ export default function MyOffersPage() {
                 <td>{new Date(o.submitted_at).toLocaleDateString()}</td>
                 <td>
                   {(o.status === 'SUBMITTED' || o.status === 'UNDER_REVIEW') && (
-                    <Link href={`/supplier/offers/${o.id}/edit`} className="text-blue-600 underline">
+                    <Link href={`/supplier/offers/${o.id}/edit`} className="font-medium text-navy-600 hover:text-navy-950">
                       Edit
                     </Link>
                   )}
@@ -61,6 +62,7 @@ export default function MyOffersPage() {
             ))}
           </tbody>
         </table>
+        </div>
       )}
     </Shell>
   );

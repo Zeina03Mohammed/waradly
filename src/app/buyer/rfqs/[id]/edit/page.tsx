@@ -7,16 +7,11 @@ import { useRequireRole } from '@/lib/client/useRequireRole';
 import { api } from '@/lib/client/apiClient';
 import { RfqForm, useRfqFormState, type Attachment } from '@/components/RfqForm';
 
-interface Category {
-  id: string;
-  name: string;
-  status: string;
-}
-
 interface RfqDetail {
   id: string;
   status: string;
   category_id: string | null;
+  category_name: string | null;
   title: string;
   quantity: string | null;
   unit: string | null;
@@ -43,14 +38,9 @@ function toLocalDateTime(iso: string | null) {
 export default function EditRfqPage({ params }: { params: { id: string } }) {
   const { user, loading } = useRequireRole('buyer');
   const router = useRouter();
-  const [categories, setCategories] = useState<Category[]>([]);
   const [rfq, setRfq] = useState<RfqDetail | null>(null);
   const [forbidden, setForbidden] = useState(false);
   const form = useRfqFormState();
-
-  useEffect(() => {
-    api<{ categories: Category[] }>('/api/categories').then((d) => setCategories(d.categories));
-  }, []);
 
   useEffect(() => {
     if (!user) return;
@@ -58,7 +48,7 @@ export default function EditRfqPage({ params }: { params: { id: string } }) {
       .then((d) => {
         setRfq(d.rfq);
         form.setValues({
-          category_id: d.rfq.category_id ?? '',
+          category_name: d.rfq.category_name ?? '',
           title: d.rfq.title,
           quantity: d.rfq.quantity ?? '',
           unit: d.rfq.unit ?? '',
@@ -93,9 +83,8 @@ export default function EditRfqPage({ params }: { params: { id: string } }) {
 
   return (
     <Shell>
-      <h1 className="mb-6 text-xl font-semibold">Edit RFQ</h1>
+      <h1 className="page-title mb-8">Edit RFQ</h1>
       <RfqForm
-        categories={categories}
         values={form.values}
         setValues={form.setValues}
         attachments={form.attachments}

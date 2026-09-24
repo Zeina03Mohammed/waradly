@@ -15,7 +15,11 @@ const rfqItemInputSchema = z.object({
 // SPEC.md Section 8.2. All optional here — POST /rfqs only requires `title` for a DRAFT save
 // (enforced separately), and PATCH /rfqs/{id} allows partial updates.
 export const rfqFieldsSchema = z.object({
-  category_id: z.string().uuid().optional(),
+  // Buyer types this freely (RfqForm) rather than picking from the admin-managed category
+  // list — resolved to a real categories row (matched by name, created if new) server-side in
+  // the RFQ create/update route, so every downstream category_id consumer (supplier eligibility,
+  // distribution, review filters) keeps working unchanged.
+  category_name: z.string().trim().min(1).max(100).optional(),
   title: z.string().trim().min(1, 'Title is required.').max(150, 'Title must be 150 characters or fewer.').optional(),
   quantity: z.number().positive('Quantity must be greater than 0.').optional(),
   unit: z.string().trim().min(1).optional(),

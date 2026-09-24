@@ -55,13 +55,13 @@ export default function SupplierProfilePage() {
 
   return (
     <Shell>
-      <h1 className="mb-6 text-xl font-semibold">Profile</h1>
+      <h1 className="page-title mb-8">Profile</h1>
 
       <AccountPhotoUsername />
 
       <h2 className="mb-4 text-lg font-medium">Company Profile</h2>
       {supplier && (
-        <p className="mb-4 text-sm text-gray-600">
+        <p className="mb-4 text-sm text-navy-400">
           Public ID: <span className="font-medium">{supplier.anonymized_id}</span> · Status:{' '}
           <span className="badge capitalize">{supplier.verification_status}</span>
         </p>
@@ -70,26 +70,26 @@ export default function SupplierProfilePage() {
         {message && <p className="text-sm text-green-700">{message}</p>}
         {error && <p className="text-sm text-red-600">{error}</p>}
         <label className="block text-sm">
-          <span className="mb-1 block font-medium text-gray-700">Legal name</span>
+          <span className="mb-1 block font-medium text-navy-400">Legal name</span>
           <input className="input" value={org.legal_name} onChange={(e) => setOrg({ ...org, legal_name: e.target.value })} />
         </label>
         <label className="block text-sm">
-          <span className="mb-1 block font-medium text-gray-700">Country</span>
+          <span className="mb-1 block font-medium text-navy-400">Country</span>
           <CountrySelect
             value={org.country}
             onChange={(v) => setOrg({ ...org, country: v, general_region: '' })}
           />
         </label>
         <label className="block text-sm">
-          <span className="mb-1 block font-medium text-gray-700">General region</span>
+          <span className="mb-1 block font-medium text-navy-400">General region</span>
           <RegionSelect country={org.country} value={org.general_region} onChange={(v) => setOrg({ ...org, general_region: v })} />
         </label>
         <label className="block text-sm">
-          <span className="mb-1 block font-medium text-gray-700">Tax ID (optional)</span>
+          <span className="mb-1 block font-medium text-navy-400">Tax ID (optional)</span>
           <input className="input" value={org.tax_id ?? ''} onChange={(e) => setOrg({ ...org, tax_id: e.target.value })} />
         </label>
         <label className="block text-sm">
-          <span className="mb-1 block font-medium text-gray-700">Exact address (internal use only)</span>
+          <span className="mb-1 block font-medium text-navy-400">Exact address (internal use only)</span>
           <input className="input" value={org.exact_address ?? ''} onChange={(e) => setOrg({ ...org, exact_address: e.target.value })} />
         </label>
         <button type="submit" disabled={saving} className="btn-primary">

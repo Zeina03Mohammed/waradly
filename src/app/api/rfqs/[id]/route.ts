@@ -9,9 +9,10 @@ import { allFilesOwnedBy } from '@/lib/files/ownership';
 import { syncRfqAttachments } from '@/lib/files/rfqAttachments';
 import { serializeRfqForViewer } from '@/lib/rfq/serialize';
 import { isSupplierEligibleForRfqFeed } from '@/lib/rfq/eligibility';
+import { resolveCategoryIdFromName } from '@/lib/rfq/resolveCategory';
 import { audit } from '@/lib/audit';
 
-const RFQ_INCLUDE = { items: true, attachments: true } as const;
+const RFQ_INCLUDE = { items: true, attachments: true, category: { select: { name: true } } } as const;
 const EDITABLE_STATUSES = ['DRAFT', 'SUBMITTED'];
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
@@ -77,9 +78,13 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
   if (!parsed.success) return Errors.validation(zodFieldErrors(parsed.error));
   const data = parsed.data;
 
-  if (data.category_id) {
-    const category = await prisma.category.findUnique({ where: { id: data.category_id } });
-    if (!category) return Errors.validation({ category_id: 'Category not found.' });
+  let categoryId: string | undefined;
+  if (data.category_name !== undefined) {
+    try {
+      categoryId = await resolveCategoryIdFromName(prisma, data.category_name);
+    } catch {
+      return Errors.validation({ category_name: 'Could not resolve that category, please try again.' });
+    }
   }
   if (data.attachments) {
     const owned = await allFilesOwnedBy(data.attachments.map((a) => a.file_id), auth.user.id);
@@ -89,8 +94,11 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
   const before = serializeRfqForViewer('owner', rfq);
 
   const updated = await prisma.$transaction(async (tx) => {
-    const { attachments, items, ...fields } = data;
-    await tx.rfq.update({ where: { id: rfq.id }, data: fields });
+    const { attachments, items, category_name: _categoryName, ...fields } = data;
+    await tx.rfq.update({
+      where: { id: rfq.id },
+      data: { ...fields, ...(data.category_name !== undefined ? { category_id: categoryId } : {}) },
+    });
 
     if (items) {
       await tx.rfqItem.deleteMany({ where: { rfq_id: rfq.id } });

@@ -33,13 +33,13 @@ export default function OrderTrackingPage({ params }: { params: { id: string } }
 
   return (
     <Shell>
-      <h1 className="mb-6 text-xl font-semibold">Order Tracking — {order.rfq_title}</h1>
-      <ol className="space-y-4 border-l border-gray-300 pl-4">
+      <h1 className="page-title mb-8">Order Tracking — {order.rfq_title}</h1>
+      <ol className="space-y-4 border-l border-navy-100 pl-4">
         {(order.status_history ?? []).map((h) => (
           <li key={h.id}>
             <p className="text-sm font-medium">{h.to_status}</p>
-            <p className="text-xs text-gray-500">{new Date(h.changed_at).toLocaleString()}</p>
-            {h.note && <p className="text-sm text-gray-600">{h.note}</p>}
+            <p className="text-xs text-navy-400">{new Date(h.changed_at).toLocaleString()}</p>
+            {h.note && <p className="text-sm text-navy-400">{h.note}</p>}
           </li>
         ))}
       </ol>

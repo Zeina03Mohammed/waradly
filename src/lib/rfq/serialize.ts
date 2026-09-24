@@ -1,6 +1,6 @@
 import type { Rfq, RfqAttachment, RfqItem } from '@prisma/client';
 
-type RfqWithRelations = Rfq & { items?: RfqItem[]; attachments?: RfqAttachment[] };
+type RfqWithRelations = Rfq & { items?: RfqItem[]; attachments?: RfqAttachment[]; category?: { name: string } | null };
 
 export type RfqViewer = 'owner' | 'supplier' | 'admin';
 
@@ -13,6 +13,7 @@ export function serializeRfqForViewer(viewer: RfqViewer, rfq: RfqWithRelations) 
   const base = {
     id: rfq.id,
     category_id: rfq.category_id,
+    category_name: rfq.category?.name ?? null,
     title: rfq.title,
     quantity: rfq.quantity,
     unit: rfq.unit,

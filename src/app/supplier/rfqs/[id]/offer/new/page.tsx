@@ -54,7 +54,7 @@ export default function SubmitOfferPage({ params }: { params: { id: string } }) 
 
   return (
     <Shell>
-      <h1 className="mb-6 text-xl font-semibold">Submit Offer</h1>
+      <h1 className="page-title mb-8">Submit Offer</h1>
       <form onSubmit={handleSubmit} className="card max-w-md space-y-3">
         {errors._ && <p className="text-sm text-red-600">{errors._}</p>}
         <F label="Unit price" error={errors.unit_price}>
@@ -101,7 +101,7 @@ export default function SubmitOfferPage({ params }: { params: { id: string } }) 
 function F({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
   return (
     <label className="block text-sm">
-      <span className="mb-1 block font-medium text-gray-700">{label}</span>
+      <span className="mb-1 block font-medium text-navy-400">{label}</span>
       {children}
       {error && <span className="mt-1 block text-red-600">{error}</span>}
     </label>

@@ -57,20 +57,20 @@ export default function ConversationPage({ params }: { params: { id: string } })
 
   return (
     <Shell>
-      <h1 className="mb-4 text-xl font-semibold">Messages</h1>
-      <p className="mb-4 text-xs text-gray-500">
+      <h1 className="page-title mb-6">Messages</h1>
+      <p className="mb-4 text-xs text-navy-400">
         Messages are monitored. Sharing phone numbers, emails, or links is against the Anti-Circumvention Policy and
         will be redacted for the other party and reviewed by Admin.
       </p>
       {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
 
       <div className="card mb-4 max-h-96 space-y-3 overflow-y-auto">
-        {messages.length === 0 && <p className="text-sm text-gray-500">No messages yet.</p>}
+        {messages.length === 0 && <p className="text-sm text-navy-400">No messages yet.</p>}
         {messages.map((m) => {
           const isMine = m.sender_id === user.id;
           return (
             <div key={m.id} className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-xs rounded px-3 py-2 text-sm ${isMine ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-900'}`}>
+              <div className={`max-w-xs rounded px-3 py-2 text-sm ${isMine ? 'bg-navy-950 text-white' : 'bg-navy-50 text-navy-950'}`}>
                 <p>{m.content}</p>
                 {m.flagged && <p className="mt-1 text-xs opacity-70">⚠ contains redacted contact info</p>}
                 <p className="mt-1 text-xs opacity-60">{new Date(m.created_at).toLocaleTimeString()}</p>

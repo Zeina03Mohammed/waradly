@@ -30,13 +30,14 @@ export default function AdminOrdersPage() {
 
   return (
     <Shell>
-      <h1 className="mb-6 text-xl font-semibold">Order Management</h1>
+      <h1 className="page-title mb-8">Order Management</h1>
       <input
         className="input mb-4 max-w-xs"
         placeholder="Filter by status (e.g. PRODUCTION)"
         value={statusFilter}
         onChange={(e) => setStatusFilter(e.target.value)}
       />
+      <div className="card overflow-x-auto p-0">
       <table className="table-base">
         <thead>
           <tr>
@@ -59,7 +60,7 @@ export default function AdminOrdersPage() {
               </td>
               <td>{new Date(o.created_at).toLocaleDateString()}</td>
               <td>
-                <Link href={`/admin/orders/${o.id}`} className="text-blue-600 underline">
+                <Link href={`/admin/orders/${o.id}`} className="font-medium text-navy-600 hover:text-navy-950">
                   Manage
                 </Link>
               </td>
@@ -67,6 +68,7 @@ export default function AdminOrdersPage() {
           ))}
         </tbody>
       </table>
+      </div>
     </Shell>
   );
 }

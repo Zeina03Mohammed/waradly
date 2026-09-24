@@ -7,7 +7,7 @@ import { SKIP_AUTH, useAuth } from '@/lib/client/AuthProvider';
 import { Avatar } from '@/components/Avatar';
 
 function Logo() {
-  return <Image src="/logo-icon.png" alt="Waradly" width={80} height={80} className="rounded" />;
+  return <Image src="/logo-icon.png" alt="Waradly" width={72} height={72} className="rounded-lg" />;
 }
 
 function displayName(user: { username: string | null; email: string }): string {
@@ -26,29 +26,115 @@ const PROFILE_BY_ROLE: Record<'buyer' | 'supplier' | 'admin', string> = {
   admin: '/admin/profile',
 };
 
-const NAV: Record<'buyer' | 'supplier' | 'admin', { href: string; label: string }[]> = {
+type NavIcon = 'dashboard' | 'rfq' | 'offer' | 'order' | 'shield' | 'grid' | 'chart' | 'log' | 'user';
+
+const NAV: Record<'buyer' | 'supplier' | 'admin', { href: string; label: string; icon: NavIcon }[]> = {
   buyer: [
-    { href: '/buyer/dashboard', label: 'Dashboard' },
-    { href: '/buyer/rfqs', label: 'My RFQs' },
-    { href: '/buyer/profile', label: 'Profile' },
+    { href: '/buyer/dashboard', label: 'Dashboard', icon: 'dashboard' },
+    { href: '/buyer/rfqs', label: 'My RFQs', icon: 'rfq' },
+    { href: '/buyer/profile', label: 'Profile', icon: 'user' },
   ],
   supplier: [
-    { href: '/supplier/rfqs', label: 'Available RFQs' },
-    { href: '/supplier/offers', label: 'My Offers' },
-    { href: '/supplier/orders', label: 'Won Orders' },
-    { href: '/supplier/verification', label: 'Verification' },
-    { href: '/supplier/categories', label: 'Capabilities' },
-    { href: '/supplier/performance', label: 'Performance' },
-    { href: '/supplier/profile', label: 'Profile' },
+    { href: '/supplier/rfqs', label: 'Available RFQs', icon: 'rfq' },
+    { href: '/supplier/offers', label: 'My Offers', icon: 'offer' },
+    { href: '/supplier/orders', label: 'Won Orders', icon: 'order' },
+    { href: '/supplier/verification', label: 'Verification', icon: 'shield' },
+    { href: '/supplier/categories', label: 'Capabilities', icon: 'grid' },
+    { href: '/supplier/performance', label: 'Performance', icon: 'chart' },
+    { href: '/supplier/profile', label: 'Profile', icon: 'user' },
   ],
   admin: [
-    { href: '/admin', label: 'Dashboard' },
-    { href: '/admin/users', label: 'Users' },
-    { href: '/admin/suppliers/verification', label: 'Supplier Verification' },
-    { href: '/admin/audit-logs', label: 'Audit Log' },
-    { href: '/admin/profile', label: 'Profile' },
+    { href: '/admin', label: 'Dashboard', icon: 'dashboard' },
+    { href: '/admin/users', label: 'Users', icon: 'user' },
+    { href: '/admin/suppliers/verification', label: 'Supplier Verification', icon: 'shield' },
+    { href: '/admin/audit-logs', label: 'Audit Log', icon: 'log' },
+    { href: '/admin/profile', label: 'Profile', icon: 'user' },
   ],
 };
+
+function NavIconGlyph({ icon, active }: { icon: NavIcon; active: boolean }) {
+  const common = {
+    width: 18,
+    height: 18,
+    viewBox: '0 0 24 24',
+    fill: 'none',
+    stroke: active ? '#d9ab5f' : 'currentColor',
+    strokeWidth: 1.75,
+    strokeLinecap: 'round' as const,
+    strokeLinejoin: 'round' as const,
+  };
+  switch (icon) {
+    case 'dashboard':
+      return (
+        <svg {...common}>
+          <rect x="3.5" y="3.5" width="7" height="7" rx="1.5" />
+          <rect x="13.5" y="3.5" width="7" height="4.5" rx="1.5" />
+          <rect x="13.5" y="10.5" width="7" height="10" rx="1.5" />
+          <rect x="3.5" y="13" width="7" height="7.5" rx="1.5" />
+        </svg>
+      );
+    case 'rfq':
+      return (
+        <svg {...common}>
+          <path d="M6 3.5h9L19 7.5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-16a1 1 0 0 1 1-1Z" />
+          <path d="M14.5 3.5V8h4.5" />
+          <path d="M8 12.5h8M8 16h5" />
+        </svg>
+      );
+    case 'offer':
+      return (
+        <svg {...common}>
+          <path d="M3.5 12 12 3.5l8.5 8.5-8.5 8.5-8.5-8.5Z" />
+          <circle cx="12" cy="12" r="2.25" />
+        </svg>
+      );
+    case 'order':
+      return (
+        <svg {...common}>
+          <path d="M4 7.5 12 3.5l8 4v9l-8 4-8-4v-9Z" />
+          <path d="M4 7.5 12 11.5l8-4M12 11.5V20.5" />
+        </svg>
+      );
+    case 'shield':
+      return (
+        <svg {...common}>
+          <path d="M12 3.5 19 6.5v5.5c0 4.2-2.9 7.4-7 8.5-4.1-1.1-7-4.3-7-8.5V6.5L12 3.5Z" />
+          <path d="M9 12l2 2 4-4.5" />
+        </svg>
+      );
+    case 'grid':
+      return (
+        <svg {...common}>
+          <rect x="3.5" y="3.5" width="7.5" height="7.5" rx="1.5" />
+          <rect x="13" y="3.5" width="7.5" height="7.5" rx="1.5" />
+          <rect x="3.5" y="13" width="7.5" height="7.5" rx="1.5" />
+          <rect x="13" y="13" width="7.5" height="7.5" rx="1.5" />
+        </svg>
+      );
+    case 'chart':
+      return (
+        <svg {...common}>
+          <path d="M4 20V4M4 20h16" />
+          <path d="M8 16v-4M12.5 16V8M17 16v-7" />
+        </svg>
+      );
+    case 'log':
+      return (
+        <svg {...common}>
+          <path d="M5 4.5h11l3 3v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-14a1 1 0 0 1 1-1Z" />
+          <path d="M8 10.5h8M8 14h8M8 17h5" />
+        </svg>
+      );
+    case 'user':
+    default:
+      return (
+        <svg {...common}>
+          <circle cx="12" cy="8" r="3.5" />
+          <path d="M4.5 20c1.2-4 4-6 7.5-6s6.3 2 7.5 6" />
+        </svg>
+      );
+  }
+}
 
 export function Shell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -73,8 +159,8 @@ export function Shell({ children }: { children: React.ReactNode }) {
           onClick={() => handleDevRole(role)}
           className={
             user?.role === role
-              ? 'rounded bg-gray-900 px-2 py-1 text-white'
-              : 'rounded border border-gray-300 px-2 py-1 text-gray-600 hover:border-gray-500'
+              ? 'rounded bg-navy-900 px-2 py-1 text-white'
+              : 'rounded border border-navy-100 px-2 py-1 text-navy-400 hover:border-navy-400'
           }
         >
           {role}
@@ -90,12 +176,12 @@ export function Shell({ children }: { children: React.ReactNode }) {
   const links = NAV[user.role];
 
   return (
-    <div className="flex min-h-screen">
-      <aside className="flex w-56 shrink-0 flex-col border-r border-gray-200 bg-white">
-        <Link href={DASHBOARD_BY_ROLE[user.role]} className="flex justify-center border-b border-gray-200 px-4 py-4">
+    <div className="flex min-h-screen bg-[#f6f5f2]">
+      <aside className="flex w-60 shrink-0 flex-col bg-navy-950">
+        <Link href={DASHBOARD_BY_ROLE[user.role]} className="flex items-center gap-2 px-5 py-6">
           <Logo />
         </Link>
-        <nav className="flex flex-1 flex-col gap-1 p-3 text-sm">
+        <nav className="flex flex-1 flex-col gap-0.5 px-3 text-sm">
           {links.map((link) => {
             const active = pathname === link.href;
             return (
@@ -104,33 +190,37 @@ export function Shell({ children }: { children: React.ReactNode }) {
                 href={link.href}
                 className={
                   active
-                    ? 'rounded bg-gray-900 px-3 py-2 text-white'
-                    : 'rounded px-3 py-2 text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                    ? 'flex items-center gap-3 rounded-md bg-white/[0.06] px-3 py-2.5 font-medium text-white ring-1 ring-inset ring-white/[0.06]'
+                    : 'flex items-center gap-3 rounded-md px-3 py-2.5 text-navy-100/70 transition-colors duration-150 hover:bg-white/[0.04] hover:text-white'
                 }
               >
-                {link.label}
+                <NavIconGlyph icon={link.icon} active={active} />
+                <span className={active ? 'border-l-2 border-gold-500 pl-3 -ml-3' : 'pl-3 -ml-3'}>{link.label}</span>
               </Link>
             );
           })}
         </nav>
-        <div className="space-y-3 border-t border-gray-200 p-3">
+        <div className="space-y-3 border-t border-white/[0.06] px-3 py-4">
           {devRoleSwitcher}
           <button
             onClick={() => logout()}
-            className="block w-full text-center text-base font-medium text-gray-500 transition-colors hover:text-red-600"
+            className="flex w-full items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-navy-100/60 transition-colors duration-150 hover:bg-white/[0.04] hover:text-red-300"
           >
             Log out
           </button>
         </div>
       </aside>
       <div className="flex flex-1 flex-col">
-        <div className="flex justify-end border-b border-gray-200 bg-white px-6 py-3">
-          <Link href={PROFILE_BY_ROLE[user.role]} className="flex items-center gap-2">
+        <div className="flex items-center justify-end gap-3 border-b border-navy-100 bg-white/70 px-8 py-3 backdrop-blur-sm">
+          <Link
+            href={PROFILE_BY_ROLE[user.role]}
+            className="flex items-center gap-2.5 rounded-full py-1 pl-1 pr-3 transition-colors duration-150 hover:bg-navy-50"
+          >
             <Avatar userId={user.id} hasAvatar={user.has_avatar} label={displayName(user)} size={32} />
-            <span className="text-sm font-medium text-gray-700">{displayName(user)}</span>
+            <span className="text-sm font-medium text-navy-900">{displayName(user)}</span>
           </Link>
         </div>
-        <main className="flex-1 px-6 py-6">{children}</main>
+        <main className="flex-1 px-8 py-8">{children}</main>
       </div>
     </div>
   );

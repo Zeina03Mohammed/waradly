@@ -80,7 +80,7 @@ export default function BuyerOrderDetailPage({ params }: { params: { id: string 
   return (
     <Shell>
       <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-xl font-semibold">{order.rfq_title}</h1>
+        <h1 className="page-title">{order.rfq_title}</h1>
         <span className="badge">{order.status}</span>
       </div>
 
@@ -134,7 +134,7 @@ export default function BuyerOrderDetailPage({ params }: { params: { id: string 
       {order.rating && (
         <div className="card mt-4 text-sm">
           <p className="font-medium">Your rating: {order.rating.score} / 5</p>
-          {order.rating.comment && <p className="text-gray-600">{order.rating.comment}</p>}
+          {order.rating.comment && <p className="text-navy-400">{order.rating.comment}</p>}
         </div>
       )}
     </Shell>

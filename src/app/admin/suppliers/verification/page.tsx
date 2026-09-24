@@ -58,11 +58,12 @@ export default function AdminSupplierVerificationPage() {
 
   return (
     <Shell>
-      <h1 className="mb-6 text-xl font-semibold">Supplier Verification</h1>
+      <h1 className="page-title mb-8">Supplier Verification</h1>
       {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
       {items.length === 0 ? (
-        <p className="text-gray-600">No pending verifications.</p>
+        <p className="text-navy-400">No pending verifications.</p>
       ) : (
+        <div className="card overflow-x-auto p-0">
         <table className="table-base">
           <thead>
             <tr>
@@ -94,6 +95,7 @@ export default function AdminSupplierVerificationPage() {
             ))}
           </tbody>
         </table>
+        </div>
       )}
     </Shell>
   );

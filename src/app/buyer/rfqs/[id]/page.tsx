@@ -53,7 +53,7 @@ export default function BuyerRfqDetailPage({ params }: { params: { id: string } 
   return (
     <Shell>
       <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-xl font-semibold">{rfq.title}</h1>
+        <h1 className="page-title">{rfq.title}</h1>
         <span className="badge">{rfq.status}</span>
       </div>
 

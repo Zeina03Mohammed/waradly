@@ -35,18 +35,18 @@ export default function BuyerDashboard() {
 
   return (
     <Shell>
-      <h1 className="mb-6 text-xl font-semibold">Buyer Dashboard</h1>
+      <h1 className="page-title mb-8">Buyer Dashboard</h1>
 
       <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div className="card">
-          <p className="text-sm text-gray-500">Open RFQs</p>
+          <p className="text-sm text-navy-400">Open RFQs</p>
           <p className="text-2xl font-semibold">{openRfqs.length}</p>
         </div>
         <div className="card">
-          <p className="text-sm text-gray-500">Total RFQs</p>
+          <p className="text-sm text-navy-400">Total RFQs</p>
           <p className="text-2xl font-semibold">{rfqs.length}</p>
         </div>
-        <Link href="/buyer/rfqs/new" className="card flex items-center justify-center bg-gray-900 text-white hover:bg-gray-700">
+        <Link href="/buyer/rfqs/new" className="card flex items-center justify-center bg-navy-950 text-white hover:bg-navy-700">
           + Create RFQ
         </Link>
       </div>
@@ -59,13 +59,13 @@ export default function BuyerDashboard() {
             className={`card text-center ${c.status !== 'active' ? 'opacity-50' : ''}`}
           >
             <p className="font-medium">{c.name}</p>
-            <p className="text-xs text-gray-500">{c.status === 'active' ? 'Active' : 'Coming soon'}</p>
+            <p className="text-xs text-navy-400">{c.status === 'active' ? 'Active' : 'Coming soon'}</p>
           </div>
         ))}
       </div>
 
       {rfqs.length === 0 && (
-        <p className="mt-8 text-gray-600">You have no RFQs yet — create your first one.</p>
+        <p className="mt-8 text-navy-400">You have no RFQs yet — create your first one.</p>
       )}
     </Shell>
   );
