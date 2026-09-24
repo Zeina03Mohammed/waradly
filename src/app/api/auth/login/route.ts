@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { randomUUID } from 'node:crypto';
 import { prisma } from '@/lib/prisma';
 import { Errors } from '@/lib/http';
 import { loginSchema, zodFieldErrors } from '@/lib/validation/auth';
 import { verifyPassword } from '@/lib/auth/password';
-import { signAccessToken, signRefreshToken, REFRESH_TOKEN_TTL_MS } from '@/lib/auth/jwt';
-import { hashToken } from '@/lib/auth/tokens';
+import { issueSessionTokens } from '@/lib/auth/issueSession';
 import { toSelfUserView } from '@/lib/masking/user';
 import { audit } from '@/lib/audit';
 
@@ -68,31 +66,14 @@ export async function POST(request: NextRequest) {
     return Errors.emailNotVerified();
   }
 
-  const accessToken = signAccessToken({ sub: user.id, role: user.role });
-  const tokenId = randomUUID();
-  const refreshTokenValue = signRefreshToken({ sub: user.id, jti: tokenId });
-
-  await prisma.$transaction([
-    prisma.refreshToken.create({
-      data: {
-        id: tokenId,
-        user_id: user.id,
-        token_hash: hashToken(refreshTokenValue),
-        expires_at: new Date(Date.now() + REFRESH_TOKEN_TTL_MS),
-      },
-    }),
-    prisma.user.update({
-      where: { id: user.id },
-      data: { failed_login_attempts: 0, locked_until: null, last_login_at: now },
-    }),
-  ]);
+  const { accessToken, refreshToken } = await issueSessionTokens(user);
 
   await audit({ actorId: user.id, action: 'auth.login', entityType: 'user', entityId: user.id });
 
   return NextResponse.json(
     {
       access_token: accessToken,
-      refresh_token: refreshTokenValue,
+      refresh_token: refreshToken,
       user: toSelfUserView(user),
     },
     { status: 200 },

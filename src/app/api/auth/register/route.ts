@@ -10,6 +10,7 @@ import { toSelfUserView } from '@/lib/masking/user';
 import { toSelfOrganizationView } from '@/lib/masking/organization';
 import { audit } from '@/lib/audit';
 import { notify } from '@/lib/notifications/notify';
+import { signEnrollmentToken } from '@/lib/auth/jwt';
 
 const EMAIL_VERIFICATION_TTL_MS = 24 * 60 * 60 * 1000; // implementation default, not a spec'd business rule
 
@@ -99,6 +100,9 @@ export async function POST(request: NextRequest) {
       {
         user: toSelfUserView(result.user),
         organization: toSelfOrganizationView(result.organization),
+        // Lets the register form offer Face ID setup immediately, before email verification —
+        // scoped to WebAuthn enrollment only (see verifyEnrollmentToken), not a real session.
+        webauthn_enrollment_token: signEnrollmentToken(result.user.id),
       },
       { status: 201 },
     );

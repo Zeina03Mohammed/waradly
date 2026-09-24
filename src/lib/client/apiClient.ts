@@ -63,6 +63,10 @@ interface ApiOptions {
   method?: string;
   body?: unknown;
   isFormData?: boolean;
+  /** Use this bearer token instead of the stored session (e.g. the short-lived WebAuthn
+   * enrollment token the register form gets back before any real session exists). Skips the
+   * refresh/redirect-to-login handling below, since it isn't a real session to begin with. */
+  token?: string;
 }
 
 // Paths where a 401 is a normal, expected, inline-handled response (wrong password, expired
@@ -70,10 +74,10 @@ interface ApiOptions {
 const AUTH_FLOW_PATHS = ['/api/auth/login', '/api/auth/register', '/api/auth/refresh'];
 
 export async function api<T = unknown>(path: string, options: ApiOptions = {}): Promise<T> {
-  const hadAccessToken = Boolean(getAccessToken());
+  const hadAccessToken = Boolean(options.token ?? getAccessToken());
 
   const doFetch = async (): Promise<Response> => {
-    const token = getAccessToken();
+    const token = options.token ?? getAccessToken();
     const headers: Record<string, string> = {};
     if (token) headers.Authorization = `Bearer ${token}`;
     let body: BodyInit | undefined;
@@ -90,7 +94,7 @@ export async function api<T = unknown>(path: string, options: ApiOptions = {}): 
 
   let res = await doFetch();
 
-  if (res.status === 401 && getRefreshToken()) {
+  if (!options.token && res.status === 401 && getRefreshToken()) {
     const refreshed = await tryRefresh();
     if (refreshed) res = await doFetch();
   }
@@ -100,7 +104,7 @@ export async function api<T = unknown>(path: string, options: ApiOptions = {}): 
   // the app fires requests from a bare `.then(setState)` with no `.catch`, so leaving this
   // unhandled means the page just renders nothing forever (React state never updates) with no
   // way back to login. Recover once here instead of chasing that same bug on every page.
-  if (res.status === 401 && hadAccessToken && !AUTH_FLOW_PATHS.includes(path) && typeof window !== 'undefined') {
+  if (!options.token && res.status === 401 && hadAccessToken && !AUTH_FLOW_PATHS.includes(path) && typeof window !== 'undefined') {
     clearTokens();
     window.location.assign('/login');
   }

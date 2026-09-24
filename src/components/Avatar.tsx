@@ -4,6 +4,10 @@ import { useEffect, useState } from 'react';
 import { getAccessToken } from '@/lib/client/apiClient';
 
 function initials(label: string): string {
+  const words = label.trim().split(/\s+/).filter(Boolean);
+  if (words.length >= 2) {
+    return (words[0][0] + words[1][0]).toUpperCase();
+  }
   return label.trim().slice(0, 2).toUpperCase();
 }
 

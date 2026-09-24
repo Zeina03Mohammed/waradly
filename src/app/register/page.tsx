@@ -5,12 +5,8 @@ import { useRouter } from 'next/navigation';
 import { api, ApiError } from '@/lib/client/apiClient';
 import { useAuth } from '@/lib/client/AuthProvider';
 import { CountrySelect, RegionSelect } from '@/components/CountryRegionSelect';
-
-interface Category {
-  id: string;
-  name: string;
-  status: string;
-}
+import { FaceIdEnrollAtRegister } from '@/components/FaceIdEnrollAtRegister';
+import { PhotoUploadAtRegister } from '@/components/PhotoUploadAtRegister';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -25,21 +21,16 @@ export default function RegisterPage() {
   const [country, setCountry] = useState('');
   const [generalRegion, setGeneralRegion] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [categoryIds, setCategoryIds] = useState<string[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [enrollmentToken, setEnrollmentToken] = useState<string | null>(null);
+  const [photoUploaded, setPhotoUploaded] = useState(false);
+  const [faceIdEnrolled, setFaceIdEnrolled] = useState(false);
 
   useEffect(() => {
     if (user) router.replace(`/${user.role}/dashboard`.replace('/admin/dashboard', '/admin'));
   }, [user, router]);
-
-  useEffect(() => {
-    if (role === 'supplier') {
-      api<{ categories: Category[] }>('/api/categories').then((d) => setCategories(d.categories));
-    }
-  }, [role]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -51,7 +42,7 @@ export default function RegisterPage() {
     }
     setSubmitting(true);
     try {
-      await api('/api/auth/register', {
+      const result = await api<{ webauthn_enrollment_token: string }>('/api/auth/register', {
         method: 'POST',
         body: {
           email,
@@ -63,9 +54,9 @@ export default function RegisterPage() {
           country,
           general_region: generalRegion,
           terms_accepted: termsAccepted,
-          ...(role === 'supplier' ? { category_ids: categoryIds } : {}),
         },
       });
+      setEnrollmentToken(result.webauthn_enrollment_token);
       setSuccess(true);
       await refreshUser();
     } catch (err) {
@@ -78,6 +69,11 @@ export default function RegisterPage() {
   }
 
   if (success) {
+    const isSupplier = role === 'supplier';
+    const needsPhoto = isSupplier && !photoUploaded;
+    const needsFaceId = isSupplier && photoUploaded && !faceIdEnrolled;
+    const done = !isSupplier || (photoUploaded && faceIdEnrolled);
+
     return (
       <main className="mx-auto max-w-md p-8">
         <h1 className="mb-4 text-xl font-semibold">Check your email</h1>
@@ -85,9 +81,23 @@ export default function RegisterPage() {
           Your account was created. We sent a verification link to <strong>{email}</strong> (check the server console
           in dev). Once verified you can log in.
         </p>
-        <a href="/login" className="mt-4 inline-block text-blue-600 underline">
-          Go to login
-        </a>
+        {needsPhoto && enrollmentToken && (
+          <>
+            <p className="mt-3 text-gray-600">
+              Supplier accounts require a one-time identity check — add your photo, then verify it&apos;s really you
+              with Face ID.
+            </p>
+            <PhotoUploadAtRegister enrollmentToken={enrollmentToken} onUploaded={() => setPhotoUploaded(true)} />
+          </>
+        )}
+        {needsFaceId && enrollmentToken && (
+          <FaceIdEnrollAtRegister enrollmentToken={enrollmentToken} onEnrolled={() => setFaceIdEnrolled(true)} />
+        )}
+        {done && (
+          <a href="/login" className="mt-4 inline-block text-blue-600 underline">
+            Go to login
+          </a>
+        )}
       </main>
     );
   }
@@ -151,23 +161,9 @@ export default function RegisterPage() {
         </Field>
 
         {role === 'supplier' && (
-          <Field label="Categories" error={errors.category_ids}>
-            <div className="space-y-1">
-              {categories.map((c) => (
-                <label key={c.id} className="flex items-center gap-2 text-sm">
-                  <input
-                    type="checkbox"
-                    checked={categoryIds.includes(c.id)}
-                    onChange={(e) =>
-                      setCategoryIds((prev) => (e.target.checked ? [...prev, c.id] : prev.filter((id) => id !== c.id)))
-                    }
-                  />
-                  {c.name}
-                </label>
-              ))}
-              {categories.length === 0 && <p className="text-sm text-gray-500">No categories yet.</p>}
-            </div>
-          </Field>
+          <p className="text-sm text-gray-600">
+            You&apos;ll pick which categories you supply from your Capabilities page after logging in.
+          </p>
         )}
 
         <label className="flex items-start gap-2 text-sm">

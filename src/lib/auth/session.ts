@@ -1,7 +1,7 @@
 import type { NextRequest } from 'next/server';
 import type { User, UserRole } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
-import { extractBearerToken, verifyAccessToken } from '@/lib/auth/jwt';
+import { extractBearerToken, verifyAccessToken, verifyEnrollmentToken } from '@/lib/auth/jwt';
 import { Errors } from '@/lib/http';
 
 export type AuthResult =
@@ -32,6 +32,29 @@ export async function authenticate(request: NextRequest): Promise<AuthResult> {
   if (user.status !== 'active') {
     return { ok: false, response: Errors.unauthenticated() };
   }
+
+  return { ok: true, user };
+}
+
+/**
+ * Like `authenticate()`, but also accepts a short-lived WebAuthn enrollment token (issued by
+ * /auth/register) in place of a real session — the one carve-out that lets Face ID be set up
+ * on the registration form itself, before email verification/login exist. A real access token
+ * still works here too, so adding another device later from the Profile page uses the exact
+ * same route with no separate code path.
+ */
+export async function authenticateForEnrollment(request: NextRequest): Promise<AuthResult> {
+  const viaSession = await authenticate(request);
+  if (viaSession.ok) return viaSession;
+
+  const token = extractBearerToken(request.headers.get('authorization'));
+  if (!token) return { ok: false, response: Errors.unauthenticated() };
+
+  const payload = verifyEnrollmentToken(token);
+  if (!payload) return { ok: false, response: Errors.unauthenticated() };
+
+  const user = await prisma.user.findUnique({ where: { id: payload.sub } });
+  if (!user || user.status !== 'active') return { ok: false, response: Errors.unauthenticated() };
 
   return { ok: true, user };
 }

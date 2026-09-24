@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import sharp from 'sharp';
 import { prisma } from '@/lib/prisma';
 import { errorResponse, Errors } from '@/lib/http';
-import { authenticate } from '@/lib/auth/session';
+import { authenticateForEnrollment } from '@/lib/auth/session';
 import { storageProvider } from '@/lib/storage';
 import { matchesFileSignature, MAX_IMAGE_PIXELS } from '@/lib/files/constraints';
 
@@ -14,7 +14,10 @@ const AVATAR_MAX_DIMENSION = 512;
  * attachment pipeline (no masking/watermarking concerns apply to a user's own avatar). Always
  * stored under a fixed per-user key so a re-upload just overwrites the previous one. */
 export async function POST(request: NextRequest) {
-  const auth = await authenticate(request);
+  // Accepts the short-lived WebAuthn enrollment token too, not just a real session — lets a
+  // supplier upload their photo on the registration success screen, before email
+  // verification/login exist (see authenticateForEnrollment).
+  const auth = await authenticateForEnrollment(request);
   if (!auth.ok) return auth.response;
 
   const formData = await request.formData().catch(() => null);
@@ -77,7 +80,7 @@ export async function POST(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
-  const auth = await authenticate(request);
+  const auth = await authenticateForEnrollment(request);
   if (!auth.ok) return auth.response;
 
   if (auth.user.avatar_storage_key) {

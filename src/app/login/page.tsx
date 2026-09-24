@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ApiError } from '@/lib/client/apiClient';
+import { api, ApiError } from '@/lib/client/apiClient';
 import { useAuth } from '@/lib/client/AuthProvider';
 
 const DASHBOARD_BY_ROLE: Record<string, string> = {
@@ -46,8 +46,9 @@ export default function LoginPage() {
   return (
     <main className="mx-auto max-w-md p-8">
       <h1 className="mb-6 text-xl font-semibold">Log in</h1>
+      {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
+
       <form onSubmit={handleSubmit} className="space-y-4">
-        {error && <p className="text-sm text-red-600">{error}</p>}
         <label className="block text-sm">
           <span className="mb-1 block font-medium text-gray-700">Email</span>
           <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="input" />
@@ -60,6 +61,7 @@ export default function LoginPage() {
           {submitting ? 'Logging in…' : 'Log in'}
         </button>
       </form>
+
       <p className="mt-4 text-sm text-gray-600">
         No account yet?{' '}
         <a href="/register" className="text-blue-600 underline">

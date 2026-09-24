@@ -159,7 +159,14 @@ model User {
   last_failed_login_at  DateTime?
   locked_until           DateTime?
 
+  // Ephemeral WebAuthn (Face ID / fingerprint) challenge, overwritten on every
+  // registration/authentication attempt. Not a token of any lasting value — just holds the
+  // random challenge between "generate options" and "verify response" for this one ceremony.
+  webauthn_challenge            String?
+  webauthn_challenge_expires_at DateTime?
+
   organizations       Organization[]
+  webauthn_credentials WebAuthnCredential[]
   refresh_tokens      RefreshToken[]
   password_reset_tokens PasswordResetToken[]
   email_verification_tokens EmailVerificationToken[]
@@ -175,6 +182,27 @@ model User {
 
   @@index([role, status])
   @@map("users")
+}
+
+// A registered WebAuthn authenticator (Face ID, Touch ID, Windows Hello, a hardware key, etc.)
+// — biometric login. A user can register more than one (e.g. one per device).
+model WebAuthnCredential {
+  id             String    @id @default(uuid())
+  user_id        String
+  credential_id  String    @unique
+  public_key     Bytes
+  counter        Int       @default(0)
+  device_type    String?
+  backed_up      Boolean   @default(false)
+  transports     String[]
+  label          String?
+  created_at     DateTime  @default(now())
+  last_used_at   DateTime?
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@map("webauthn_credentials")
 }
 
 model RefreshToken {

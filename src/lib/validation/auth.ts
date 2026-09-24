@@ -27,16 +27,9 @@ export const registerSchema = z.object({
   terms_accepted: z.literal(true, {
     errorMap: () => ({ message: 'You must accept the Terms, Anti-Circumvention Policy, and Privacy Policy.' }),
   }),
-  // Supplier-only: at least one category to apply for (SPEC.md Section 4/6.1).
+  // Optional at registration — a supplier applies for categories afterward from the
+  // Capabilities page (/supplier/categories), not as part of signing up.
   category_ids: z.array(z.string().uuid()).optional(),
-}).superRefine((data, ctx) => {
-  if (data.role === 'supplier' && (!data.category_ids || data.category_ids.length === 0)) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: ['category_ids'],
-      message: 'Select at least one category.',
-    });
-  }
 });
 
 export const loginSchema = z.object({
