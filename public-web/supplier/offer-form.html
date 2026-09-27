@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Offer — Waradly</title>
+  <link rel="stylesheet" href="/assets/css/theme.css" />
+</head>
+<body>
+  <div class="shell">
+    <div id="sidebar-slot"></div>
+    <main class="content">
+      <div class="page-wide" style="max-width:560px;">
+        <h1 class="page-title" id="page-title">Submit an offer</h1>
+        <p id="error" class="error-text mb-4" style="display:none;"></p>
+
+        <form id="form" class="card">
+          <div class="flex gap-4">
+            <label class="field" style="flex:1;"><span>Unit price ($)</span><input class="input" type="number" step="any" min="0" id="unit_price" required /></label>
+            <label class="field" style="flex:1;"><span>MOQ</span><input class="input" type="number" step="any" min="0" id="moq" required /></label>
+          </div>
+          <div class="flex gap-4">
+            <label class="field" style="flex:1;"><span>Production lead time (days)</span><input class="input" type="number" min="0" id="production_lead_time_days" required /></label>
+            <label class="field" style="flex:1;"><span>Delivery estimate (days)</span><input class="input" type="number" min="0" id="delivery_time_estimate_days" required /></label>
+          </div>
+          <label class="flex gap-2 items-center mb-4"><input type="checkbox" id="sample_availability" /><span>Sample available</span></label>
+          <label class="field"><span>Sample terms</span><textarea class="input" id="sample_terms" rows="2"></textarea></label>
+          <label class="field"><span>Payment terms</span><textarea class="input" id="payment_terms" rows="2"></textarea></label>
+          <label class="field"><span>Technical specs notes</span><textarea class="input" id="technical_specs_notes" rows="2"></textarea></label>
+          <label class="field"><span>Quality notes</span><textarea class="input" id="quality_notes" rows="2"></textarea></label>
+          <label class="field"><span>Shipping estimate notes</span><textarea class="input" id="shipping_estimate_notes" rows="2"></textarea></label>
+          <button class="btn-primary w-full" type="submit" id="submit-btn">Submit offer</button>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/shell.js"></script>
+  <script src="/assets/js/util.js"></script>
+  <script>
+    const offerId = Waradly.qs('id');
+    const rfqId = Waradly.qs('rfq_id');
+
+    function collectPayload() {
+      return {
+        unit_price: Number(document.getElementById('unit_price').value),
+        moq: Number(document.getElementById('moq').value),
+        production_lead_time_days: Number(document.getElementById('production_lead_time_days').value),
+        delivery_time_estimate_days: Number(document.getElementById('delivery_time_estimate_days').value),
+        sample_availability: document.getElementById('sample_availability').checked,
+        sample_terms: document.getElementById('sample_terms').value || undefined,
+        payment_terms: document.getElementById('payment_terms').value || undefined,
+        technical_specs_notes: document.getElementById('technical_specs_notes').value || undefined,
+        quality_notes: document.getElementById('quality_notes').value || undefined,
+        shipping_estimate_notes: document.getElementById('shipping_estimate_notes').value || undefined,
+      };
+    }
+
+    (async () => {
+      const user = await Waradly.requireRole('supplier');
+      if (!user) return;
+      Waradly.mountShell(user, '/supplier/offers.html');
+
+      if (offerId) {
+        document.getElementById('page-title').textContent = 'Edit offer';
+        const { offer } = await Waradly.api(`/api/offers/${offerId}`);
+        document.getElementById('unit_price').value = offer.unit_price;
+        document.getElementById('moq').value = offer.moq;
+        document.getElementById('production_lead_time_days').value = offer.production_lead_time_days;
+        document.getElementById('delivery_time_estimate_days').value = offer.delivery_time_estimate_days;
+        document.getElementById('sample_availability').checked = Boolean(offer.sample_availability);
+        document.getElementById('sample_terms').value = offer.sample_terms || '';
+        document.getElementById('payment_terms').value = offer.payment_terms || '';
+        document.getElementById('technical_specs_notes').value = offer.technical_specs_notes || '';
+        document.getElementById('quality_notes').value = offer.quality_notes || '';
+        document.getElementById('shipping_estimate_notes').value = offer.shipping_estimate_notes || '';
+      }
+    })();
+
+    document.getElementById('form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      Waradly.clearError('error');
+      const btn = document.getElementById('submit-btn');
+      btn.disabled = true;
+      try {
+        if (offerId) {
+          await Waradly.api(`/api/offers/${offerId}`, { method: 'PATCH', body: collectPayload() });
+          window.location.assign('/supplier/offers.html');
+        } else {
+          await Waradly.api(`/api/rfqs/${rfqId}/offers`, { method: 'POST', body: collectPayload() });
+          window.location.assign('/supplier/offers.html');
+        }
+      } catch (err) {
+        Waradly.showError('error', err);
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

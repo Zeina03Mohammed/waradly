@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Offers — Waradly</title>
+  <link rel="stylesheet" href="/assets/css/theme.css" />
+</head>
+<body>
+  <div class="shell">
+    <div id="sidebar-slot"></div>
+    <main class="content">
+      <div class="page-wide">
+        <h1 class="page-title">My Offers</h1>
+        <p id="error" class="error-text mb-4" style="display:none;"></p>
+        <div class="card" id="list">Loading…</div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/shell.js"></script>
+  <script src="/assets/js/util.js"></script>
+  <script>
+    async function render() {
+      const { offers } = await Waradly.api('/api/offers');
+      const editable = (s) => ['SUBMITTED', 'UNDER_REVIEW'].includes(s);
+      document.getElementById('list').innerHTML = offers.length
+        ? `<table><thead><tr><th>Unit price</th><th>MOQ</th><th>Status</th><th>Submitted</th><th></th></tr></thead><tbody>
+            ${offers.map((o) => `<tr>
+              <td>$${o.unit_price}</td><td>${o.moq}</td><td><span class="badge">${o.status}</span></td><td>${Waradly.formatDate(o.submitted_at)}</td>
+              <td>${editable(o.status) ? `
+                <a class="btn-secondary" href="/supplier/offer-form.html?id=${o.id}">Edit</a>
+                <button class="btn-danger withdraw-btn" data-id="${o.id}">Withdraw</button>` : ''}</td>
+            </tr>`).join('')}
+          </tbody></table>`
+        : '<p class="muted">No offers yet.</p>';
+
+      document.querySelectorAll('.withdraw-btn').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          if (!confirm('Withdraw this offer?')) return;
+          try {
+            await Waradly.api(`/api/offers/${btn.dataset.id}/withdraw`, { method: 'PATCH' });
+            render();
+          } catch (err) {
+            Waradly.showError('error', err);
+          }
+        });
+      });
+    }
+
+    (async () => {
+      const user = await Waradly.requireRole('supplier');
+      if (!user) return;
+      Waradly.mountShell(user, '/supplier/offers.html');
+      await render();
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Order — Waradly</title>
+  <link rel="stylesheet" href="/assets/css/theme.css" />
+</head>
+<body>
+  <div class="shell">
+    <div id="sidebar-slot"></div>
+    <main class="content">
+      <div class="page-wide" style="max-width:640px;">
+        <div id="content">Loading…</div>
+
+        <h2 style="font-size:1.05rem; font-weight:600;">Force a status transition</h2>
+        <div class="card">
+          <label class="field"><span>New status</span>
+            <select class="input" id="new-status">
+              ${['OFFER_SELECTED','PENDING_PAYMENT','PAYMENT_CONFIRMED','PRODUCTION','SAMPLE_REVIEW','PRODUCTION_COMPLETED','RECEIVED_AT_HUB','QC_COMPLETED','READY_FOR_DELIVERY','IN_TRANSIT','DELIVERED','COMPLETED','CANCELLED','DISPUTED']
+                .map((s) => `<option value="${s}">${s}</option>`).join('')}
+            </select>
+          </label>
+          <label class="field"><span>Reason (required)</span><input class="input" id="reason" /></label>
+          <label class="field"><span>Evidence file ID (required for hub/QC/delivered)</span><input class="input" id="evidence" /></label>
+          <button class="btn-primary" id="force-btn">Apply</button>
+        </div>
+
+        <h2 style="font-size:1.05rem; font-weight:600;">Internal notes</h2>
+        <div class="card">
+          <textarea class="input" id="notes" rows="3"></textarea>
+          <button class="btn-secondary mt-4" id="save-notes-btn">Save notes</button>
+        </div>
+        <p id="error" class="error-text" style="display:none;"></p>
+      </div>
+    </main>
+  </div>
+
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/shell.js"></script>
+  <script src="/assets/js/util.js"></script>
+  <script>
+    const orderId = Waradly.qs('id');
+
+    async function render() {
+      const { order, status_history } = await Waradly.api(`/api/admin/orders/${orderId}`);
+      document.getElementById('content').innerHTML = `
+        <div class="flex justify-between items-center mb-4">
+          <h1 class="page-title" style="margin:0;">Order ${orderId}</h1>
+          <span class="badge">${order.status}</span>
+        </div>
+        <div class="card">
+          <p><strong>Buyer org:</strong> ${Waradly.escapeHtml(order.buyer_id)}</p>
+          <p><strong>Supplier org:</strong> ${Waradly.escapeHtml(order.supplier_id)}</p>
+          <p><strong>Sample required:</strong> ${order.sample_required ? 'Yes' : 'No'}</p>
+        </div>
+        ${order.status === 'PENDING_PAYMENT' ? `<button class="btn-primary mb-4" id="confirm-payment-btn">Confirm payment received</button>` : ''}
+        <div class="card">
+          <h3 style="margin-top:0;">History</h3>
+          ${status_history.map((h) => `<p class="muted">${h.from_status ? h.from_status + ' → ' : ''}${h.to_status} — ${Waradly.formatDate(h.changed_at)}${h.note ? ' (' + Waradly.escapeHtml(h.note) + ')' : ''}</p>`).join('')}
+        </div>
+      `;
+      document.getElementById('notes').value = order.admin_notes || '';
+
+      const confirmBtn = document.getElementById('confirm-payment-btn');
+      if (confirmBtn) confirmBtn.addEventListener('click', async () => {
+        Waradly.clearError('error');
+        try {
+          await Waradly.api(`/api/admin/orders/${orderId}/confirm-payment`, { method: 'PATCH' });
+          render();
+        } catch (err) {
+          Waradly.showError('error', err);
+        }
+      });
+    }
+
+    document.getElementById('force-btn').addEventListener('click', async () => {
+      Waradly.clearError('error');
+      try {
+        await Waradly.api(`/api/admin/orders/${orderId}/status`, {
+          method: 'PATCH',
+          body: {
+            status: document.getElementById('new-status').value,
+            reason: document.getElementById('reason').value,
+            evidence_file_id: document.getElementById('evidence').value || undefined,
+          },
+        });
+        render();
+      } catch (err) {
+        Waradly.showError('error', err);
+      }
+    });
+
+    document.getElementById('save-notes-btn').addEventListener('click', async () => {
+      Waradly.clearError('error');
+      try {
+        await Waradly.api(`/api/admin/orders/${orderId}/notes`, { method: 'PATCH', body: { notes: document.getElementById('notes').value } });
+      } catch (err) {
+        Waradly.showError('error', err);
+      }
+    });
+
+    (async () => {
+      const user = await Waradly.requireRole('admin');
+      if (!user) return;
+      Waradly.mountShell(user, '/admin/orders.html');
+      await render();
+    })();
+  </script>
+</body>
+</html>

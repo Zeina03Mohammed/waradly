@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Messages — Waradly</title>
+  <link rel="stylesheet" href="/assets/css/theme.css" />
+</head>
+<body>
+  <div class="shell">
+    <div id="sidebar-slot"></div>
+    <main class="content">
+      <div class="page-wide" style="max-width:640px;">
+        <h1 class="page-title">Messages</h1>
+        <div class="card" id="thread" style="min-height:300px; display:flex; flex-direction:column; gap:0.5rem;">Loading…</div>
+        <form id="send-form" class="flex gap-2 mt-4" style="display:none;">
+          <input class="input" id="content" placeholder="Type a message…" required />
+          <button class="btn-primary" type="submit">Send</button>
+        </form>
+        <p id="error" class="error-text mt-4" style="display:none;"></p>
+      </div>
+    </main>
+  </div>
+
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/shell.js"></script>
+  <script src="/assets/js/util.js"></script>
+  <script>
+    const conversationId = Waradly.qs('id');
+    let user = null;
+
+    async function render() {
+      const { messages } = await Waradly.api(`/api/conversations/${conversationId}/messages`);
+      document.getElementById('thread').innerHTML = messages.length
+        ? messages.map((m) => `
+            <div style="align-self:${m.sender_id === user.id ? 'flex-end' : 'flex-start'}; max-width:70%;">
+              <div style="background:${m.sender_id === user.id ? 'var(--navy-900)' : 'var(--navy-50)'}; color:${m.sender_id === user.id ? '#fff' : 'inherit'}; padding:0.5rem 0.75rem; border-radius:0.75rem;">
+                ${Waradly.escapeHtml(m.content)}
+              </div>
+              <div class="muted" style="font-size:0.75rem;">${Waradly.formatDate(m.created_at)}${m.flagged ? ' · flagged for review' : ''}</div>
+            </div>`).join('')
+        : '<p class="muted">No messages yet.</p>';
+    }
+
+    (async () => {
+      user = await Waradly.getCurrentUser();
+      if (!user) { window.location.assign('/login.html'); return; }
+      Waradly.mountShell(user, '');
+      if (user.role !== 'admin') document.getElementById('send-form').style.display = 'flex';
+      await render();
+    })();
+
+    document.getElementById('send-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      Waradly.clearError('error');
+      const input = document.getElementById('content');
+      try {
+        await Waradly.api(`/api/conversations/${conversationId}/messages`, { method: 'POST', body: { content: input.value } });
+        input.value = '';
+        await render();
+      } catch (err) {
+        Waradly.showError('error', err);
+      }
+    });
+  </script>
+</body>
+</html>

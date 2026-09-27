@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Audit Log — Waradly</title>
+  <link rel="stylesheet" href="/assets/css/theme.css" />
+</head>
+<body>
+  <div class="shell">
+    <div id="sidebar-slot"></div>
+    <main class="content">
+      <div class="page-wide">
+        <h1 class="page-title">Audit Log</h1>
+        <div class="flex gap-2 mb-4">
+          <input class="input" id="entity-type" placeholder="entity_type (e.g. rfq)" style="max-width:200px;" />
+          <input class="input" id="actor-id" placeholder="actor_id" style="max-width:220px;" />
+          <button class="btn-secondary" id="filter-btn">Filter</button>
+        </div>
+        <div class="card" id="list">Loading…</div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/shell.js"></script>
+  <script src="/assets/js/util.js"></script>
+  <script>
+    async function render() {
+      const params = new URLSearchParams();
+      if (document.getElementById('entity-type').value) params.set('entity_type', document.getElementById('entity-type').value);
+      if (document.getElementById('actor-id').value) params.set('actor_id', document.getElementById('actor-id').value);
+
+      const { audit_logs } = await Waradly.api(`/api/admin/audit-logs?${params.toString()}`);
+      document.getElementById('list').innerHTML = audit_logs.length
+        ? `<table><thead><tr><th>Action</th><th>Entity</th><th>When</th></tr></thead><tbody>
+            ${audit_logs.map((l) => `<tr>
+              <td>${Waradly.escapeHtml(l.action)}</td>
+              <td>${Waradly.escapeHtml(l.entity_type)} — ${Waradly.escapeHtml(l.entity_label || l.entity_id)}</td>
+              <td>${Waradly.formatDate(l.created_at)}</td>
+            </tr>`).join('')}
+          </tbody></table>`
+        : '<p class="muted">No audit log entries match.</p>';
+    }
+    document.getElementById('filter-btn').addEventListener('click', render);
+
+    (async () => {
+      const user = await Waradly.requireRole('admin');
+      if (!user) return;
+      Waradly.mountShell(user, '/admin/audit-logs.html');
+      await render();
+    })();
+  </script>
+</body>
+</html>

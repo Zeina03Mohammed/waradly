@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>User — Waradly</title>
+  <link rel="stylesheet" href="/assets/css/theme.css" />
+</head>
+<body>
+  <div class="shell">
+    <div id="sidebar-slot"></div>
+    <main class="content">
+      <div class="page-wide" style="max-width:560px;">
+        <div id="content">Loading…</div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/shell.js"></script>
+  <script src="/assets/js/util.js"></script>
+  <script>
+    (async () => {
+      const admin = await Waradly.requireRole('admin');
+      if (!admin) return;
+      Waradly.mountShell(admin, '/admin/users.html');
+
+      const userId = Waradly.qs('id');
+      const { user, organization } = await Waradly.api(`/api/admin/users/${userId}`);
+      document.getElementById('content').innerHTML = `
+        <h1 class="page-title">${Waradly.escapeHtml(user.email)}</h1>
+        <div class="card">
+          <p><strong>Role:</strong> ${user.role}</p>
+          <p><strong>Status:</strong> <span class="badge">${user.status}</span>${user.status_reason ? ' — ' + Waradly.escapeHtml(user.status_reason) : ''}</p>
+          <p><strong>Username:</strong> ${Waradly.escapeHtml(user.username || '—')}</p>
+          <p><strong>Failed login attempts:</strong> ${user.failed_login_attempts}</p>
+          <p><strong>Created:</strong> ${Waradly.formatDate(user.created_at)}</p>
+        </div>
+        ${organization ? `<div class="card">
+          <h3 style="margin-top:0;">Organization</h3>
+          <p><strong>Legal name:</strong> ${Waradly.escapeHtml(organization.legal_name)}</p>
+          <p><strong>Country / region:</strong> ${Waradly.escapeHtml(organization.country)} / ${Waradly.escapeHtml(organization.general_region)}</p>
+        </div>` : ''}
+        <a class="btn-secondary" href="/admin/users.html">Back to users</a>
+      `;
+    })();
+  </script>
+</body>
+</html>

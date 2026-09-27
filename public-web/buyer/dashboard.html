@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard — Waradly</title>
+  <link rel="stylesheet" href="/assets/css/theme.css" />
+</head>
+<body>
+  <div class="shell">
+    <div id="sidebar-slot"></div>
+    <main class="content">
+      <div class="page-wide">
+        <h1 class="page-title">Dashboard</h1>
+        <div class="flex gap-4 mb-4" id="stats"></div>
+        <a class="btn-primary mb-4" href="/buyer/rfq-form.html" style="display:inline-flex;">Create RFQ</a>
+        <h2 style="font-size:1.1rem; font-weight:600;" class="mb-2">Recent RFQs</h2>
+        <div class="card" id="recent-rfqs">Loading…</div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/shell.js"></script>
+  <script src="/assets/js/util.js"></script>
+  <script>
+    (async () => {
+      const user = await Waradly.requireRole('buyer');
+      if (!user) return;
+      Waradly.mountShell(user, '/buyer/dashboard.html');
+
+      const { rfqs } = await Waradly.api('/api/rfqs');
+      const open = rfqs.filter((r) => !['CLOSED', 'CANCELLED', 'REJECTED'].includes(r.status)).length;
+      document.getElementById('stats').innerHTML = `
+        <div class="card" style="flex:1;"><div class="muted">Open RFQs</div><div style="font-size:1.5rem;font-weight:600;">${open}</div></div>
+        <div class="card" style="flex:1;"><div class="muted">Total RFQs</div><div style="font-size:1.5rem;font-weight:600;">${rfqs.length}</div></div>
+      `;
+
+      const recent = rfqs.slice(0, 5);
+      document.getElementById('recent-rfqs').innerHTML = recent.length
+        ? `<table><thead><tr><th>Title</th><th>Status</th><th>Created</th></tr></thead><tbody>
+            ${recent.map((r) => `<tr onclick="location.href='/buyer/rfq-detail.html?id=${r.id}'" style="cursor:pointer;">
+              <td>${Waradly.escapeHtml(r.title)}</td><td><span class="badge">${r.status}</span></td><td>${Waradly.formatDate(r.created_at)}</td>
+            </tr>`).join('')}
+          </tbody></table>`
+        : '<p class="muted">No RFQs yet — create your first one.</p>';
+    })();
+  </script>
+</body>
+</html>

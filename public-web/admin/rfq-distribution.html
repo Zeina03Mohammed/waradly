@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RFQ Distribution — Waradly</title>
+  <link rel="stylesheet" href="/assets/css/theme.css" />
+</head>
+<body>
+  <div class="shell">
+    <div id="sidebar-slot"></div>
+    <main class="content">
+      <div class="page-wide" style="max-width:640px;">
+        <div id="rfq-info">Loading…</div>
+
+        <h2 style="font-size:1.05rem; font-weight:600;">Internal notes (never shown to buyer/supplier)</h2>
+        <div class="card">
+          <textarea class="input" id="notes" rows="3"></textarea>
+          <button class="btn-secondary mt-4" id="save-notes-btn">Save notes</button>
+        </div>
+
+        <h2 style="font-size:1.05rem; font-weight:600;">Distribution overrides</h2>
+        <p class="muted mb-4">By default every supplier approved for this RFQ's category can see it. Override a specific supplier here.</p>
+        <div class="card">
+          <div class="flex gap-2 mb-4">
+            <input class="input" id="supplier-org-id" placeholder="Supplier organization ID" />
+            <select class="input" id="included" style="max-width:140px;"><option value="true">Include</option><option value="false">Exclude</option></select>
+            <button class="btn-primary" id="add-override-btn">Set</button>
+          </div>
+          <div id="overrides">Loading…</div>
+        </div>
+        <p id="error" class="error-text" style="display:none;"></p>
+      </div>
+    </main>
+  </div>
+
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/shell.js"></script>
+  <script src="/assets/js/util.js"></script>
+  <script>
+    const rfqId = Waradly.qs('id');
+
+    async function renderOverrides() {
+      const { overrides } = await Waradly.api(`/api/admin/rfqs/${rfqId}/distribution`);
+      document.getElementById('overrides').innerHTML = overrides.length
+        ? `<table><thead><tr><th>Supplier org</th><th>Included</th></tr></thead><tbody>
+            ${overrides.map((o) => `<tr><td>${Waradly.escapeHtml(o.supplier_org_id)}</td><td>${o.included ? 'Yes' : 'No'}</td></tr>`).join('')}
+          </tbody></table>`
+        : '<p class="muted">No overrides set.</p>';
+    }
+
+    (async () => {
+      const user = await Waradly.requireRole('admin');
+      if (!user) return;
+      Waradly.mountShell(user, '/admin/rfqs-review.html');
+
+      const { rfq } = await Waradly.api(`/api/rfqs/${rfqId}`);
+      document.getElementById('rfq-info').innerHTML = `
+        <div class="flex justify-between items-center mb-4">
+          <h1 class="page-title" style="margin:0;">${Waradly.escapeHtml(rfq.title)}</h1>
+          <span class="badge">${rfq.status}</span>
+        </div>`;
+      document.getElementById('notes').value = rfq.admin_notes || '';
+      await renderOverrides();
+    })();
+
+    document.getElementById('save-notes-btn').addEventListener('click', async () => {
+      Waradly.clearError('error');
+      try {
+        await Waradly.api(`/api/admin/rfqs/${rfqId}/notes`, { method: 'PATCH', body: { notes: document.getElementById('notes').value } });
+      } catch (err) {
+        Waradly.showError('error', err);
+      }
+    });
+
+    document.getElementById('add-override-btn').addEventListener('click', async () => {
+      Waradly.clearError('error');
+      try {
+        await Waradly.api(`/api/admin/rfqs/${rfqId}/distribution`, {
+          method: 'PATCH',
+          body: { supplier_org_id: document.getElementById('supplier-org-id').value, included: document.getElementById('included').value === 'true' },
+        });
+        await renderOverrides();
+      } catch (err) {
+        Waradly.showError('error', err);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+rules_version = '2';
+
+// Deny-by-default: every collection is written and read exclusively through the Express API
+// (Admin SDK, which bypasses these rules entirely) — see the plan's "why no direct client
+// access" note. These rules exist as a defense-in-depth backstop, not the primary access
+// control layer; the real permission/masking logic lives in functions/.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Append-only collections — enforced here even though the Admin SDK bypasses rules, so
+    // this stays true if a future narrow client-read exception is ever added (see plan).
+    match /audit_logs/{id} {
+      allow update, delete: if false;
+    }
+    match /orders/{orderId}/status_history/{id} {
+      allow update, delete: if false;
+    }
+  }
+}

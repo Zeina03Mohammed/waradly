@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Order — Waradly</title>
+  <link rel="stylesheet" href="/assets/css/theme.css" />
+</head>
+<body>
+  <div class="shell">
+    <div id="sidebar-slot"></div>
+    <main class="content">
+      <div class="page-wide" style="max-width:640px;">
+        <div id="content">Loading…</div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/shell.js"></script>
+  <script src="/assets/js/util.js"></script>
+  <script>
+    const orderId = Waradly.qs('id');
+
+    async function render() {
+      const { order } = await Waradly.api(`/api/orders/${orderId}`);
+      const sampleAction = order.status === 'SAMPLE_REVIEW'
+        ? `<div class="card"><h3 style="margin-top:0;">Sample review</h3>
+            <button class="btn-primary" id="approve-sample">Approve sample</button>
+            <button class="btn-danger" id="reject-sample">Reject sample</button>
+          </div>`
+        : '';
+      const rateAction = ['DELIVERED', 'COMPLETED'].includes(order.status) && order.status !== 'RATED'
+        ? `<a class="btn-primary" href="/buyer/order-rate.html?id=${orderId}">Rate this order</a>` : '';
+      const reorderAction = order.status === 'COMPLETED' ? `<button class="btn-secondary" id="reorder-btn">Reorder</button>` : '';
+
+      document.getElementById('content').innerHTML = `
+        <div class="flex justify-between items-center mb-4">
+          <h1 class="page-title" style="margin:0;">Order</h1>
+          <span class="badge">${order.status}</span>
+        </div>
+        <div class="card">
+          <p><strong>Sample required:</strong> ${order.sample_required ? 'Yes' : 'No'}</p>
+        </div>
+        ${sampleAction}
+        <div class="flex gap-2 mb-4">
+          <a class="btn-secondary" href="/buyer/order-tracking.html?id=${orderId}">View tracking</a>
+          ${rateAction} ${reorderAction}
+        </div>
+        <p id="error" class="error-text" style="display:none;"></p>
+      `;
+
+      const approveBtn = document.getElementById('approve-sample');
+      if (approveBtn) approveBtn.addEventListener('click', () => decideSample(true));
+      const rejectBtn = document.getElementById('reject-sample');
+      if (rejectBtn) rejectBtn.addEventListener('click', () => decideSample(false));
+      const reorderBtn = document.getElementById('reorder-btn');
+      if (reorderBtn) {
+        reorderBtn.addEventListener('click', async () => {
+          try {
+            const data = await Waradly.api(`/api/orders/${orderId}/reorder`, { method: 'POST' });
+            window.location.assign(`/buyer/rfq-form.html?id=${data.rfq_id}`);
+          } catch (err) {
+            Waradly.showError('error', err);
+          }
+        });
+      }
+    }
+
+    async function decideSample(approved) {
+      Waradly.clearError('error');
+      try {
+        await Waradly.api(`/api/orders/${orderId}/samples/decision`, { method: 'PATCH', body: { approved } });
+        render();
+      } catch (err) {
+        Waradly.showError('error', err);
+      }
+    }
+
+    (async () => {
+      const user = await Waradly.requireRole('buyer');
+      if (!user) return;
+      Waradly.mountShell(user, '/buyer/orders.html');
+      await render();
+    })();
+  </script>
+</body>
+</html>

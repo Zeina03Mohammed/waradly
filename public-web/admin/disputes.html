@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Disputes — Waradly</title>
+  <link rel="stylesheet" href="/assets/css/theme.css" />
+</head>
+<body>
+  <div class="shell">
+    <div id="sidebar-slot"></div>
+    <main class="content">
+      <div class="page-wide">
+        <h1 class="page-title">Disputes</h1>
+        <p id="error" class="error-text mb-4" style="display:none;"></p>
+        <div class="card" id="list">Loading…</div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/shell.js"></script>
+  <script src="/assets/js/util.js"></script>
+  <script>
+    async function render() {
+      const { disputes } = await Waradly.api('/api/admin/disputes');
+      document.getElementById('list').innerHTML = disputes.length
+        ? `<table><thead><tr><th>Category</th><th>Description</th><th>Order</th><th>Status</th><th></th></tr></thead><tbody>
+            ${disputes.map((d) => `<tr>
+              <td>${Waradly.escapeHtml(d.category)}</td><td>${Waradly.escapeHtml(d.description)}</td>
+              <td><a href="/admin/order-detail.html?id=${d.order_id}">${d.order_id}</a></td>
+              <td><span class="badge">${d.status}</span></td>
+              <td>${d.status === 'open' ? `
+                <select class="input outcome-select" data-id="${d.id}" style="max-width:170px;display:inline-block;">
+                  <option value="reopen_production">Reopen production</option>
+                  <option value="refund_manual">Refund (manual)</option>
+                  <option value="close_no_action">Close, no action</option>
+                </select>
+                <button class="btn-secondary resolve-btn" data-id="${d.id}">Resolve</button>` : ''}</td>
+            </tr>`).join('')}
+          </tbody></table>`
+        : '<p class="muted">No disputes.</p>';
+
+      document.querySelectorAll('.resolve-btn').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const select = document.querySelector(`.outcome-select[data-id="${btn.dataset.id}"]`);
+          Waradly.clearError('error');
+          try {
+            await Waradly.api(`/api/admin/disputes/${btn.dataset.id}/resolve`, { method: 'PATCH', body: { outcome: select.value } });
+            render();
+          } catch (err) {
+            Waradly.showError('error', err);
+          }
+        });
+      });
+    }
+
+    (async () => {
+      const user = await Waradly.requireRole('admin');
+      if (!user) return;
+      Waradly.mountShell(user, '/admin/disputes.html');
+      await render();
+    })();
+  </script>
+</body>
+</html>

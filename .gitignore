@@ -11,6 +11,7 @@
 # env
 .env
 .env*.local
+functions/.env*
 
 # storage (local file uploads)
 /storage/*
@@ -27,3 +28,4 @@ next-env.d.ts
 
 # vitest
 /coverage
+.emulator-data/

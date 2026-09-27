@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orders — Waradly</title>
+  <link rel="stylesheet" href="/assets/css/theme.css" />
+</head>
+<body>
+  <div class="shell">
+    <div id="sidebar-slot"></div>
+    <main class="content">
+      <div class="page-wide">
+        <h1 class="page-title">Orders</h1>
+        <div class="card" id="list">Loading…</div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/shell.js"></script>
+  <script src="/assets/js/util.js"></script>
+  <script>
+    (async () => {
+      const user = await Waradly.requireRole('buyer');
+      if (!user) return;
+      Waradly.mountShell(user, '/buyer/orders.html');
+
+      const { orders } = await Waradly.api('/api/orders');
+      document.getElementById('list').innerHTML = orders.length
+        ? `<table><thead><tr><th>Order</th><th>Status</th><th>Created</th></tr></thead><tbody>
+            ${orders.map((o) => `<tr onclick="location.href='/buyer/order-detail.html?id=${o.id}'" style="cursor:pointer;">
+              <td>${o.id}</td><td><span class="badge">${o.status}</span></td><td>${Waradly.formatDate(o.created_at)}</td>
+            </tr>`).join('')}
+          </tbody></table>`
+        : '<p class="muted">No orders yet.</p>';
+    })();
+  </script>
+</body>
+</html>

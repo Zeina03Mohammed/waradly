@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Offers — Waradly</title>
+  <link rel="stylesheet" href="/assets/css/theme.css" />
+</head>
+<body>
+  <div class="shell">
+    <div id="sidebar-slot"></div>
+    <main class="content">
+      <div class="page-wide">
+        <h1 class="page-title">Offers</h1>
+        <p id="error" class="error-text mb-4" style="display:none;"></p>
+        <div class="card" id="list">Loading…</div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/shell.js"></script>
+  <script src="/assets/js/util.js"></script>
+  <script>
+    async function render() {
+      const { offers } = await Waradly.api('/api/admin/offers');
+      document.getElementById('list').innerHTML = offers.length
+        ? `<table><thead><tr><th>Supplier</th><th>RFQ</th><th>Unit price</th><th>Status</th><th>Flag note</th><th></th></tr></thead><tbody>
+            ${offers.map((o) => `<tr>
+              <td>${Waradly.escapeHtml(o.supplier_anonymized_id)}</td><td>${Waradly.escapeHtml(o.rfq_id)}</td>
+              <td>$${o.unit_price}</td><td><span class="badge">${o.status}</span></td>
+              <td>${Waradly.escapeHtml(o.admin_flag_note || '—')}</td>
+              <td><button class="btn-secondary flag-btn" data-id="${o.id}">Flag</button></td>
+            </tr>`).join('')}
+          </tbody></table>`
+        : '<p class="muted">No offers yet.</p>';
+
+      document.querySelectorAll('.flag-btn').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const note = prompt('Flag note:');
+          if (note === null) return;
+          Waradly.clearError('error');
+          try {
+            await Waradly.api(`/api/admin/offers/${btn.dataset.id}/flag`, { method: 'PATCH', body: { note } });
+            render();
+          } catch (err) {
+            Waradly.showError('error', err);
+          }
+        });
+      });
+    }
+
+    (async () => {
+      const user = await Waradly.requireRole('admin');
+      if (!user) return;
+      Waradly.mountShell(user, '/admin/offers.html');
+      await render();
+    })();
+  </script>
+</body>
+</html>

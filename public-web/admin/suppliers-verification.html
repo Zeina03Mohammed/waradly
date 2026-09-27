@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Supplier Verification — Waradly</title>
+  <link rel="stylesheet" href="/assets/css/theme.css" />
+</head>
+<body>
+  <div class="shell">
+    <div id="sidebar-slot"></div>
+    <main class="content">
+      <div class="page-wide">
+        <h1 class="page-title">Supplier Verification</h1>
+        <p id="error" class="error-text mb-4" style="display:none;"></p>
+        <div class="card" id="list">Loading…</div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/shell.js"></script>
+  <script src="/assets/js/util.js"></script>
+  <script>
+    async function render() {
+      const { documents } = await Waradly.api('/api/admin/suppliers/verification');
+      document.getElementById('list').innerHTML = documents.length
+        ? `<table><thead><tr><th>Org</th><th>Document type</th><th>File</th><th></th></tr></thead><tbody>
+            ${documents.map((d) => `<tr>
+              <td>${Waradly.escapeHtml(d.org_id)}</td><td>${Waradly.escapeHtml(d.document_type)}</td>
+              <td><a href="#" class="view-file" data-id="${d.file_id}">View</a></td>
+              <td>
+                <button class="btn-secondary approve-btn" data-org="${d.org_id}">Approve</button>
+                <button class="btn-danger reject-btn" data-org="${d.org_id}">Reject</button>
+              </td>
+            </tr>`).join('')}
+          </tbody></table>`
+        : '<p class="muted">No pending verifications.</p>';
+
+      document.querySelectorAll('.view-file').forEach((a) => {
+        a.addEventListener('click', async (e) => {
+          e.preventDefault();
+          try {
+            const { url } = await Waradly.api(`/api/files/${a.dataset.id}/original`);
+            window.open(url, '_blank');
+          } catch (err) {
+            Waradly.showError('error', err);
+          }
+        });
+      });
+      document.querySelectorAll('.approve-btn').forEach((btn) => btn.addEventListener('click', () => decide(btn.dataset.org, 'verified')));
+      document.querySelectorAll('.reject-btn').forEach((btn) => btn.addEventListener('click', () => {
+        const reason = prompt('Rejection reason (optional):') || undefined;
+        decide(btn.dataset.org, 'rejected', reason);
+      }));
+    }
+
+    async function decide(orgId, status, rejection_reason) {
+      Waradly.clearError('error');
+      try {
+        await Waradly.api(`/api/admin/suppliers/${orgId}/verification`, { method: 'PATCH', body: { status, rejection_reason } });
+        render();
+      } catch (err) {
+        Waradly.showError('error', err);
+      }
+    }
+
+    (async () => {
+      const user = await Waradly.requireRole('admin');
+      if (!user) return;
+      Waradly.mountShell(user, '/admin/suppliers-verification.html');
+      await render();
+    })();
+  </script>
+</body>
+</html>

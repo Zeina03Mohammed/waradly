@@ -1,0 +1,12 @@
+rules_version = '2';
+
+// Deny-by-default: file bytes are only ever served through the Express API's signed-URL
+// endpoints (resolveFileAccess logic) — the bucket itself stays private. See plan §"File
+// storage (Firebase Storage)".
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Categories — Waradly</title>
+  <link rel="stylesheet" href="/assets/css/theme.css" />
+</head>
+<body>
+  <div class="shell">
+    <div id="sidebar-slot"></div>
+    <main class="content">
+      <div class="page-wide">
+        <h1 class="page-title">Categories</h1>
+        <p id="error" class="error-text mb-4" style="display:none;"></p>
+
+        <div class="card">
+          <div class="flex gap-2">
+            <input class="input" id="new-name" placeholder="New category name" />
+            <button class="btn-primary" id="add-btn">Add</button>
+          </div>
+        </div>
+
+        <div class="card" id="list">Loading…</div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/shell.js"></script>
+  <script src="/assets/js/util.js"></script>
+  <script>
+    async function render() {
+      const { categories } = await Waradly.api('/api/categories');
+      document.getElementById('list').innerHTML = categories.length
+        ? `<table><thead><tr><th>Name</th><th>Status</th><th></th></tr></thead><tbody>
+            ${categories.map((c) => `<tr>
+              <td>${Waradly.escapeHtml(c.name)}</td><td><span class="badge">${c.status}</span></td>
+              <td>
+                ${c.status === 'coming_soon' ? `<button class="btn-secondary activate-btn" data-id="${c.id}">Activate</button>` : `<button class="btn-secondary deactivate-btn" data-id="${c.id}">Deactivate</button>`}
+                <button class="btn-danger delete-btn" data-id="${c.id}">Delete</button>
+              </td>
+            </tr>`).join('')}
+          </tbody></table>`
+        : '<p class="muted">No categories yet.</p>';
+
+      document.querySelectorAll('.activate-btn').forEach((btn) => btn.addEventListener('click', () => act(btn.dataset.id, 'activate')));
+      document.querySelectorAll('.deactivate-btn').forEach((btn) => btn.addEventListener('click', () => act(btn.dataset.id, 'deactivate')));
+      document.querySelectorAll('.delete-btn').forEach((btn) => btn.addEventListener('click', () => del(btn.dataset.id)));
+    }
+
+    async function act(id, action) {
+      Waradly.clearError('error');
+      try {
+        await Waradly.api(`/api/admin/categories/${id}/${action}`, { method: 'PATCH' });
+        render();
+      } catch (err) {
+        Waradly.showError('error', err);
+      }
+    }
+
+    async function del(id) {
+      if (!confirm('Delete this category?')) return;
+      Waradly.clearError('error');
+      try {
+        await Waradly.api(`/api/admin/categories/${id}`, { method: 'DELETE' });
+        render();
+      } catch (err) {
+        Waradly.showError('error', err);
+      }
+    }
+
+    document.getElementById('add-btn').addEventListener('click', async () => {
+      const name = document.getElementById('new-name').value.trim();
+      if (!name) return;
+      Waradly.clearError('error');
+      try {
+        await Waradly.api('/api/admin/categories', { method: 'POST', body: { name } });
+        document.getElementById('new-name').value = '';
+        render();
+      } catch (err) {
+        Waradly.showError('error', err);
+      }
+    });
+
+    (async () => {
+      const user = await Waradly.requireRole('admin');
+      if (!user) return;
+      Waradly.mountShell(user, '/admin/categories.html');
+      await render();
+    })();
+  </script>
+</body>
+</html>

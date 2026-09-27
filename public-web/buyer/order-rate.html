@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Rate order — Waradly</title>
+  <link rel="stylesheet" href="/assets/css/theme.css" />
+</head>
+<body>
+  <div class="shell">
+    <div id="sidebar-slot"></div>
+    <main class="content">
+      <div class="page-wide" style="max-width:480px;">
+        <h1 class="page-title">Rate this order</h1>
+        <p id="error" class="error-text mb-4" style="display:none;"></p>
+        <form id="form" class="card">
+          <label class="field"><span>Score (1–5)</span><input class="input" type="number" id="score" min="1" max="5" required /></label>
+          <label class="field"><span>Comment (optional)</span><textarea class="input" id="comment" rows="3"></textarea></label>
+          <button class="btn-primary w-full" type="submit" id="submit-btn">Submit rating</button>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/shell.js"></script>
+  <script src="/assets/js/util.js"></script>
+  <script>
+    const orderId = Waradly.qs('id');
+    (async () => {
+      const user = await Waradly.requireRole('buyer');
+      if (!user) return;
+      Waradly.mountShell(user, '/buyer/orders.html');
+    })();
+
+    document.getElementById('form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      Waradly.clearError('error');
+      const btn = document.getElementById('submit-btn');
+      btn.disabled = true;
+      try {
+        await Waradly.api(`/api/orders/${orderId}/rate`, {
+          method: 'POST',
+          body: { score: Number(document.getElementById('score').value), comment: document.getElementById('comment').value || undefined },
+        });
+        window.location.assign(`/buyer/order-detail.html?id=${orderId}`);
+      } catch (err) {
+        Waradly.showError('error', err);
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

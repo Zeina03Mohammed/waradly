@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Verification — Waradly</title>
+  <link rel="stylesheet" href="/assets/css/theme.css" />
+</head>
+<body>
+  <div class="shell">
+    <div id="sidebar-slot"></div>
+    <main class="content">
+      <div class="page-wide" style="max-width:560px;">
+        <h1 class="page-title">Verification</h1>
+        <p id="status-line" class="mb-4"></p>
+        <p id="error" class="error-text mb-4" style="display:none;"></p>
+        <p id="success" class="success-text mb-4" style="display:none;"></p>
+
+        <div class="card">
+          <label class="field">
+            <span>Document type</span>
+            <select class="input" id="document_type">
+              <option value="commercial_registration">Commercial registration</option>
+              <option value="certificate">Certificate</option>
+              <option value="other">Other</option>
+            </select>
+          </label>
+          <input type="file" id="file-input" accept="image/png,image/jpeg,application/pdf" style="display:none;" />
+          <button class="btn-primary" id="upload-btn" type="button">Upload document</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/shell.js"></script>
+  <script src="/assets/js/util.js"></script>
+  <script>
+    (async () => {
+      const user = await Waradly.requireRole('supplier');
+      if (!user) return;
+      Waradly.mountShell(user, '/supplier/verification.html');
+
+      const { supplier } = await Waradly.api('/api/suppliers/me');
+      document.getElementById('status-line').innerHTML = `Status: <span class="badge">${supplier.verification_status}</span>`;
+    })();
+
+    document.getElementById('upload-btn').addEventListener('click', () => document.getElementById('file-input').click());
+    document.getElementById('file-input').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      Waradly.clearError('error');
+      Waradly.clearError('success');
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        const { file: uploaded } = await Waradly.api('/api/files', { method: 'POST', body: formData, isFormData: true });
+        await Waradly.api('/api/suppliers/verification-documents', {
+          method: 'POST',
+          body: { file_id: uploaded.id, document_type: document.getElementById('document_type').value },
+        });
+        document.getElementById('success').textContent = 'Document submitted for review.';
+        document.getElementById('success').style.display = 'block';
+      } catch (err) {
+        Waradly.showError('error', err);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My RFQs — Waradly</title>
+  <link rel="stylesheet" href="/assets/css/theme.css" />
+</head>
+<body>
+  <div class="shell">
+    <div id="sidebar-slot"></div>
+    <main class="content">
+      <div class="page-wide">
+        <div class="flex justify-between items-center mb-4">
+          <h1 class="page-title" style="margin:0;">My RFQs</h1>
+          <a class="btn-primary" href="/buyer/rfq-form.html">Create RFQ</a>
+        </div>
+        <div class="card" id="list">Loading…</div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/shell.js"></script>
+  <script src="/assets/js/util.js"></script>
+  <script>
+    (async () => {
+      const user = await Waradly.requireRole('buyer');
+      if (!user) return;
+      Waradly.mountShell(user, '/buyer/rfqs.html');
+
+      const { rfqs } = await Waradly.api('/api/rfqs');
+      document.getElementById('list').innerHTML = rfqs.length
+        ? `<table><thead><tr><th>Title</th><th>Category</th><th>Status</th><th>Created</th></tr></thead><tbody>
+            ${rfqs.map((r) => `<tr onclick="location.href='/buyer/rfq-detail.html?id=${r.id}'" style="cursor:pointer;">
+              <td>${Waradly.escapeHtml(r.title)}</td><td>${Waradly.escapeHtml(r.category_name || '—')}</td>
+              <td><span class="badge">${r.status}</span></td><td>${Waradly.formatDate(r.created_at)}</td>
+            </tr>`).join('')}
+          </tbody></table>`
+        : '<p class="muted">No RFQs yet.</p>';
+    })();
+  </script>
+</body>
+</html>

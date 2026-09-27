@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Available RFQs — Waradly</title>
+  <link rel="stylesheet" href="/assets/css/theme.css" />
+</head>
+<body>
+  <div class="shell">
+    <div id="sidebar-slot"></div>
+    <main class="content">
+      <div class="page-wide">
+        <h1 class="page-title">Available RFQs</h1>
+        <div class="card" id="list">Loading…</div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/shell.js"></script>
+  <script src="/assets/js/util.js"></script>
+  <script>
+    (async () => {
+      const user = await Waradly.requireRole('supplier');
+      if (!user) return;
+      Waradly.mountShell(user, '/supplier/rfqs.html');
+
+      const { rfqs } = await Waradly.api('/api/rfqs');
+      document.getElementById('list').innerHTML = rfqs.length
+        ? `<table><thead><tr><th>Title</th><th>Category</th><th>Region</th><th>Offer deadline</th><th>Status</th></tr></thead><tbody>
+            ${rfqs.map((r) => `<tr onclick="location.href='/supplier/rfq-detail.html?id=${r.id}'" style="cursor:pointer;">
+              <td>${Waradly.escapeHtml(r.title)}</td><td>${Waradly.escapeHtml(r.category_name || '—')}</td>
+              <td>${Waradly.escapeHtml(r.buyer_general_region || '—')}</td><td>${Waradly.formatDate(r.offer_deadline_at)}</td>
+              <td><span class="badge">${r.status}</span></td>
+            </tr>`).join('')}
+          </tbody></table>`
+        : '<p class="muted">No RFQs available for your approved categories right now.</p>';
+    })();
+  </script>
+</body>
+</html>

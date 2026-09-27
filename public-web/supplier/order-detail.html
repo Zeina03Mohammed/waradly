@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Order — Waradly</title>
+  <link rel="stylesheet" href="/assets/css/theme.css" />
+</head>
+<body>
+  <div class="shell">
+    <div id="sidebar-slot"></div>
+    <main class="content">
+      <div class="page-wide" style="max-width:640px;">
+        <div id="content">Loading…</div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/shell.js"></script>
+  <script src="/assets/js/util.js"></script>
+  <script>
+    const orderId = Waradly.qs('id');
+
+    async function render() {
+      const { order } = await Waradly.api(`/api/orders/${orderId}`);
+      let actions = '';
+      if (order.status === 'PAYMENT_CONFIRMED') actions = `<button class="btn-primary" id="start-btn">Mark production started</button>`;
+      if (order.status === 'PRODUCTION') {
+        actions = order.sample_required
+          ? `<button class="btn-primary" id="sample-btn">Submit sample for review</button>`
+          : `<button class="btn-primary" id="complete-btn">Mark production completed</button>`;
+      }
+
+      document.getElementById('content').innerHTML = `
+        <div class="flex justify-between items-center mb-4">
+          <h1 class="page-title" style="margin:0;">Order</h1>
+          <span class="badge">${order.status}</span>
+        </div>
+        <div class="card"><p><strong>Sample required:</strong> ${order.sample_required ? 'Yes' : 'No'}</p></div>
+        <div class="flex gap-2 mb-4">${actions}</div>
+        <p id="error" class="error-text" style="display:none;"></p>
+      `;
+
+      const startBtn = document.getElementById('start-btn');
+      if (startBtn) startBtn.addEventListener('click', () => act('mark-production-started'));
+      const completeBtn = document.getElementById('complete-btn');
+      if (completeBtn) completeBtn.addEventListener('click', () => act('mark-production-completed'));
+      const sampleBtn = document.getElementById('sample-btn');
+      if (sampleBtn) sampleBtn.addEventListener('click', () => act('samples', 'POST'));
+    }
+
+    async function act(action, method = 'PATCH') {
+      Waradly.clearError('error');
+      try {
+        await Waradly.api(`/api/orders/${orderId}/${action}`, { method, body: method === 'POST' ? {} : undefined });
+        render();
+      } catch (err) {
+        Waradly.showError('error', err);
+      }
+    }
+
+    (async () => {
+      const user = await Waradly.requireRole('supplier');
+      if (!user) return;
+      Waradly.mountShell(user, '/supplier/orders.html');
+      await render();
+    })();
+  </script>
+</body>
+</html>

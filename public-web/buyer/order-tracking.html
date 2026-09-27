@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Order tracking — Waradly</title>
+  <link rel="stylesheet" href="/assets/css/theme.css" />
+</head>
+<body>
+  <div class="shell">
+    <div id="sidebar-slot"></div>
+    <main class="content">
+      <div class="page-wide" style="max-width:640px;">
+        <h1 class="page-title">Order tracking</h1>
+        <div id="timeline">Loading…</div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/shell.js"></script>
+  <script src="/assets/js/util.js"></script>
+  <script>
+    (async () => {
+      const user = await Waradly.requireRole('buyer');
+      if (!user) return;
+      Waradly.mountShell(user, '/buyer/orders.html');
+
+      const orderId = Waradly.qs('id');
+      const { status_history } = await Waradly.api(`/api/orders/${orderId}`);
+      document.getElementById('timeline').innerHTML = status_history.length
+        ? status_history.map((h) => `<div class="card">
+            <strong>${h.from_status ? h.from_status + ' → ' : ''}${h.to_status}</strong>
+            <p class="muted">${Waradly.formatDate(h.changed_at)}${h.note ? ' — ' + Waradly.escapeHtml(h.note) : ''}</p>
+          </div>`).join('')
+        : '<p class="muted">No history yet.</p>';
+    })();
+  </script>
+</body>
+</html>

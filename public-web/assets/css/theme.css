@@ -1,0 +1,228 @@
+/* Waradly theme — carried over from the previous Next.js/Tailwind build: navy + gold, warm
+   off-white background, Outfit font. Plain CSS, no build step. */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap');
+
+:root {
+  --navy-50: #f1f4f8;
+  --navy-100: #dde4ed;
+  --navy-400: #3d5a80;
+  --navy-600: #1c2f47;
+  --navy-700: #152337;
+  --navy-900: #0e1826;
+  --navy-950: #0a1220;
+  --gold-400: #d9ab5f;
+  --gold-500: #c8964f;
+  --gold-600: #ad7d3c;
+  --bg: #f6f5f2;
+  --shadow-soft: 0 1px 2px 0 rgba(14, 24, 38, 0.04), 0 8px 24px -8px rgba(14, 24, 38, 0.1);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  font-family: 'Outfit', ui-sans-serif, system-ui, sans-serif;
+  color: var(--navy-900);
+}
+
+a { color: inherit; }
+
+.page { max-width: 480px; margin: 0 auto; padding: 2rem 1rem; }
+.page-wide { max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+.page-title { font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem; }
+
+.card {
+  background: #fff;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  box-shadow: var(--shadow-soft);
+  margin-bottom: 1rem;
+}
+
+label.field { display: block; font-size: 0.875rem; margin-bottom: 1rem; }
+label.field span { display: block; margin-bottom: 0.25rem; font-weight: 500; color: var(--navy-400); }
+
+.input, select.input, textarea.input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--navy-100);
+  border-radius: 0.5rem;
+  font: inherit;
+  background: #fff;
+  color: var(--navy-900);
+}
+.input:focus { outline: 2px solid var(--gold-400); outline-offset: 1px; }
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--navy-900);
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+.btn-primary:hover { background: var(--navy-700); }
+.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  color: var(--navy-900);
+  border: 1px solid var(--navy-100);
+  border-radius: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  font: inherit;
+  cursor: pointer;
+}
+
+.btn-danger { background: #b3261e; color: #fff; border: none; border-radius: 0.5rem; padding: 0.5rem 1rem; font: inherit; cursor: pointer; }
+
+.w-full { width: 100%; }
+
+.error-text { color: #b3261e; font-size: 0.875rem; }
+.success-text { color: #1e7a3e; font-size: 0.875rem; }
+.muted { color: var(--navy-400); font-size: 0.875rem; }
+
+.badge {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  background: var(--navy-50);
+  color: var(--navy-700);
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--navy-100); font-size: 0.9rem; }
+th { color: var(--navy-400); font-weight: 500; }
+tr:hover td { background: var(--navy-50); }
+
+/* Shell layout: fixed navy sidebar + content area, mirroring the previous Shell.tsx. */
+.shell { display: flex; min-height: 100vh; }
+.sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  background: var(--navy-950);
+  color: #fff;
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+}
+.sidebar .logo { font-weight: 700; font-size: 1.1rem; margin-bottom: 1.25rem; color: #fff; text-decoration: none; }
+
+.sidebar-profile { display: flex; align-items: center; gap: 0.65rem; padding: 0 0.25rem 1rem; margin-bottom: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
+.avatar-circle {
+  width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+  background: var(--gold-500); color: var(--navy-950);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.8rem; font-weight: 600;
+}
+.sidebar-profile-text { min-width: 0; }
+.sidebar-profile-text .name { font-size: 0.875rem; font-weight: 500; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sidebar-profile-text .email { font-size: 0.75rem; color: var(--navy-100); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.sidebar nav { display: flex; flex-direction: column; gap: 0.1rem; flex: 1; overflow-y: auto; }
+.nav-group-label {
+  font-size: 0.7rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;
+  color: var(--navy-400); padding: 0.9rem 0.75rem 0.3rem;
+}
+.sidebar nav > .nav-group-label:first-child { padding-top: 0.25rem; }
+.sidebar nav a {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: 0.5rem;
+  color: var(--navy-100);
+  text-decoration: none;
+  font-size: 0.875rem;
+  border-left: 3px solid transparent;
+}
+.sidebar nav a svg { flex-shrink: 0; opacity: 0.8; }
+.sidebar nav a:hover { background: rgba(255,255,255,0.06); }
+.sidebar nav a.active { background: rgba(255,255,255,0.08); border-left-color: var(--gold-500); color: #fff; }
+.sidebar nav a.active svg { opacity: 1; color: var(--gold-400); }
+
+.logout-link {
+  display: flex; align-items: center; gap: 0.65rem;
+  margin-top: 0.75rem; padding: 0.75rem; border-top: 1px solid rgba(255,255,255,0.1);
+  color: var(--navy-100); text-decoration: none; font-size: 0.875rem; cursor: pointer;
+}
+.logout-link:hover { color: #fff; }
+
+.content { flex: 1; min-width: 0; }
+
+/* Mobile nav — collapses the sidebar into a hamburger-triggered slide-out drawer. A bottom tab
+   bar (the Flutter app's approach) doesn't work here: admin has 11 nav items and supplier has 7,
+   too many for a row of tabs, so a drawer is the pattern that scales to every role's list. */
+.mobile-topbar { display: none; }
+.sidebar-backdrop { display: none; }
+
+@media (max-width: 768px) {
+  .mobile-topbar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: var(--navy-950);
+    color: #fff;
+    padding: 0.75rem 1rem;
+  }
+  .mobile-topbar .logo { color: #fff; text-decoration: none; font-weight: 700; }
+  .mobile-topbar .hamburger {
+    background: none; border: none; color: #fff; cursor: pointer; padding: 0.25rem;
+    display: flex; align-items: center;
+  }
+
+  .shell { display: block; }
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    z-index: 60;
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
+    box-shadow: var(--shadow-soft);
+  }
+  .sidebar.open { transform: translateX(0); }
+
+  .sidebar-backdrop.open {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 50;
+  }
+}
+
+.modal-backdrop {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+  display: flex; align-items: center; justify-content: center; padding: 1rem; z-index: 50;
+}
+.modal { background: #fff; border-radius: 0.75rem; padding: 1.5rem; max-width: 400px; width: 100%; }
+
+.flex { display: flex; }
+.flex-col { display: flex; flex-direction: column; }
+.gap-2 { gap: 0.5rem; }
+.gap-4 { gap: 1rem; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-4 { margin-bottom: 1rem; }
+.mt-4 { margin-top: 1rem; }

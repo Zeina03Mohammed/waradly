@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Message Flags — Waradly</title>
+  <link rel="stylesheet" href="/assets/css/theme.css" />
+</head>
+<body>
+  <div class="shell">
+    <div id="sidebar-slot"></div>
+    <main class="content">
+      <div class="page-wide">
+        <h1 class="page-title">Message Flags</h1>
+        <p class="muted mb-4">Manual escalation ladder: Warning → Strike → Suspension → Ban.</p>
+        <p id="error" class="error-text mb-4" style="display:none;"></p>
+        <div class="card" id="list">Loading…</div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/shell.js"></script>
+  <script src="/assets/js/util.js"></script>
+  <script>
+    async function render() {
+      const { flags } = await Waradly.api('/api/admin/messages/flags');
+      document.getElementById('list').innerHTML = flags.length
+        ? `<table><thead><tr><th>Pattern</th><th>Matched text</th><th>Conversation</th><th></th></tr></thead><tbody>
+            ${flags.map((f) => `<tr>
+              <td>${Waradly.escapeHtml(f.detected_pattern_type)}</td><td>${Waradly.escapeHtml(f.matched_text)}</td>
+              <td><a href="/messages/conversation.html?id=${f.conversation_id}">View</a></td>
+              <td>
+                <select class="input action-select" data-cid="${f.conversation_id}" data-mid="${f.message_id}" data-fid="${f.id}" style="max-width:140px;display:inline-block;">
+                  <option value="dismiss">Dismiss</option>
+                  <option value="warning">Warning</option>
+                  <option value="strike">Strike</option>
+                  <option value="suspension">Suspension</option>
+                  <option value="ban">Ban</option>
+                </select>
+                <button class="btn-secondary apply-btn" data-cid="${f.conversation_id}" data-mid="${f.message_id}" data-fid="${f.id}">Apply</button>
+              </td>
+            </tr>`).join('')}
+          </tbody></table>`
+        : '<p class="muted">No pending flags.</p>';
+
+      document.querySelectorAll('.apply-btn').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const select = document.querySelector(`.action-select[data-fid="${btn.dataset.fid}"]`);
+          Waradly.clearError('error');
+          try {
+            await Waradly.api(`/api/admin/messages/flags/${btn.dataset.cid}/${btn.dataset.mid}/${btn.dataset.fid}`, {
+              method: 'PATCH',
+              body: { action: select.value },
+            });
+            render();
+          } catch (err) {
+            Waradly.showError('error', err);
+          }
+        });
+      });
+    }
+
+    (async () => {
+      const user = await Waradly.requireRole('admin');
+      if (!user) return;
+      Waradly.mountShell(user, '/admin/messages-flags.html');
+      await render();
+    })();
+  </script>
+</body>
+</html>

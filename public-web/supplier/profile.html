@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Profile — Waradly</title>
+  <link rel="stylesheet" href="/assets/css/theme.css" />
+</head>
+<body>
+  <div class="shell">
+    <div id="sidebar-slot"></div>
+    <main class="content">
+      <div class="page-wide" style="max-width:480px;">
+        <h1 class="page-title">Profile</h1>
+
+        <div class="card">
+          <div class="flex items-center gap-4 mb-4">
+            <img id="avatar-img" src="" alt="" style="width:64px;height:64px;border-radius:50%;object-fit:cover;display:none;" />
+            <div id="avatar-initials" style="width:64px;height:64px;border-radius:50%;background:var(--navy-50);display:flex;align-items:center;justify-content:center;font-weight:600;"></div>
+            <div>
+              <input type="file" id="photo-input" accept="image/png,image/jpeg" style="display:none;" />
+              <button class="btn-secondary" type="button" id="upload-photo-btn">Upload new photo</button>
+            </div>
+          </div>
+          <label class="field"><span>Username</span><input class="input" id="username" /></label>
+          <button class="btn-primary" id="save-username-btn" type="button">Save username</button>
+        </div>
+
+        <h2 style="font-size:1.1rem; font-weight:600;">Company Profile</h2>
+        <p id="error" class="error-text mb-4" style="display:none;"></p>
+        <p id="success" class="success-text mb-4" style="display:none;"></p>
+        <form id="org-form" class="card">
+          <label class="field"><span>Legal name</span><input class="input" id="legal_name" /></label>
+          <label class="field"><span>Country</span><input class="input" id="country" /></label>
+          <label class="field"><span>General region</span><input class="input" id="general_region" /></label>
+          <label class="field"><span>Tax ID (optional)</span><input class="input" id="tax_id" /></label>
+          <label class="field"><span>Exact address (internal use only)</span><input class="input" id="exact_address" /></label>
+          <button class="btn-primary" type="submit">Save changes</button>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/shell.js"></script>
+  <script src="/assets/js/util.js"></script>
+  <script>
+    let currentUser = null;
+
+    async function renderAvatar() {
+      if (currentUser.has_avatar) {
+        const img = document.getElementById('avatar-img');
+        const ok = await Waradly.loadAvatarInto(img, currentUser.id);
+        if (ok) {
+          img.style.display = 'block';
+          document.getElementById('avatar-initials').style.display = 'none';
+          return;
+        }
+      }
+      const label = currentUser.username || currentUser.email;
+      document.getElementById('avatar-initials').textContent = label.slice(0, 2).toUpperCase();
+    }
+
+    (async () => {
+      currentUser = await Waradly.requireRole('supplier');
+      if (!currentUser) return;
+      Waradly.mountShell(currentUser, '/supplier/profile.html');
+      document.getElementById('username').value = currentUser.username || '';
+      renderAvatar();
+
+      const { organization } = await Waradly.api('/api/organizations/me');
+      document.getElementById('legal_name').value = organization.legal_name || '';
+      document.getElementById('country').value = organization.country || '';
+      document.getElementById('general_region').value = organization.general_region || '';
+      document.getElementById('tax_id').value = organization.tax_id || '';
+      document.getElementById('exact_address').value = organization.exact_address || '';
+    })();
+
+    document.getElementById('upload-photo-btn').addEventListener('click', () => document.getElementById('photo-input').click());
+    document.getElementById('photo-input').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        await Waradly.api('/api/users/me/avatar', { method: 'POST', body: formData, isFormData: true });
+        currentUser.has_avatar = true;
+        renderAvatar();
+      } catch (err) {
+        Waradly.showError('error', err);
+      }
+    });
+
+    document.getElementById('save-username-btn').addEventListener('click', async () => {
+      Waradly.clearError('error');
+      try {
+        await Waradly.api('/api/users/me', { method: 'PATCH', body: { username: document.getElementById('username').value } });
+      } catch (err) {
+        Waradly.showError('error', err);
+      }
+    });
+
+    document.getElementById('org-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      Waradly.clearError('error');
+      Waradly.clearError('success');
+      try {
+        await Waradly.api('/api/organizations/me', {
+          method: 'PATCH',
+          body: {
+            legal_name: document.getElementById('legal_name').value,
+            country: document.getElementById('country').value,
+            general_region: document.getElementById('general_region').value,
+            tax_id: document.getElementById('tax_id').value || null,
+            exact_address: document.getElementById('exact_address').value || null,
+          },
+        });
+        document.getElementById('success').textContent = 'Profile updated.';
+        document.getElementById('success').style.display = 'block';
+      } catch (err) {
+        Waradly.showError('error', err);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Capabilities — Waradly</title>
+  <link rel="stylesheet" href="/assets/css/theme.css" />
+</head>
+<body>
+  <div class="shell">
+    <div id="sidebar-slot"></div>
+    <main class="content">
+      <div class="page-wide">
+        <h1 class="page-title">Capabilities</h1>
+        <p class="muted mb-4">Apply for the product categories you can supply. An admin reviews each application.</p>
+        <p id="error" class="error-text mb-4" style="display:none;"></p>
+        <div class="card" id="list">Loading…</div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/shell.js"></script>
+  <script src="/assets/js/util.js"></script>
+  <script>
+    async function render() {
+      const [{ categories: allCategories }, { categories: applications }] = await Promise.all([
+        Waradly.api('/api/categories'),
+        Waradly.api('/api/suppliers/categories'),
+      ]);
+      const appliedIds = new Map(applications.map((a) => [a.category_id, a]));
+
+      document.getElementById('list').innerHTML = `<table><thead><tr><th>Category</th><th>Status</th><th></th></tr></thead><tbody>
+        ${allCategories.map((c) => {
+          const app = appliedIds.get(c.id);
+          const status = app ? (app.approved ? 'approved' : 'pending') : null;
+          return `<tr>
+            <td>${Waradly.escapeHtml(c.name)}</td>
+            <td>${status ? `<span class="badge">${status}</span>` : '—'}</td>
+            <td>${!app ? `<button class="btn-secondary apply-btn" data-id="${c.id}">Apply</button>` : ''}</td>
+          </tr>`;
+        }).join('')}
+      </tbody></table>`;
+
+      document.querySelectorAll('.apply-btn').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          Waradly.clearError('error');
+          try {
+            await Waradly.api('/api/suppliers/categories', { method: 'POST', body: { category_id: btn.dataset.id } });
+            render();
+          } catch (err) {
+            Waradly.showError('error', err);
+          }
+        });
+      });
+    }
+
+    (async () => {
+      const user = await Waradly.requireRole('supplier');
+      if (!user) return;
+      Waradly.mountShell(user, '/supplier/categories.html');
+      await render();
+    })();
+  </script>
+</body>
+</html>

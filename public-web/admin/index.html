@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Dashboard — Waradly</title>
+  <link rel="stylesheet" href="/assets/css/theme.css" />
+</head>
+<body>
+  <div class="shell">
+    <div id="sidebar-slot"></div>
+    <main class="content">
+      <div class="page-wide">
+        <h1 class="page-title">Dashboard</h1>
+        <div class="flex gap-4 mb-4" id="stats" style="flex-wrap:wrap;">Loading…</div>
+        <h2 style="font-size:1.1rem; font-weight:600;">Orders by status</h2>
+        <div class="card" id="orders-by-status"></div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/shell.js"></script>
+  <script src="/assets/js/util.js"></script>
+  <script>
+    (async () => {
+      const user = await Waradly.requireRole('admin');
+      if (!user) return;
+      Waradly.mountShell(user, '/admin/index.html');
+
+      const stats = await Waradly.api('/api/admin/dashboard');
+      const card = (label, value, href) => `<a class="card" href="${href}" style="flex:1;min-width:160px;text-decoration:none;color:inherit;">
+        <div class="muted">${label}</div><div style="font-size:1.5rem;font-weight:600;">${value}</div></a>`;
+      document.getElementById('stats').innerHTML =
+        card('Pending supplier approvals', stats.pending_supplier_approvals, '/admin/suppliers-verification.html') +
+        card('RFQs awaiting review', stats.rfqs_awaiting_review, '/admin/rfqs-review.html') +
+        card('Flagged messages', stats.flagged_messages, '/admin/messages-flags.html') +
+        card('Open disputes', stats.open_disputes, '/admin/disputes.html');
+
+      const entries = Object.entries(stats.orders_by_status);
+      document.getElementById('orders-by-status').innerHTML = entries.length
+        ? `<table><thead><tr><th>Status</th><th>Count</th></tr></thead><tbody>
+            ${entries.map(([status, count]) => `<tr><td><span class="badge">${status}</span></td><td>${count}</td></tr>`).join('')}
+          </tbody></table>`
+        : '<p class="muted">No orders yet.</p>';
+    })();
+  </script>
+</body>
+</html>

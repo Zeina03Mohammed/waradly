@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Users — Waradly</title>
+  <link rel="stylesheet" href="/assets/css/theme.css" />
+</head>
+<body>
+  <div class="shell">
+    <div id="sidebar-slot"></div>
+    <main class="content">
+      <div class="page-wide">
+        <h1 class="page-title">Users</h1>
+        <div class="flex gap-2 mb-4">
+          <input class="input" id="search" placeholder="Search email or username" style="max-width:280px;" />
+          <select class="input" id="role-filter" style="max-width:160px;"><option value="">All roles</option><option value="buyer">Buyer</option><option value="supplier">Supplier</option><option value="admin">Admin</option></select>
+          <button class="btn-secondary" id="filter-btn">Filter</button>
+        </div>
+        <p id="error" class="error-text mb-4" style="display:none;"></p>
+        <div class="card" id="list">Loading…</div>
+      </div>
+    </main>
+  </div>
+
+  <div id="reason-modal" class="modal-backdrop" style="display:none;">
+    <div class="modal">
+      <h2 id="reason-title"></h2>
+      <label class="field"><span>Reason</span><textarea class="input" id="reason-input" rows="3"></textarea></label>
+      <div class="flex gap-2">
+        <button class="btn-primary" id="reason-confirm">Confirm</button>
+        <button class="btn-secondary" id="reason-cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/shell.js"></script>
+  <script src="/assets/js/util.js"></script>
+  <script>
+    let pendingAction = null;
+
+    async function render() {
+      const params = new URLSearchParams();
+      if (document.getElementById('search').value) params.set('search', document.getElementById('search').value);
+      if (document.getElementById('role-filter').value) params.set('role', document.getElementById('role-filter').value);
+
+      const { users } = await Waradly.api(`/api/admin/users?${params.toString()}`);
+      document.getElementById('list').innerHTML = users.length
+        ? `<table><thead><tr><th>Email</th><th>Org</th><th>Role</th><th>Status</th><th></th></tr></thead><tbody>
+            ${users.map((u) => `<tr>
+              <td><a href="/admin/user-detail.html?id=${u.id}">${Waradly.escapeHtml(u.email)}</a></td>
+              <td>${Waradly.escapeHtml(u.organization_name || '—')}</td>
+              <td>${u.role}</td>
+              <td><span class="badge">${u.status}</span></td>
+              <td>
+                ${u.status !== 'suspended' ? `<button class="btn-secondary act-btn" data-id="${u.id}" data-action="suspend">Suspend</button>` : ''}
+                ${u.status !== 'banned' ? `<button class="btn-danger act-btn" data-id="${u.id}" data-action="ban">Ban</button>` : ''}
+                ${u.status !== 'active' ? `<button class="btn-secondary act-btn" data-id="${u.id}" data-action="reactivate">Reactivate</button>` : ''}
+              </td>
+            </tr>`).join('')}
+          </tbody></table>`
+        : '<p class="muted">No users found.</p>';
+
+      document.querySelectorAll('.act-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const { id, action } = btn.dataset;
+          if (action === 'reactivate') return doAction(id, action, null);
+          pendingAction = { id, action };
+          document.getElementById('reason-title').textContent = action === 'suspend' ? 'Suspend user' : 'Ban user';
+          document.getElementById('reason-input').value = '';
+          document.getElementById('reason-modal').style.display = 'flex';
+        });
+      });
+    }
+
+    async function doAction(id, action, reason) {
+      Waradly.clearError('error');
+      try {
+        await Waradly.api(`/api/admin/users/${id}/${action}`, { method: 'PATCH', body: reason !== null ? { reason } : undefined });
+        render();
+      } catch (err) {
+        Waradly.showError('error', err);
+      }
+    }
+
+    document.getElementById('reason-confirm').addEventListener('click', () => {
+      document.getElementById('reason-modal').style.display = 'none';
+      doAction(pendingAction.id, pendingAction.action, document.getElementById('reason-input').value);
+    });
+    document.getElementById('reason-cancel').addEventListener('click', () => (document.getElementById('reason-modal').style.display = 'none'));
+    document.getElementById('filter-btn').addEventListener('click', render);
+
+    (async () => {
+      const user = await Waradly.requireRole('admin');
+      if (!user) return;
+      Waradly.mountShell(user, '/admin/users.html');
+      await render();
+    })();
+  </script>
+</body>
+</html>

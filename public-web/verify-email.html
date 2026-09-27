@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Verify email — Waradly</title>
+  <link rel="stylesheet" href="/assets/css/theme.css" />
+</head>
+<body>
+  <main class="page">
+    <h1 class="page-title">Verify your email</h1>
+    <p id="status" class="muted">Verifying…</p>
+    <a id="login-link" href="/login.html" class="btn-primary" style="display:none;">Go to login</a>
+  </main>
+
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/util.js"></script>
+  <script>
+    (async () => {
+      const token = Waradly.qs('token');
+      const statusEl = document.getElementById('status');
+      if (!token) {
+        statusEl.textContent = 'This link is invalid or has expired.';
+        statusEl.className = 'error-text';
+        return;
+      }
+      try {
+        await Waradly.api('/api/auth/verify-email', { method: 'POST', body: { token } });
+        statusEl.textContent = 'Your email has been verified.';
+        statusEl.className = 'success-text';
+        document.getElementById('login-link').style.display = 'inline-flex';
+      } catch (err) {
+        statusEl.textContent = err instanceof Waradly.ApiError ? err.message : 'This link is invalid or has expired.';
+        statusEl.className = 'error-text';
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Log in — Waradly</title>
+  <link rel="stylesheet" href="/assets/css/theme.css" />
+</head>
+<body>
+  <main class="page">
+    <h1 class="page-title">Log in</h1>
+    <p id="error" class="error-text mb-4" style="display:none;"></p>
+
+    <form id="login-form">
+      <label class="field">
+        <span>Email</span>
+        <input class="input" type="email" id="email" required />
+      </label>
+      <label class="field">
+        <span>Password</span>
+        <input class="input" type="password" id="password" required />
+      </label>
+      <button class="btn-primary w-full" type="submit" id="submit-btn">Log in</button>
+    </form>
+
+    <p class="muted mt-4">No account yet? <a href="/register.html">Register</a></p>
+    <p class="muted"><a href="/forgot-password.html">Forgot password?</a></p>
+  </main>
+
+  <div id="suspension-modal" class="modal-backdrop" style="display:none;">
+    <div class="modal">
+      <h2 id="suspension-title" style="text-transform:capitalize;"></h2>
+      <p id="suspension-reason" class="muted mb-4"></p>
+      <p class="muted mb-4">Contact support if you believe this is a mistake.</p>
+      <button class="btn-primary" id="suspension-close">Close</button>
+    </div>
+  </div>
+
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/util.js"></script>
+  <script>
+    (async () => {
+      const user = await Waradly.getCurrentUser();
+      if (user) window.location.replace(Waradly.DASHBOARD_BY_ROLE[user.role] || '/');
+    })();
+
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      Waradly.clearError('error');
+      const btn = document.getElementById('submit-btn');
+      btn.disabled = true;
+      btn.textContent = 'Logging in…';
+      try {
+        const data = await Waradly.api('/api/auth/login', {
+          method: 'POST',
+          body: { email: document.getElementById('email').value, password: document.getElementById('password').value },
+        });
+        Waradly.setTokens(data.access_token, data.refresh_token);
+        window.location.assign(Waradly.DASHBOARD_BY_ROLE[data.user.role] || '/');
+      } catch (err) {
+        if (err instanceof Waradly.ApiError && err.code === 'FORBIDDEN' && err.data && err.data.status) {
+          document.getElementById('suspension-title').textContent = 'Account ' + err.data.status;
+          document.getElementById('suspension-reason').textContent = err.data.reason || 'No reason was recorded.';
+          document.getElementById('suspension-modal').style.display = 'flex';
+        } else {
+          Waradly.showError('error', err);
+        }
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Log in';
+      }
+    });
+
+    document.getElementById('suspension-close').addEventListener('click', () => {
+      document.getElementById('suspension-modal').style.display = 'none';
+    });
+  </script>
+</body>
+</html>

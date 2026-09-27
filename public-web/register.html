@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Create an account — Waradly</title>
+  <link rel="stylesheet" href="/assets/css/theme.css" />
+</head>
+<body>
+  <main class="page" id="register-view">
+    <h1 class="page-title">Create an account</h1>
+
+    <div class="flex mb-4" style="border:1px solid var(--navy-100); border-radius:0.5rem; overflow:hidden;">
+      <button type="button" class="role-btn btn-secondary w-full" data-role="buyer" style="border-radius:0;">Buyer</button>
+      <button type="button" class="role-btn btn-secondary w-full" data-role="supplier" style="border-radius:0;">Supplier</button>
+    </div>
+
+    <p id="error" class="error-text mb-4" style="display:none;"></p>
+
+    <form id="register-form">
+      <label class="field"><span>Email</span><input class="input" type="email" id="email" required /></label>
+      <label class="field"><span>Username</span><input class="input" id="username" required /></label>
+      <label class="field"><span>Phone number</span><input class="input" type="tel" id="phone" required /></label>
+      <label class="field"><span>Password</span><input class="input" type="password" id="password" required /></label>
+      <label class="field"><span>Confirm password</span><input class="input" type="password" id="confirm_password" required /></label>
+      <label class="field"><span>Company legal name</span><input class="input" id="legal_name" required /></label>
+      <label class="field"><span>Country</span><input class="input" id="country" required /></label>
+      <label class="field"><span>General region</span><input class="input" id="general_region" required /></label>
+
+      <p class="muted" id="supplier-hint" style="display:none;">You'll pick which categories you supply from your Capabilities page after logging in.</p>
+
+      <label class="flex gap-2" style="align-items:flex-start; font-size:0.875rem; margin-bottom:1rem;">
+        <input type="checkbox" id="terms_accepted" style="margin-top:0.2rem;" />
+        <span>I agree to the Terms, Anti-Circumvention Policy, and Privacy Policy.</span>
+      </label>
+
+      <button class="btn-primary w-full" type="submit" id="submit-btn">Create account</button>
+    </form>
+
+    <p class="muted mt-4">Already have an account? <a href="/login.html">Log in</a></p>
+  </main>
+
+  <main class="page" id="success-view" style="display:none;">
+    <h1 class="page-title">Check your email</h1>
+    <p class="muted mb-4">Your account was created. We sent a verification link to <strong id="success-email"></strong>. Once verified you can log in.</p>
+
+    <div id="supplier-verification-steps" style="display:none;">
+      <div id="photo-step" class="mb-4">
+        <p class="muted mb-2">Supplier accounts require a one-time identity check — add your photo, then verify it's really you with Face ID.</p>
+        <input type="file" id="photo-input" accept="image/png,image/jpeg" style="display:none;" />
+        <button class="btn-primary" id="photo-upload-btn" type="button">Upload your photo (required)</button>
+        <p id="photo-done" class="success-text" style="display:none;">Photo uploaded.</p>
+        <p id="photo-error" class="error-text" style="display:none;"></p>
+      </div>
+
+      <div id="webauthn-step" style="display:none;">
+        <button class="btn-primary" id="webauthn-btn" type="button">Verify with Face ID (required)</button>
+        <p id="webauthn-done" class="success-text" style="display:none;">Face ID verification complete.</p>
+        <p id="webauthn-error" class="error-text" style="display:none;"></p>
+        <p id="webauthn-unsupported" class="error-text" style="display:none;">
+          Face ID verification is required for supplier accounts, but this browser doesn't support it.
+          Open this page in a browser with Face ID / Touch ID / Windows Hello / security key support to finish registering.
+        </p>
+      </div>
+    </div>
+
+    <a id="go-to-login" href="/login.html" class="btn-primary" style="display:none;">Go to login</a>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@simplewebauthn/browser@11/dist/bundle/index.umd.min.js"></script>
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/util.js"></script>
+  <script>
+    let role = 'buyer';
+    document.querySelectorAll('.role-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        role = btn.dataset.role;
+        document.querySelectorAll('.role-btn').forEach((b) => (b.style.background = b === btn ? 'var(--navy-900)' : '#fff'));
+        document.querySelectorAll('.role-btn').forEach((b) => (b.style.color = b === btn ? '#fff' : 'var(--navy-900)'));
+        document.getElementById('supplier-hint').style.display = role === 'supplier' ? 'block' : 'none';
+      });
+    });
+    document.querySelector('.role-btn[data-role="buyer"]').click();
+
+    let enrollmentToken = null;
+    let photoUploaded = false;
+
+    document.getElementById('register-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      Waradly.clearError('error');
+      if (document.getElementById('password').value !== document.getElementById('confirm_password').value) {
+        Waradly.showError('error', new Error('Passwords do not match.'));
+        return;
+      }
+      const btn = document.getElementById('submit-btn');
+      btn.disabled = true;
+      btn.textContent = 'Creating account…';
+      try {
+        const email = document.getElementById('email').value;
+        const data = await Waradly.api('/api/auth/register', {
+          method: 'POST',
+          body: {
+            email,
+            username: document.getElementById('username').value,
+            phone: document.getElementById('phone').value,
+            password: document.getElementById('password').value,
+            role,
+            legal_name: document.getElementById('legal_name').value,
+            country: document.getElementById('country').value,
+            general_region: document.getElementById('general_region').value,
+            terms_accepted: document.getElementById('terms_accepted').checked,
+          },
+        });
+        enrollmentToken = data.access_token;
+        document.getElementById('register-view').style.display = 'none';
+        document.getElementById('success-view').style.display = 'block';
+        document.getElementById('success-email').textContent = email;
+
+        if (role === 'supplier') {
+          document.getElementById('supplier-verification-steps').style.display = 'block';
+          document.getElementById('photo-step').style.display = 'block';
+        } else {
+          document.getElementById('go-to-login').style.display = 'inline-flex';
+        }
+      } catch (err) {
+        Waradly.showError('error', err);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Create account';
+      }
+    });
+
+    document.getElementById('photo-upload-btn').addEventListener('click', () => document.getElementById('photo-input').click());
+    document.getElementById('photo-input').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const errEl = document.getElementById('photo-error');
+      errEl.style.display = 'none';
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        await Waradly.api('/api/users/me/avatar', { method: 'POST', body: formData, isFormData: true, token: enrollmentToken });
+        photoUploaded = true;
+        document.getElementById('photo-done').style.display = 'block';
+        document.getElementById('photo-upload-btn').style.display = 'none';
+        document.getElementById('webauthn-step').style.display = 'block';
+        checkWebauthnSupport();
+      } catch (err) {
+        errEl.textContent = err instanceof Waradly.ApiError ? err.message : 'Could not upload photo.';
+        errEl.style.display = 'block';
+      }
+    });
+
+    function checkWebauthnSupport() {
+      if (typeof window.PublicKeyCredential === 'undefined' || !window.SimpleWebAuthnBrowser) {
+        document.getElementById('webauthn-unsupported').style.display = 'block';
+        document.getElementById('webauthn-btn').style.display = 'none';
+      }
+    }
+
+    document.getElementById('webauthn-btn').addEventListener('click', async () => {
+      const btn = document.getElementById('webauthn-btn');
+      const errEl = document.getElementById('webauthn-error');
+      errEl.style.display = 'none';
+      btn.disabled = true;
+      btn.textContent = 'Verifying…';
+      try {
+        const optionsJSON = await Waradly.api('/api/auth/webauthn/register-options', { method: 'POST', token: enrollmentToken });
+        const response = await window.SimpleWebAuthnBrowser.startRegistration({ optionsJSON });
+        await Waradly.api('/api/auth/webauthn/register-verify', { method: 'POST', body: { response }, token: enrollmentToken });
+        document.getElementById('webauthn-done').style.display = 'block';
+        btn.style.display = 'none';
+        document.getElementById('go-to-login').style.display = 'inline-flex';
+      } catch (err) {
+        errEl.textContent = err instanceof Waradly.ApiError ? err.message : 'Could not verify this device.';
+        errEl.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Verify with Face ID (required)';
+      }
+    });
+  </script>
+</body>
+</html>

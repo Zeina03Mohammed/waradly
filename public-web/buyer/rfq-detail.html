@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RFQ — Waradly</title>
+  <link rel="stylesheet" href="/assets/css/theme.css" />
+</head>
+<body>
+  <div class="shell">
+    <div id="sidebar-slot"></div>
+    <main class="content">
+      <div class="page-wide" style="max-width:640px;">
+        <div id="content">Loading…</div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/shell.js"></script>
+  <script src="/assets/js/util.js"></script>
+  <script>
+    const rfqId = Waradly.qs('id');
+
+    async function render() {
+      const { rfq } = await Waradly.api(`/api/rfqs/${rfqId}`);
+      const canEdit = ['DRAFT', 'SUBMITTED'].includes(rfq.status);
+      const canCancel = !['AWARDED', 'CLOSED', 'CANCELLED', 'EXPIRED'].includes(rfq.status);
+
+      document.getElementById('content').innerHTML = `
+        <div class="flex justify-between items-center mb-4">
+          <h1 class="page-title" style="margin:0;">${Waradly.escapeHtml(rfq.title)}</h1>
+          <span class="badge">${rfq.status}</span>
+        </div>
+        <div class="card">
+          <p><strong>Category:</strong> ${Waradly.escapeHtml(rfq.category_name || '—')}</p>
+          <p><strong>Quantity:</strong> ${rfq.quantity ?? '—'} ${Waradly.escapeHtml(rfq.unit || '')}</p>
+          <p><strong>Delivery region:</strong> ${Waradly.escapeHtml(rfq.delivery_region || '—')}</p>
+          <p><strong>Delivery deadline:</strong> ${Waradly.formatDate(rfq.delivery_deadline)}</p>
+          <p><strong>Offer deadline:</strong> ${Waradly.formatDate(rfq.offer_deadline_at)}</p>
+          <p><strong>Sample required:</strong> ${rfq.sample_required ? 'Yes' : 'No'}</p>
+          ${rfq.rejection_reason ? `<p class="error-text"><strong>Rejection reason:</strong> ${Waradly.escapeHtml(rfq.rejection_reason)}</p>` : ''}
+        </div>
+        ${rfq.items && rfq.items.length ? `<div class="card"><h3 style="margin-top:0;">Items</h3>
+          <table><thead><tr><th>Item</th><th>Qty</th><th>Unit</th></tr></thead><tbody>
+            ${rfq.items.map((i) => `<tr><td>${Waradly.escapeHtml(i.item_name)}</td><td>${i.quantity}</td><td>${Waradly.escapeHtml(i.unit)}</td></tr>`).join('')}
+          </tbody></table></div>` : ''}
+        <div class="flex gap-2 mb-4">
+          ${canEdit ? `<a class="btn-secondary" href="/buyer/rfq-form.html?id=${rfqId}">Edit</a>` : ''}
+          ${['PUBLISHED', 'RECEIVING_OFFERS', 'AWARDED'].includes(rfq.status) ? `<a class="btn-secondary" href="/buyer/rfq-offers.html?id=${rfqId}">View offers</a>` : ''}
+          ${canCancel ? `<button class="btn-danger" id="cancel-btn">Cancel RFQ</button>` : ''}
+        </div>
+        <p id="error" class="error-text" style="display:none;"></p>
+      `;
+
+      const cancelBtn = document.getElementById('cancel-btn');
+      if (cancelBtn) {
+        cancelBtn.addEventListener('click', async () => {
+          if (!confirm('Cancel this RFQ? This cannot be undone.')) return;
+          try {
+            await Waradly.api(`/api/rfqs/${rfqId}/cancel`, { method: 'PATCH' });
+            render();
+          } catch (err) {
+            Waradly.showError('error', err);
+          }
+        });
+      }
+    }
+
+    (async () => {
+      const user = await Waradly.requireRole('buyer');
+      if (!user) return;
+      Waradly.mountShell(user, '/buyer/rfqs.html');
+      await render();
+    })();
+  </script>
+</body>
+</html>

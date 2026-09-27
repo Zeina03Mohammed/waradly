@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RFQ — Waradly</title>
+  <link rel="stylesheet" href="/assets/css/theme.css" />
+</head>
+<body>
+  <div class="shell">
+    <div id="sidebar-slot"></div>
+    <main class="content">
+      <div class="page-wide" style="max-width:640px;">
+        <h1 class="page-title" id="page-title">Create RFQ</h1>
+        <p id="error" class="error-text mb-4" style="display:none;"></p>
+        <p id="success" class="success-text mb-4" style="display:none;"></p>
+
+        <form id="form" class="card">
+          <label class="field"><span>Title</span><input class="input" id="title" required maxlength="150" /></label>
+          <label class="field"><span>Category</span><input class="input" id="category" placeholder="e.g. Packaging" /></label>
+          <div class="flex gap-4">
+            <label class="field" style="flex:1;"><span>Quantity</span><input class="input" type="number" id="quantity" min="0" step="any" /></label>
+            <label class="field" style="flex:1;"><span>Unit</span><input class="input" id="unit" placeholder="units" /></label>
+          </div>
+          <label class="field"><span>Dimensions</span><input class="input" id="dimensions" /></label>
+          <label class="field"><span>Material</span><input class="input" id="material" /></label>
+          <label class="field"><span>Printing / customization</span><textarea class="input" id="printing_customization" rows="2"></textarea></label>
+          <div class="flex gap-4">
+            <label class="field" style="flex:1;"><span>Delivery deadline</span><input class="input" type="date" id="delivery_deadline" /></label>
+            <label class="field" style="flex:1;"><span>Delivery region</span><input class="input" id="delivery_region" /></label>
+          </div>
+          <label class="field"><span>Offer deadline</span><input class="input" type="date" id="offer_deadline_at" /></label>
+          <label class="field"><span>Quality requirements</span><textarea class="input" id="quality_requirements" rows="2"></textarea></label>
+          <label class="field"><span>Certifications required</span><input class="input" id="certifications_required" /></label>
+          <label class="field"><span>Legal / compliance requirements</span><textarea class="input" id="legal_compliance_requirements" rows="2"></textarea></label>
+          <label class="flex gap-2 items-center mb-4" style="font-size:0.9rem;">
+            <input type="checkbox" id="sample_required" /><span>Sample required</span>
+          </label>
+
+          <h3 style="font-size:0.95rem; font-weight:600;">Items</h3>
+          <div id="items"></div>
+          <button type="button" class="btn-secondary mb-4" id="add-item">Add item</button>
+
+          <div class="flex gap-2">
+            <button class="btn-primary" type="submit" id="save-btn">Save draft</button>
+            <button class="btn-secondary" type="button" id="submit-rfq-btn" style="display:none;">Submit for review</button>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/shell.js"></script>
+  <script src="/assets/js/util.js"></script>
+  <script>
+    const rfqId = Waradly.qs('id');
+    let currentStatus = 'DRAFT';
+
+    function addItemRow(item) {
+      const row = document.createElement('div');
+      row.className = 'flex gap-2 mb-2 item-row';
+      row.innerHTML = `
+        <input class="input" placeholder="Item name" value="${Waradly.escapeHtml(item?.item_name || '')}" data-field="item_name" />
+        <input class="input" type="number" placeholder="Qty" style="max-width:100px;" value="${item?.quantity ?? ''}" data-field="quantity" />
+        <input class="input" placeholder="Unit" style="max-width:100px;" value="${Waradly.escapeHtml(item?.unit || '')}" data-field="unit" />
+        <button type="button" class="btn-secondary" onclick="this.parentElement.remove()">Remove</button>`;
+      document.getElementById('items').appendChild(row);
+    }
+    document.getElementById('add-item').addEventListener('click', () => addItemRow());
+
+    function collectItems() {
+      return [...document.querySelectorAll('.item-row')]
+        .map((row) => ({
+          item_name: row.querySelector('[data-field=item_name]').value.trim(),
+          quantity: parseFloat(row.querySelector('[data-field=quantity]').value),
+          unit: row.querySelector('[data-field=unit]').value.trim(),
+        }))
+        .filter((i) => i.item_name && !Number.isNaN(i.quantity) && i.unit);
+    }
+
+    function toDateInput(value) {
+      if (!value) return '';
+      const date = typeof value === 'object' && value._seconds !== undefined ? new Date(value._seconds * 1000) : new Date(value);
+      return Number.isNaN(date.getTime()) ? '' : date.toISOString().slice(0, 10);
+    }
+
+    function collectPayload() {
+      const payload = {
+        title: document.getElementById('title').value,
+        category: document.getElementById('category').value || undefined,
+        quantity: document.getElementById('quantity').value ? Number(document.getElementById('quantity').value) : undefined,
+        unit: document.getElementById('unit').value || undefined,
+        dimensions: document.getElementById('dimensions').value || undefined,
+        material: document.getElementById('material').value || undefined,
+        printing_customization: document.getElementById('printing_customization').value || undefined,
+        delivery_deadline: document.getElementById('delivery_deadline').value ? new Date(document.getElementById('delivery_deadline').value).toISOString() : undefined,
+        delivery_region: document.getElementById('delivery_region').value || undefined,
+        offer_deadline_at: document.getElementById('offer_deadline_at').value ? new Date(document.getElementById('offer_deadline_at').value).toISOString() : undefined,
+        quality_requirements: document.getElementById('quality_requirements').value || undefined,
+        certifications_required: document.getElementById('certifications_required').value || undefined,
+        legal_compliance_requirements: document.getElementById('legal_compliance_requirements').value || undefined,
+        sample_required: document.getElementById('sample_required').checked,
+        items: collectItems(),
+      };
+      return payload;
+    }
+
+    (async () => {
+      const user = await Waradly.requireRole('buyer');
+      if (!user) return;
+      Waradly.mountShell(user, '/buyer/rfqs.html');
+
+      if (rfqId) {
+        document.getElementById('page-title').textContent = 'Edit RFQ';
+        const { rfq } = await Waradly.api(`/api/rfqs/${rfqId}`);
+        currentStatus = rfq.status;
+        document.getElementById('title').value = rfq.title || '';
+        document.getElementById('category').value = rfq.category_name || '';
+        document.getElementById('quantity').value = rfq.quantity ?? '';
+        document.getElementById('unit').value = rfq.unit || '';
+        document.getElementById('dimensions').value = rfq.dimensions || '';
+        document.getElementById('material').value = rfq.material || '';
+        document.getElementById('printing_customization').value = rfq.printing_customization || '';
+        document.getElementById('delivery_deadline').value = toDateInput(rfq.delivery_deadline);
+        document.getElementById('delivery_region').value = rfq.delivery_region || '';
+        document.getElementById('offer_deadline_at').value = toDateInput(rfq.offer_deadline_at);
+        document.getElementById('quality_requirements').value = rfq.quality_requirements || '';
+        document.getElementById('certifications_required').value = rfq.certifications_required || '';
+        document.getElementById('legal_compliance_requirements').value = rfq.legal_compliance_requirements || '';
+        document.getElementById('sample_required').checked = Boolean(rfq.sample_required);
+        (rfq.items || []).forEach(addItemRow);
+        if (['DRAFT', 'SUBMITTED'].includes(currentStatus)) document.getElementById('submit-rfq-btn').style.display = 'inline-flex';
+        if (!['DRAFT', 'SUBMITTED'].includes(currentStatus)) {
+          [...document.querySelectorAll('#form input, #form textarea, #form button')].forEach((el) => (el.disabled = true));
+          Waradly.showError('error', new Error('This RFQ can no longer be edited.'));
+        }
+      }
+    })();
+
+    document.getElementById('form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      Waradly.clearError('error');
+      Waradly.clearError('success');
+      const btn = document.getElementById('save-btn');
+      btn.disabled = true;
+      try {
+        if (rfqId) {
+          await Waradly.api(`/api/rfqs/${rfqId}`, { method: 'PATCH', body: collectPayload() });
+          document.getElementById('success').textContent = 'Saved.';
+          document.getElementById('success').style.display = 'block';
+        } else {
+          const { rfq } = await Waradly.api('/api/rfqs', { method: 'POST', body: collectPayload() });
+          window.location.assign(`/buyer/rfq-form.html?id=${rfq.id}`);
+        }
+      } catch (err) {
+        Waradly.showError('error', err);
+      } finally {
+        btn.disabled = false;
+      }
+    });
+
+    document.getElementById('submit-rfq-btn').addEventListener('click', async () => {
+      Waradly.clearError('error');
+      try {
+        await Waradly.api(`/api/rfqs/${rfqId}`, { method: 'PATCH', body: collectPayload() });
+        await Waradly.api(`/api/rfqs/${rfqId}/submit`, { method: 'PATCH' });
+        window.location.assign(`/buyer/rfq-detail.html?id=${rfqId}`);
+      } catch (err) {
+        Waradly.showError('error', err);
+      }
+    });
+  </script>
+</body>
+</html>
