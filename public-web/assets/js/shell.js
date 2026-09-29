@@ -18,10 +18,13 @@ const ICONS = {
   chart: '<path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>',
   user: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
   logout: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/>',
+  plus: '<path d="M12 5v14"/><path d="M5 12h14"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  truck: '<path d="M3 6h11v10H3z"/><path d="M14 10h4l3 3v3h-7"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>',
 };
 
-function icon(name) {
-  return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[name] || ''}</svg>`;
+function icon(name, size = 20) {
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[name] || ''}</svg>`;
 }
 
 // Each role: array of {group?, items:[{href,label,icon}]}. A group with no label renders with
@@ -99,7 +102,7 @@ function mountShell(user, currentPath) {
     </div>
     <div class="sidebar-backdrop" id="waradly-sidebar-backdrop"></div>
     <aside class="sidebar" id="waradly-sidebar">
-      <a class="logo" href="${HOME_BY_ROLE[user.role]}">Waradly</a>
+      <a class="logo" href="${HOME_BY_ROLE[user.role]}"><span class="logo-mark">W</span>Waradly</a>
       <div class="sidebar-profile">
         <div class="avatar-circle">${initials}</div>
         <div class="sidebar-profile-text">
@@ -133,3 +136,4 @@ function mountShell(user, currentPath) {
 
 window.Waradly = window.Waradly || {};
 window.Waradly.mountShell = mountShell;
+window.Waradly.icon = icon;

@@ -10,12 +10,36 @@
   <div class="shell">
     <div id="sidebar-slot"></div>
     <main class="content">
-      <div class="page-wide">
-        <h1 class="page-title">Dashboard</h1>
-        <div class="flex gap-4 mb-4" id="stats"></div>
-        <a class="btn-primary mb-4" href="/buyer/rfq-form.html" style="display:inline-flex;">Create RFQ</a>
-        <h2 style="font-size:1.1rem; font-weight:600;" class="mb-2">Recent RFQs</h2>
-        <div class="card" id="recent-rfqs">Loading…</div>
+      <div class="dash">
+        <header class="dash-header">
+          <div>
+            <h1>Dashboard</h1>
+            <p>Manage your requests for quotation, orders, and supplier activity.</p>
+          </div>
+          <a class="btn-primary btn-lg" href="/buyer/rfq-form.html" id="create-rfq-btn">Create RFQ</a>
+        </header>
+
+        <section class="kpi-grid" id="stats"></section>
+
+        <div class="dash-grid">
+          <section class="panel">
+            <div class="panel-head">
+              <h2>Recent RFQs</h2>
+              <a class="panel-link" href="/buyer/rfqs.html">View all</a>
+            </div>
+            <div id="recent-rfqs"><div class="panel-loading">Loading…</div></div>
+          </section>
+
+          <div class="dash-side">
+            <section class="panel">
+              <div class="panel-head">
+                <h2>Recent orders</h2>
+                <a class="panel-link" href="/buyer/orders.html">View all</a>
+              </div>
+              <div id="recent-orders"><div class="panel-loading">Loading…</div></div>
+            </section>
+          </div>
+        </div>
       </div>
     </main>
   </div>
@@ -30,21 +54,93 @@
       if (!user) return;
       Waradly.mountShell(user, '/buyer/dashboard.html');
 
-      const { rfqs } = await Waradly.api('/api/rfqs');
-      const open = rfqs.filter((r) => !['CLOSED', 'CANCELLED', 'REJECTED'].includes(r.status)).length;
-      document.getElementById('stats').innerHTML = `
-        <div class="card" style="flex:1;"><div class="muted">Open RFQs</div><div style="font-size:1.5rem;font-weight:600;">${open}</div></div>
-        <div class="card" style="flex:1;"><div class="muted">Total RFQs</div><div style="font-size:1.5rem;font-weight:600;">${rfqs.length}</div></div>
-      `;
+      const { icon, escapeHtml: esc, formatDate } = Waradly;
+      const label = (s) => (s ? s.charAt(0) + s.slice(1).toLowerCase().replace(/_/g, ' ') : '—');
 
-      const recent = rfqs.slice(0, 5);
-      document.getElementById('recent-rfqs').innerHTML = recent.length
-        ? `<table><thead><tr><th>Title</th><th>Status</th><th>Created</th></tr></thead><tbody>
-            ${recent.map((r) => `<tr onclick="location.href='/buyer/rfq-detail.html?id=${r.id}'" style="cursor:pointer;">
-              <td>${Waradly.escapeHtml(r.title)}</td><td><span class="badge">${r.status}</span></td><td>${Waradly.formatDate(r.created_at)}</td>
-            </tr>`).join('')}
-          </tbody></table>`
-        : '<p class="muted">No RFQs yet — create your first one.</p>';
+      const RFQ_CLOSED = ['CLOSED', 'CANCELLED', 'REJECTED', 'EXPIRED'];
+      const RFQ_TONE = { PUBLISHED: 'gold', RECEIVING_OFFERS: 'gold', AWARDED: 'success', CLOSED: 'success', REJECTED: 'danger', CANCELLED: 'danger', EXPIRED: 'danger' };
+      const ORDER_DONE = ['COMPLETED', 'CANCELLED'];
+      const ORDER_TONE = { COMPLETED: 'success', DELIVERED: 'success', DISPUTED: 'danger', CANCELLED: 'danger' };
+      const badge = (status, tones) => `<span class="badge${tones[status] ? ` badge--${tones[status]}` : ''}">${esc(label(status))}</span>`;
+
+      document.getElementById('create-rfq-btn').insertAdjacentHTML('afterbegin', icon('plus', 18));
+
+      // Orders are secondary here — if they fail, the RFQ side of the dashboard still renders.
+      const [rfqRes, orderRes] = await Promise.allSettled([Waradly.api('/api/rfqs'), Waradly.api('/api/orders')]);
+      const rfqs = rfqRes.status === 'fulfilled' ? rfqRes.value.rfqs : null;
+      const orders = orderRes.status === 'fulfilled' ? orderRes.value.orders : null;
+
+      const count = (list, pred) => (list ? list.filter(pred).length : null);
+      const openRfqs = count(rfqs, (r) => !RFQ_CLOSED.includes(r.status));
+      const receiving = count(rfqs, (r) => ['PUBLISHED', 'RECEIVING_OFFERS'].includes(r.status));
+      const drafts = count(rfqs, (r) => r.status === 'DRAFT');
+      const activeOrders = count(orders, (o) => !ORDER_DONE.includes(o.status));
+      const disputed = count(orders, (o) => o.status === 'DISPUTED');
+      const completed = count(orders, (o) => o.status === 'COMPLETED');
+      const show = (n) => (n === null ? '—' : n);
+
+      const kpis = [
+        ['/buyer/rfqs.html', 'document', 'Open RFQs', openRfqs, rfqs ? `${receiving} receiving offers` : 'Unavailable'],
+        ['/buyer/rfqs.html', 'clipboard', 'Total RFQs', rfqs && rfqs.length, rfqs ? (drafts ? `${drafts} in draft` : 'All time') : 'Unavailable'],
+        ['/buyer/orders.html', 'truck', 'Active orders', activeOrders, orders ? (disputed ? `${disputed} disputed` : 'In progress') : 'Unavailable'],
+        ['/buyer/orders.html', 'check', 'Completed orders', completed, orders ? 'All time' : 'Unavailable'],
+      ];
+      document.getElementById('stats').innerHTML = kpis.map(([href, ic, name, value, sub]) => `
+        <a class="kpi" href="${href}">
+          <div>
+            <div class="kpi-label">${name}</div>
+            <div class="kpi-value">${show(value)}</div>
+            <div class="kpi-sub">${sub}</div>
+          </div>
+          <div class="kpi-icon">${icon(ic)}</div>
+        </a>`).join('');
+
+      const rfqEl = document.getElementById('recent-rfqs');
+      if (!rfqs) {
+        rfqEl.innerHTML = '<div class="empty-state compact"><p class="error-text">Couldn\'t load your RFQs. Refresh to try again.</p></div>';
+      } else if (!rfqs.length) {
+        rfqEl.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">${icon('document', 26)}</div>
+            <h3>No RFQs yet</h3>
+            <p>Use <strong>Create RFQ</strong> above to describe what you need to source — verified suppliers will send you competing offers.</p>
+          </div>`;
+      } else {
+        rfqEl.innerHTML = `<div class="table-scroll"><table>
+          <thead><tr><th>RFQ</th><th>Quantity</th><th>Status</th><th>Deadline</th><th class="col-created">Created</th><th></th></tr></thead>
+          <tbody>${rfqs.slice(0, 6).map((r) => {
+            const href = `/buyer/rfq-detail.html?id=${encodeURIComponent(r.id)}`;
+            return `<tr class="row-link" onclick="location.href='${href}'">
+              <td><div class="cell-title">${esc(r.title)}</div><div class="cell-sub">${esc(r.category_name || 'Uncategorised')}</div></td>
+              <td>${r.quantity != null ? `${esc(r.quantity)} ${esc(r.unit || '')}` : '—'}</td>
+              <td>${badge(r.status, RFQ_TONE)}</td>
+              <td>${formatDate(r.delivery_deadline)}</td>
+              <td class="col-created">${formatDate(r.created_at)}</td>
+              <td style="text-align:right;"><a class="view-link" href="${href}">View →</a></td>
+            </tr>`;
+          }).join('')}</tbody></table></div>`;
+      }
+
+      const orderEl = document.getElementById('recent-orders');
+      if (!orders) {
+        orderEl.innerHTML = '<div class="empty-state compact"><p class="error-text">Couldn\'t load orders.</p></div>';
+      } else if (!orders.length) {
+        orderEl.innerHTML = `
+          <div class="empty-state compact">
+            <div class="empty-icon">${icon('box', 24)}</div>
+            <h3>No orders yet</h3>
+            <p>Orders appear here once you accept a supplier's offer on one of your RFQs.</p>
+          </div>`;
+      } else {
+        // /api/orders has no ordering for buyers — sort newest first here.
+        const ts = (v) => (v && v._seconds !== undefined ? v._seconds * 1000 : new Date(v).getTime() || 0);
+        const recentOrders = [...orders].sort((a, b) => ts(b.created_at) - ts(a.created_at));
+        orderEl.innerHTML = `<div class="list-rows">${recentOrders.slice(0, 5).map((o) => `
+          <a href="/buyer/order-detail.html?id=${encodeURIComponent(o.id)}">
+            <div><div class="cell-title">Order #${esc(String(o.id).slice(0, 8))}</div><div class="cell-sub">${formatDate(o.created_at)}</div></div>
+            ${badge(o.status, ORDER_TONE)}
+          </a>`).join('')}</div>`;
+      }
     })();
   </script>
 </body>

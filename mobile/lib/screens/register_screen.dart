@@ -115,7 +115,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             CheckboxListTile(
               value: _termsAccepted,
               onChanged: (v) => setState(() => _termsAccepted = v ?? false),
-              title: const Text('I agree to the Terms, Anti-Circumvention Policy, and Privacy Policy.'),
+              title: const Text('I confirm I am at least 18 years old and registering on behalf of a business, and I agree to the Terms, Anti-Circumvention Policy, and Privacy Policy.'),
               controlAffinity: ListTileControlAffinity.leading,
               contentPadding: EdgeInsets.zero,
             ),

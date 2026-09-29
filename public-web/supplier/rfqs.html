@@ -27,7 +27,17 @@
       if (!user) return;
       Waradly.mountShell(user, '/supplier/rfqs.html');
 
-      const { rfqs } = await Waradly.api('/api/rfqs');
+      let rfqs;
+      try {
+        ({ rfqs } = await Waradly.api('/api/rfqs'));
+      } catch (err) {
+        const list = document.getElementById('list');
+        list.innerHTML = '<p class="error-text"></p>';
+        list.firstChild.textContent = err instanceof Waradly.ApiError && err.status === 403
+          ? "Your account isn't set up as a supplier organization, so RFQs can't be shown."
+          : (err.message || 'Couldn\'t load RFQs. Refresh to try again.');
+        return;
+      }
       document.getElementById('list').innerHTML = rfqs.length
         ? `<table><thead><tr><th>Title</th><th>Category</th><th>Region</th><th>Offer deadline</th><th>Status</th></tr></thead><tbody>
             ${rfqs.map((r) => `<tr onclick="location.href='/supplier/rfq-detail.html?id=${r.id}'" style="cursor:pointer;">

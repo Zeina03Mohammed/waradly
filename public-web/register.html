@@ -3,7 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Create an account — Waradly</title>
+  <title>Create a Free Account — Waradly for Buyers & Suppliers</title>
+  <meta name="description" content="Join Waradly as a buyer to source custom products through RFQs, or as a supplier to receive qualified requests from businesses." />
+  <link rel="canonical" href="https://waradly-1.web.app/register" />
   <link rel="stylesheet" href="/assets/css/theme.css" />
 </head>
 <body>
@@ -31,7 +33,7 @@
 
       <label class="flex gap-2" style="align-items:flex-start; font-size:0.875rem; margin-bottom:1rem;">
         <input type="checkbox" id="terms_accepted" style="margin-top:0.2rem;" />
-        <span>I agree to the Terms, Anti-Circumvention Policy, and Privacy Policy.</span>
+        <span>I confirm I am at least 18 years old and registering on behalf of a business, and I agree to the Terms, Anti-Circumvention Policy, and Privacy Policy.</span>
       </label>
 
       <button class="btn-primary w-full" type="submit" id="submit-btn">Create account</button>
@@ -80,7 +82,9 @@
         document.getElementById('supplier-hint').style.display = role === 'supplier' ? 'block' : 'none';
       });
     });
-    document.querySelector('.role-btn[data-role="buyer"]').click();
+    // Landing page links to ?role=supplier to preselect it.
+    const initialRole = new URLSearchParams(location.search).get('role') === 'supplier' ? 'supplier' : 'buyer';
+    document.querySelector(`.role-btn[data-role="${initialRole}"]`).click();
 
     let enrollmentToken = null;
     let photoUploaded = false;

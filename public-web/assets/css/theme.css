@@ -1,7 +1,18 @@
 /* Waradly theme — carried over from the previous Next.js/Tailwind build: navy + gold, warm
    off-white background, Outfit font. Plain CSS, no build step. */
 
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap');
+/* Self-hosted (not loaded from Google Fonts) so visitors' IPs aren't sent to a third party.
+   Outfit is a variable font — one file per subset covers weights 400–700. SIL Open Font License. */
+@font-face {
+  font-family: 'Outfit'; font-style: normal; font-weight: 100 900; font-display: swap;
+  src: url('/assets/fonts/outfit-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Outfit'; font-style: normal; font-weight: 100 900; font-display: swap;
+  src: url('/assets/fonts/outfit-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
 
 :root {
   --navy-50: #f1f4f8;
@@ -102,6 +113,7 @@ label.field span { display: block; margin-bottom: 0.25rem; font-weight: 500; col
   color: var(--navy-700);
   font-size: 0.75rem;
   font-weight: 500;
+  white-space: nowrap;
   text-transform: capitalize;
 }
 
@@ -112,54 +124,80 @@ tr:hover td { background: var(--navy-50); }
 
 /* Shell layout: fixed navy sidebar + content area, mirroring the previous Shell.tsx. */
 .shell { display: flex; min-height: 100vh; }
+/* Unwrap the injection slot so .sidebar itself is the flex child and stretches full height. */
+#sidebar-slot { display: contents; }
 .sidebar {
-  width: 240px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  width: 272px;
   flex-shrink: 0;
   background: var(--navy-950);
   color: #fff;
-  padding: 1.5rem 1rem;
+  padding: 1.75rem 1.25rem 1.25rem;
   display: flex;
   flex-direction: column;
 }
-.sidebar .logo { font-weight: 700; font-size: 1.1rem; margin-bottom: 1.25rem; color: #fff; text-decoration: none; }
-
-.sidebar-profile { display: flex; align-items: center; gap: 0.65rem; padding: 0 0.25rem 1rem; margin-bottom: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
-.avatar-circle {
-  width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+.sidebar .logo {
+  display: flex; align-items: center; gap: 0.65rem;
+  font-weight: 700; font-size: 1.35rem; letter-spacing: -0.01em;
+  margin: 0 0.25rem 1.75rem; color: #fff; text-decoration: none;
+}
+.logo-mark {
+  width: 34px; height: 34px; border-radius: 0.6rem; flex-shrink: 0;
   background: var(--gold-500); color: var(--navy-950);
   display: flex; align-items: center; justify-content: center;
-  font-size: 0.8rem; font-weight: 600;
+  font-size: 1.05rem; font-weight: 700;
+}
+
+.sidebar-profile {
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.85rem; margin-bottom: 1.25rem;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 0.75rem;
+}
+.avatar-circle {
+  width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+  background: var(--gold-500); color: var(--navy-950);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.85rem; font-weight: 600;
 }
 .sidebar-profile-text { min-width: 0; }
-.sidebar-profile-text .name { font-size: 0.875rem; font-weight: 500; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sidebar-profile-text .email { font-size: 0.75rem; color: var(--navy-100); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sidebar-profile-text .name { font-size: 0.95rem; font-weight: 500; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sidebar-profile-text .email { font-size: 0.78rem; color: #9fb0c6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-.sidebar nav { display: flex; flex-direction: column; gap: 0.1rem; flex: 1; overflow-y: auto; }
+.sidebar nav { display: flex; flex-direction: column; gap: 0.25rem; flex: 1; overflow-y: auto; }
 .nav-group-label {
-  font-size: 0.7rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;
-  color: var(--navy-400); padding: 0.9rem 0.75rem 0.3rem;
+  font-size: 0.7rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+  color: #6f86a6; padding: 1rem 0.9rem 0.35rem;
 }
 .sidebar nav > .nav-group-label:first-child { padding-top: 0.25rem; }
 .sidebar nav a {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 0.65rem;
-  padding: 0.55rem 0.75rem;
-  border-radius: 0.5rem;
-  color: var(--navy-100);
+  gap: 0.8rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: 0.6rem;
+  color: #c3cfdd;
   text-decoration: none;
-  font-size: 0.875rem;
-  border-left: 3px solid transparent;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: background 0.15s ease, color 0.15s ease;
 }
-.sidebar nav a svg { flex-shrink: 0; opacity: 0.8; }
-.sidebar nav a:hover { background: rgba(255,255,255,0.06); }
-.sidebar nav a.active { background: rgba(255,255,255,0.08); border-left-color: var(--gold-500); color: #fff; }
+.sidebar nav a svg { flex-shrink: 0; opacity: 0.75; transition: opacity 0.15s ease; }
+.sidebar nav a:hover { background: rgba(255,255,255,0.06); color: #fff; }
+.sidebar nav a:hover svg { opacity: 1; }
+.sidebar nav a.active { background: rgba(200,150,79,0.14); color: #fff; }
+.sidebar nav a.active::before {
+  content: ''; position: absolute; left: 0; top: 0.55rem; bottom: 0.55rem;
+  width: 3px; border-radius: 0 3px 3px 0; background: var(--gold-500);
+}
 .sidebar nav a.active svg { opacity: 1; color: var(--gold-400); }
 
 .logout-link {
-  display: flex; align-items: center; gap: 0.65rem;
-  margin-top: 0.75rem; padding: 0.75rem; border-top: 1px solid rgba(255,255,255,0.1);
-  color: var(--navy-100); text-decoration: none; font-size: 0.875rem; cursor: pointer;
+  display: flex; align-items: center; gap: 0.8rem;
+  margin-top: 1rem; padding: 0.85rem 0.9rem 0.25rem; border-top: 1px solid rgba(255,255,255,0.1);
+  color: #c3cfdd; text-decoration: none; font-size: 0.95rem; font-weight: 500; cursor: pointer;
 }
 .logout-link:hover { color: #fff; }
 
@@ -226,3 +264,89 @@ tr:hover td { background: var(--navy-50); }
 .mb-2 { margin-bottom: 0.5rem; }
 .mb-4 { margin-bottom: 1rem; }
 .mt-4 { margin-top: 1rem; }
+
+/* Status badge tones — grouped by meaning (in progress / done / problem), not one colour per status. */
+.badge--gold { background: #fbf2e4; color: var(--gold-600); }
+.badge--success { background: #e7f3eb; color: #1e7a3e; }
+.badge--danger { background: #fbeceb; color: #b3261e; }
+
+/* Dashboard — wider container than .page-wide so KPIs + two-column grid can breathe. */
+.dash { max-width: 1440px; margin: 0 auto; padding: 2.75rem 2.5rem 3.5rem; }
+.dash-header { display: flex; align-items: flex-end; justify-content: space-between; gap: 1.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
+.dash-header h1 { font-size: 2rem; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 0.35rem; }
+.dash-header p { margin: 0; color: var(--navy-400); font-size: 1rem; }
+.btn-primary.btn-lg { padding: 0.75rem 1.35rem; gap: 0.5rem; text-decoration: none; box-shadow: 0 1px 2px rgba(14,24,38,0.12); transition: background 0.15s ease; }
+
+.kpi-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; margin-bottom: 1.75rem; }
+.kpi {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem;
+  background: #fff; border: 1px solid var(--navy-100); border-radius: 0.75rem;
+  padding: 1.15rem 1.25rem; text-decoration: none; color: inherit;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+.kpi:hover { border-color: #c5d0de; box-shadow: var(--shadow-soft); transform: translateY(-1px); }
+.kpi-label { font-size: 0.85rem; font-weight: 500; color: var(--navy-400); }
+.kpi-value { font-size: 2rem; font-weight: 600; line-height: 1.15; margin: 0.3rem 0 0.25rem; letter-spacing: -0.02em; }
+.kpi-sub { font-size: 0.8rem; color: #6f86a6; }
+.kpi-icon {
+  width: 40px; height: 40px; border-radius: 0.6rem; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--navy-50); color: var(--navy-600);
+}
+
+.dash-grid { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 1.5rem; align-items: start; }
+.dash-side { display: flex; flex-direction: column; gap: 1.5rem; }
+
+.panel { background: #fff; border: 1px solid var(--navy-100); border-radius: 0.75rem; overflow: hidden; }
+.panel-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.1rem 1.25rem; border-bottom: 1px solid var(--navy-100); }
+.panel-head h2 { font-size: 1.05rem; font-weight: 600; margin: 0; }
+.panel-link { font-size: 0.85rem; font-weight: 500; color: var(--gold-600); text-decoration: none; }
+.panel-link:hover { text-decoration: underline; }
+.panel-body { padding: 1.25rem; }
+.panel-loading { padding: 1.25rem; color: var(--navy-400); font-size: 0.9rem; }
+
+.table-scroll { overflow-x: auto; }
+.table-scroll table { min-width: 640px; }
+.table-scroll th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; background: #fafbfc; padding: 0.7rem 1.25rem; }
+.table-scroll td { padding: 0.9rem 1.25rem; vertical-align: middle; white-space: nowrap; }
+.table-scroll td:first-child { white-space: normal; min-width: 220px; }
+.table-scroll tr:last-child td { border-bottom: none; }
+.row-link { cursor: pointer; }
+.cell-title { font-weight: 500; }
+.cell-sub { font-size: 0.8rem; color: #6f86a6; margin-top: 0.1rem; }
+.view-link { font-size: 0.85rem; font-weight: 500; color: var(--navy-600); text-decoration: none; white-space: nowrap; }
+.view-link:hover { color: var(--gold-600); }
+
+.empty-state { text-align: center; padding: 3.5rem 1.5rem; }
+.empty-state .empty-icon {
+  width: 56px; height: 56px; border-radius: 50%; margin: 0 auto 1rem;
+  display: flex; align-items: center; justify-content: center;
+  background: #fbf2e4; color: var(--gold-600);
+}
+.empty-state h3 { font-size: 1.1rem; font-weight: 600; margin: 0 0 0.4rem; }
+.empty-state p { color: var(--navy-400); font-size: 0.9rem; max-width: 380px; margin: 0 auto; line-height: 1.5; }
+.empty-state.compact { padding: 1.75rem 1.25rem; }
+
+.list-rows a { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; padding: 0.8rem 1.25rem; border-bottom: 1px solid var(--navy-100); text-decoration: none; color: inherit; transition: background 0.15s ease; }
+.list-rows a:last-child { border-bottom: none; }
+.list-rows a:hover { background: var(--navy-50); }
+.list-rows .cell-title { font-size: 0.9rem; }
+
+/* Below ~1400px the side column would squeeze the RFQ table, so panels stack under it instead. */
+@media (max-width: 1400px) {
+  .dash-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 1200px) {
+  .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 1100px) {
+  .col-created { display: none; }
+}
+@media (max-width: 768px) {
+  .dash { padding: 1.5rem 1rem 2.5rem; }
+  .dash-header { align-items: stretch; flex-direction: column; margin-bottom: 1.5rem; }
+  .dash-header h1 { font-size: 1.6rem; }
+}
+@media (max-width: 480px) {
+  .kpi-grid { grid-template-columns: minmax(0, 1fr); }
+}

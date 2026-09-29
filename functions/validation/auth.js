@@ -25,7 +25,7 @@ const registerSchema = z.object({
   country: z.string().trim().min(1, 'Country is required.'),
   general_region: z.string().trim().min(1, 'General region is required.'),
   terms_accepted: z.literal(true, {
-    errorMap: () => ({ message: 'You must accept the Terms, Anti-Circumvention Policy, and Privacy Policy.' }),
+    errorMap: () => ({ message: 'You must confirm you are 18+ and accept the Terms, Anti-Circumvention Policy, and Privacy Policy.' }),
   }),
   // A supplier applies for categories afterward from the Capabilities page (phase 4), not as
   // part of registering — matches the current product (the category picker was removed from

@@ -3,17 +3,328 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Waradly</title>
+  <title>Waradly — B2B Procurement Marketplace for Custom Sourcing</title>
+  <meta name="description" content="Post a request for quotation and get competing offers from verified suppliers. Waradly reviews every RFQ and manages every order from payment to delivery." />
+  <link rel="canonical" href="https://waradly-1.web.app/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Waradly" />
+  <meta property="og:title" content="Waradly — B2B Procurement Marketplace for Custom Sourcing" />
+  <meta property="og:description" content="Post a request for quotation and get competing offers from verified suppliers. Waradly reviews every RFQ and manages every order from payment to delivery." />
+  <meta property="og:url" content="https://waradly-1.web.app/" />
   <link rel="stylesheet" href="/assets/css/theme.css" />
+  <style>
+    /* Landing-only styles — kept here rather than theme.css since no other page uses them. */
+    .l-wrap { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+
+    .l-header { position: sticky; top: 0; z-index: 30; background: rgba(10,18,32,0.92); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .l-header .l-wrap { display: flex; align-items: center; gap: 2rem; height: 68px; }
+    .l-brand { display: flex; align-items: center; gap: 0.6rem; color: #fff; text-decoration: none; font-weight: 700; font-size: 1.25rem; }
+    .l-nav { display: flex; gap: 1.75rem; margin-right: auto; }
+    .l-nav a { color: #b8c5d6; text-decoration: none; font-size: 0.925rem; transition: color 0.15s; }
+    .l-nav a:hover { color: #fff; }
+    .l-auth { display: flex; align-items: center; gap: 0.5rem; margin-left: auto; }
+    .l-login { color: #fff; text-decoration: none; font-weight: 500; font-size: 0.925rem; padding: 0.55rem 1rem; border-radius: 0.5rem; transition: background 0.15s; }
+    .l-login:hover { background: rgba(255,255,255,0.08); }
+    .btn-gold { display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; background: var(--gold-500); color: var(--navy-950); font-weight: 600; font-size: 0.925rem; text-decoration: none; padding: 0.6rem 1.15rem; border-radius: 0.5rem; transition: background 0.15s, transform 0.15s; }
+    .btn-gold:hover { background: var(--gold-400); }
+    .btn-gold.lg, .btn-ghost.lg { padding: 0.85rem 1.5rem; font-size: 1rem; }
+    .btn-ghost { display: inline-flex; align-items: center; justify-content: center; color: #fff; font-weight: 500; text-decoration: none; border: 1px solid rgba(255,255,255,0.22); border-radius: 0.5rem; padding: 0.6rem 1.15rem; transition: background 0.15s, border-color 0.15s; }
+    .btn-ghost:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.4); }
+
+    .l-hero { background: radial-gradient(1000px 500px at 85% 10%, rgba(200,150,79,0.16), transparent 60%), var(--navy-950); color: #fff; padding: 5.5rem 0 7.5rem; overflow: hidden; }
+    .l-hero .l-wrap { display: grid; grid-template-columns: 1.05fr 1fr; gap: 4rem; align-items: center; }
+    .l-eyebrow { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--gold-400); margin-bottom: 1.25rem; }
+    .l-eyebrow::before { content: ''; width: 24px; height: 2px; background: var(--gold-500); }
+    .l-hero h1 { font-size: clamp(2.3rem, 4.6vw, 3.6rem); line-height: 1.07; letter-spacing: -0.03em; font-weight: 600; margin: 0 0 1.35rem; }
+    .l-hero h1 em { font-style: normal; color: var(--gold-400); }
+    .l-hero p.lead { font-size: 1.15rem; line-height: 1.6; color: #b8c5d6; max-width: 34rem; margin: 0 0 2.25rem; }
+    .l-ctas { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+
+    /* Illustrative product mock — clearly an example RFQ, not live data. */
+    .mock { position: relative; background: #fff; color: var(--navy-900); border-radius: 1rem; padding: 1.5rem; box-shadow: 0 30px 60px -20px rgba(0,0,0,0.55); }
+    .mock-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; padding-bottom: 1.1rem; border-bottom: 1px solid var(--navy-100); margin-bottom: 1rem; }
+    .mock-kicker { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: #6f86a6; }
+    .mock-title { font-weight: 600; font-size: 1.05rem; margin: 0.25rem 0 0.2rem; }
+    .mock-meta { font-size: 0.82rem; color: var(--navy-400); }
+    .mock-offer { display: grid; grid-template-columns: 34px 1fr auto; gap: 0.8rem; align-items: center; padding: 0.8rem; border: 1px solid var(--navy-100); border-radius: 0.65rem; margin-bottom: 0.55rem; }
+    .mock-offer.best { border-color: var(--gold-400); background: #fdf8ef; }
+    .mock-av { width: 34px; height: 34px; border-radius: 50%; background: var(--navy-50); color: var(--navy-600); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.8rem; }
+    .mock-name { font-weight: 500; font-size: 0.9rem; }
+    .mock-sub { font-size: 0.78rem; color: #6f86a6; }
+    .mock-price { text-align: right; font-weight: 600; }
+    .mock-tag { display: inline-block; font-size: 0.68rem; font-weight: 600; color: var(--gold-600); background: #fbf2e4; padding: 0.1rem 0.45rem; border-radius: 999px; margin-top: 0.15rem; }
+    .mock-note { display: flex; align-items: center; gap: 0.5rem; font-size: 0.78rem; color: var(--navy-400); margin-top: 0.9rem; }
+    .mock-float { position: absolute; left: -2rem; bottom: -3.4rem; background: var(--navy-900); color: #fff; border: 1px solid rgba(255,255,255,0.1); border-radius: 0.75rem; padding: 0.8rem 1rem; display: flex; gap: 0.7rem; align-items: center; font-size: 0.85rem; box-shadow: 0 16px 30px -12px rgba(0,0,0,0.5); }
+    .mock-float .dot { width: 30px; height: 30px; border-radius: 50%; background: rgba(200,150,79,0.18); color: var(--gold-400); display: flex; align-items: center; justify-content: center; }
+
+    .l-pillars { background: #fff; border-bottom: 1px solid var(--navy-100); }
+    .l-pillars .l-wrap { display: grid; grid-template-columns: repeat(4, 1fr); }
+    .l-pillar { display: flex; gap: 0.8rem; align-items: flex-start; padding: 1.75rem 1.25rem; }
+    .l-pillar + .l-pillar { border-left: 1px solid var(--navy-100); }
+    .l-pillar svg { flex-shrink: 0; color: var(--gold-600); margin-top: 0.1rem; }
+    .l-pillar b { display: block; font-weight: 600; font-size: 0.95rem; margin-bottom: 0.2rem; }
+    .l-pillar span { font-size: 0.85rem; color: var(--navy-400); line-height: 1.45; }
+
+    .l-section { padding: 6rem 0; }
+    .l-section-head { max-width: 46rem; margin-bottom: 3rem; }
+    .l-section-head h2 { font-size: clamp(1.8rem, 3vw, 2.4rem); letter-spacing: -0.02em; line-height: 1.15; font-weight: 600; margin: 0 0 0.9rem; }
+    .l-section-head p { font-size: 1.05rem; color: var(--navy-400); line-height: 1.6; margin: 0; }
+    .l-kicker { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--gold-600); margin-bottom: 0.75rem; }
+
+    .l-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; counter-reset: step; }
+    .l-step { background: #fff; border: 1px solid var(--navy-100); border-radius: 0.9rem; padding: 1.6rem; }
+    .l-step-num { width: 36px; height: 36px; border-radius: 0.6rem; background: var(--navy-900); color: var(--gold-400); font-weight: 600; display: flex; align-items: center; justify-content: center; margin-bottom: 1.1rem; }
+    .l-step h3 { font-size: 1.05rem; font-weight: 600; margin: 0 0 0.5rem; }
+    .l-step p { font-size: 0.9rem; color: var(--navy-400); line-height: 1.55; margin: 0; }
+
+    .l-audience { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .l-card { border-radius: 1rem; padding: 2.5rem; display: flex; flex-direction: column; }
+    .l-card.light { background: #fff; border: 1px solid var(--navy-100); }
+    .l-card.dark { background: var(--navy-950); color: #fff; }
+    .l-card h3 { font-size: 1.6rem; letter-spacing: -0.02em; font-weight: 600; margin: 0 0 0.6rem; }
+    .l-card > p { color: var(--navy-400); line-height: 1.6; margin: 0 0 1.5rem; }
+    .l-card.dark > p { color: #b8c5d6; }
+    .l-list { list-style: none; padding: 0; margin: 0 0 2rem; display: grid; gap: 0.8rem; }
+    .l-list li { display: flex; gap: 0.7rem; align-items: flex-start; font-size: 0.95rem; line-height: 1.45; }
+    .l-list svg { flex-shrink: 0; color: var(--gold-500); margin-top: 0.15rem; }
+    .l-card .btn-primary, .l-card .btn-gold { align-self: flex-start; margin-top: auto; text-decoration: none; padding: 0.75rem 1.3rem; }
+
+    .l-track { background: #fff; border-top: 1px solid var(--navy-100); border-bottom: 1px solid var(--navy-100); }
+    .l-timeline { display: grid; grid-template-columns: repeat(6, 1fr); position: relative; }
+    .l-timeline::before { content: ''; position: absolute; top: 17px; left: 8%; right: 8%; height: 2px; background: linear-gradient(90deg, var(--gold-500) 55%, var(--navy-100) 55%); }
+    .l-tl { position: relative; text-align: center; padding: 0 0.5rem; }
+    .l-tl-dot { width: 36px; height: 36px; margin: 0 auto 0.9rem; border-radius: 50%; background: #fff; border: 2px solid var(--navy-100); display: flex; align-items: center; justify-content: center; color: var(--navy-400); }
+    .l-tl.done .l-tl-dot { background: var(--gold-500); border-color: var(--gold-500); color: var(--navy-950); }
+    .l-tl.now .l-tl-dot { border-color: var(--gold-500); color: var(--gold-600); box-shadow: 0 0 0 5px rgba(200,150,79,0.18); }
+    .l-tl b { display: block; font-size: 0.92rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .l-tl span { font-size: 0.8rem; color: var(--navy-400); line-height: 1.4; }
+
+    .l-cta { background: radial-gradient(700px 300px at 50% 0%, rgba(200,150,79,0.18), transparent 70%), var(--navy-950); color: #fff; border-radius: 1.25rem; padding: 4rem 2rem; text-align: center; }
+    .l-cta h2 { font-size: clamp(1.8rem, 3vw, 2.5rem); letter-spacing: -0.02em; font-weight: 600; margin: 0 0 0.8rem; }
+    .l-cta p { color: #b8c5d6; font-size: 1.05rem; margin: 0 auto 2rem; max-width: 32rem; }
+    .l-cta .l-ctas { justify-content: center; }
+
+    .l-footer { padding: 2.5rem 0; border-top: 1px solid var(--navy-100); }
+    .l-footer .l-wrap { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; font-size: 0.875rem; color: var(--navy-400); }
+    .l-footer .l-brand { color: var(--navy-900); font-size: 1.05rem; }
+    .l-footer nav { display: flex; gap: 1.5rem; }
+    .l-footer a { color: var(--navy-400); text-decoration: none; }
+    .l-footer a:hover { color: var(--navy-900); }
+
+    @media (max-width: 960px) {
+      .l-nav { display: none; }
+      .l-hero { padding: 3.5rem 0 4.5rem; }
+      .l-hero .l-wrap { grid-template-columns: 1fr; gap: 3.5rem; }
+      .mock-float { left: 1rem; }
+      .l-pillars .l-wrap { grid-template-columns: 1fr 1fr; }
+      .l-pillar:nth-child(3) { border-left: none; }
+      .l-pillar:nth-child(n+3) { border-top: 1px solid var(--navy-100); }
+      .l-steps { grid-template-columns: 1fr 1fr; }
+      .l-audience { grid-template-columns: 1fr; }
+      .l-timeline { grid-template-columns: repeat(3, 1fr); row-gap: 2rem; }
+      .l-timeline::before { display: none; }
+      .l-section { padding: 4.5rem 0; }
+    }
+    @media (max-width: 560px) {
+      .l-wrap { padding: 0 1rem; }
+      .l-login { padding: 0.5rem 0.6rem; }
+      .l-pillars .l-wrap { grid-template-columns: 1fr; }
+      .l-pillar { border-left: none !important; border-top: 1px solid var(--navy-100); padding: 1.25rem 0.25rem; }
+      .l-pillar:first-child { border-top: none; }
+      .l-steps { grid-template-columns: 1fr; }
+      .l-card { padding: 1.75rem; }
+      .l-timeline { grid-template-columns: 1fr 1fr; }
+      .mock { padding: 1.1rem; }
+      .mock-float { position: static; margin-top: 1rem; }
+    }
+  </style>
 </head>
 <body>
-  <main class="page" style="text-align:center; padding-top: 4rem;">
-    <h1 class="page-title">Waradly</h1>
-    <p class="muted" style="margin-bottom: 2rem;">B2B procurement marketplace</p>
-    <div class="flex gap-2" style="justify-content:center;">
-      <a class="btn-primary" href="/login.html">Log in</a>
-      <a class="btn-secondary" href="/register.html">Register</a>
+  <header class="l-header">
+    <div class="l-wrap">
+      <a class="l-brand" href="/"><span class="logo-mark">W</span>Waradly</a>
+      <nav class="l-nav" aria-label="Sections">
+        <a href="#how">How it works</a>
+        <a href="#buyers">For buyers</a>
+        <a href="#suppliers">For suppliers</a>
+        <a href="#tracking">Order tracking</a>
+      </nav>
+      <div class="l-auth" id="auth-actions">
+        <a class="l-login" href="/login.html">Log in</a>
+        <a class="btn-gold" href="/register.html">Sign up</a>
+      </div>
     </div>
+  </header>
+
+  <main>
+    <section class="l-hero">
+      <div class="l-wrap">
+        <div>
+          <div class="l-eyebrow">B2B procurement marketplace</div>
+          <h1>Source custom products from <em>verified suppliers</em> — without the back-and-forth.</h1>
+          <p class="lead">Describe what you need once. Qualified suppliers compete with offers, you pick the best one, and our team manages the order through production, quality checks and delivery.</p>
+          <div class="l-ctas">
+            <a class="btn-gold lg" href="/register.html">Post your first RFQ</a>
+            <a class="btn-ghost lg" href="/register.html?role=supplier">Join as a supplier</a>
+          </div>
+        </div>
+
+        <div class="mock" aria-label="Example of an RFQ receiving offers">
+          <div class="mock-top">
+            <div>
+              <div class="mock-kicker">Example RFQ</div>
+              <div class="mock-title">Custom printed shipping boxes</div>
+              <div class="mock-meta">5,000 pcs · Packaging · Deliver by 15 Nov</div>
+            </div>
+            <span class="badge badge--gold">Receiving offers</span>
+          </div>
+          <div class="mock-offer best">
+            <div class="mock-av">S1</div>
+            <div><div class="mock-name">Supplier #1</div><div class="mock-sub">Lead time 18 days · Sample included</div></div>
+            <div class="mock-price">$0.42/pc<br /><span class="mock-tag">Best price</span></div>
+          </div>
+          <div class="mock-offer">
+            <div class="mock-av">S2</div>
+            <div><div class="mock-name">Supplier #2</div><div class="mock-sub">Lead time 12 days</div></div>
+            <div class="mock-price">$0.47/pc</div>
+          </div>
+          <div class="mock-offer">
+            <div class="mock-av">S3</div>
+            <div><div class="mock-name">Supplier #3</div><div class="mock-sub">Lead time 21 days · Sample included</div></div>
+            <div class="mock-price">$0.45/pc</div>
+          </div>
+          <div class="mock-note">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Supplier identities stay private until the platform connects you.
+          </div>
+          <div class="mock-float">
+            <div class="dot"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+            <div><b>RFQ approved</b><br /><span style="color:#b8c5d6;">Sent to eligible suppliers</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="l-pillars" aria-label="Why Waradly">
+      <div class="l-wrap">
+        <div class="l-pillar">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+          <div><b>Verified suppliers</b><span>Every supplier is identity-checked and approved per category.</span></div>
+        </div>
+        <div class="l-pillar">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="m9 15 2 2 4-4"/></svg>
+          <div><b>Reviewed RFQs</b><span>Our team checks each request before it reaches suppliers.</span></div>
+        </div>
+        <div class="l-pillar">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <div><b>Protected identities</b><span>Contact details stay private on both sides of the deal.</span></div>
+        </div>
+        <div class="l-pillar">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h11v10H3z"/><path d="M14 10h4l3 3v3h-7"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>
+          <div><b>Managed orders</b><span>Tracked step by step from payment to delivery.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="l-section" id="how">
+      <div class="l-wrap">
+        <div class="l-section-head">
+          <div class="l-kicker">How it works</div>
+          <h2>From request to delivered order in four steps</h2>
+          <p>One request replaces dozens of emails and calls. Waradly handles the matching and the follow-up.</p>
+        </div>
+        <div class="l-steps">
+          <div class="l-step"><div class="l-step-num">1</div><h3>Post an RFQ</h3><p>Describe the product, quantity, specs and delivery deadline. Attach drawings or references.</p></div>
+          <div class="l-step"><div class="l-step-num">2</div><h3>We review it</h3><p>Our team approves the request and sends it only to suppliers approved for that category.</p></div>
+          <div class="l-step"><div class="l-step-num">3</div><h3>Compare offers</h3><p>Suppliers submit competing offers. Compare price, lead time and terms side by side.</p></div>
+          <div class="l-step"><div class="l-step-num">4</div><h3>Track your order</h3><p>Accept the best offer and follow production, quality checks and delivery in one place.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="l-section" style="padding-top:0;">
+      <div class="l-wrap l-audience">
+        <div class="l-card light" id="buyers">
+          <div class="l-kicker">For buyers</div>
+          <h3>Get better offers with less effort</h3>
+          <p>Stop chasing quotes. Post once and let qualified suppliers come to you.</p>
+          <ul class="l-list">
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Competing offers from verified suppliers only</li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Compare price, lead time and samples side by side</li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Every order tracked through quality checks and delivery</li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Reorder past purchases in a couple of clicks</li>
+          </ul>
+          <a class="btn-primary" href="/register.html">Create a buyer account</a>
+        </div>
+        <div class="l-card dark" id="suppliers">
+          <div class="l-kicker" style="color:var(--gold-400);">For suppliers</div>
+          <h3>Qualified requests, straight to you</h3>
+          <p>Win new business without cold outreach. Receive RFQs that match what you actually make.</p>
+          <ul class="l-list">
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>RFQs matched to your approved categories</li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Every request reviewed before it reaches you</li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Submit, edit or withdraw offers before the deadline</li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Build a track record with ratings on completed orders</li>
+          </ul>
+          <a class="btn-gold" href="/register.html?role=supplier">Apply as a supplier</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="l-section l-track" id="tracking">
+      <div class="l-wrap">
+        <div class="l-section-head">
+          <div class="l-kicker">Order tracking</div>
+          <h2>Know exactly where every order stands</h2>
+          <p>Each order moves through clear stages, and you're notified as it progresses.</p>
+        </div>
+        <div class="l-timeline">
+          <div class="l-tl done"><div class="l-tl-dot"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><b>Offer selected</b><span>You accept the best offer</span></div>
+          <div class="l-tl done"><div class="l-tl-dot"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><b>Payment confirmed</b><span>Order is locked in</span></div>
+          <div class="l-tl done"><div class="l-tl-dot"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><b>Production</b><span>With optional sample review</span></div>
+          <div class="l-tl now"><div class="l-tl-dot">4</div><b>Quality check</b><span>Inspected before dispatch</span></div>
+          <div class="l-tl"><div class="l-tl-dot">5</div><b>In transit</b><span>On its way to you</span></div>
+          <div class="l-tl"><div class="l-tl-dot">6</div><b>Delivered</b><span>Confirm and rate</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="l-section">
+      <div class="l-wrap">
+        <div class="l-cta">
+          <h2>Ready to source smarter?</h2>
+          <p>Create a free account and post your first request for quotation in minutes.</p>
+          <div class="l-ctas">
+            <a class="btn-gold lg" href="/register.html">Sign up free</a>
+            <a class="btn-ghost lg" href="/login.html">Log in</a>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
+
+  <footer class="l-footer">
+    <div class="l-wrap">
+      <a class="l-brand" href="/"><span class="logo-mark">W</span>Waradly</a>
+      <nav aria-label="Footer">
+        <a href="#how">How it works</a>
+        <a href="/login.html">Log in</a>
+        <a href="/register.html">Sign up</a>
+      </nav>
+      <div>© <span id="year">2026</span> Waradly</div>
+    </div>
+  </footer>
+
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/auth.js"></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    // Already signed in → swap Log in / Sign up for a single link back to the right dashboard.
+    (async () => {
+      const user = await Waradly.getCurrentUser();
+      if (!user || !Waradly.DASHBOARD_BY_ROLE[user.role]) return;
+      document.getElementById('auth-actions').innerHTML = `<a class="btn-gold" href="${Waradly.DASHBOARD_BY_ROLE[user.role]}">Go to dashboard</a>`;
+    })();
+  </script>
 </body>
 </html>
