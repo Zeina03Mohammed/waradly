@@ -6,9 +6,11 @@
   <meta name="robots" content="noindex" />
   <title>Verify email — Waradly</title>
   <link rel="stylesheet" href="/assets/css/theme.css" />
+  <link rel="icon" type="image/png" href="/assets/img/favicon.png" />
 </head>
 <body>
   <main class="page">
+    <a class="auth-logo" href="/"><img src="/assets/img/logo-dark.png" alt="Waradly" height="38" /></a>
     <h1 class="page-title">Verify your email</h1>
     <p id="status" class="muted">Verifying…</p>
     <a id="login-link" href="/login.html" class="btn-primary" style="display:none;">Go to login</a>
@@ -18,7 +20,13 @@
   <script src="/assets/js/util.js"></script>
   <script>
     (async () => {
-      const token = Waradly.qs('token');
+      // Firebase's own email links arrive as ?mode=...&oobCode=... when this page is set as the
+      // Auth action URL — password-reset links get forwarded to the reset page.
+      if (Waradly.qs('mode') === 'resetPassword') {
+        window.location.replace('/reset-password.html?token=' + encodeURIComponent(Waradly.qs('oobCode') || ''));
+        return;
+      }
+      const token = Waradly.qs('token') || Waradly.qs('oobCode');
       const statusEl = document.getElementById('status');
       if (!token) {
         statusEl.textContent = 'This link is invalid or has expired.';

@@ -24,7 +24,13 @@ function formatDate(value) {
 function showError(containerId, err) {
   const el = document.getElementById(containerId);
   if (!el) return;
-  el.textContent = err instanceof Waradly.ApiError ? err.message : 'Something went wrong.';
+  // Field-level validation errors carry the useful detail ("Password must be at least 8
+  // characters.") — show those instead of the generic "Validation failed.".
+  const fieldMessages = err instanceof Waradly.ApiError ? Object.values(err.fields || {}).filter(Boolean) : [];
+  el.textContent = fieldMessages.length
+    ? fieldMessages.join('\n')
+    : err instanceof Waradly.ApiError ? err.message : 'Something went wrong.';
+  el.style.whiteSpace = 'pre-line';
   el.style.display = 'block';
 }
 

@@ -5,7 +5,7 @@
   "description": "Waradly backend — plain Node.js/Express on Firebase Cloud Functions",
   "main": "index.js",
   "engines": {
-    "node": "20"
+    "node": "22"
   },
   "scripts": {
     "serve": "firebase emulators:start --only functions,firestore,auth,storage",

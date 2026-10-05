@@ -21,6 +21,7 @@ const { audit } = require('../services/auditService');
 const { notify } = require('../services/notifyService');
 const { isLockedOut, recordFailedAttempt, resetLockout } = require('../services/lockoutService');
 const identityToolkit = require('../config/identityToolkit');
+const { usesFirebaseAuthMailer } = require('../services/emailChannelService');
 
 const router = Router();
 
@@ -64,21 +65,31 @@ router.post(
 
     await audit({ actorId: uid, action: 'auth.registered', entityType: 'user', entityId: uid, after: { role: data.role, email: data.email } });
 
-    const verifyLink = await auth.generateEmailVerificationLink(data.email, { url: `${APP_BASE_URL}/verify-email` });
-    const oobCode = new URL(verifyLink).searchParams.get('oobCode');
-    await notify({
+    const signedIn = await identityToolkit.signInWithPassword(data.email, data.password);
+
+    const welcome = {
       userId: uid,
       eventType: 'account.created',
       message: 'Welcome to Waradly — please verify your email to get started.',
       link: '/verify-email',
-      email: {
-        to: data.email,
-        subject: 'Welcome to Waradly — verify your email',
-        body: `Welcome to Waradly!\n\nPlease verify your email by visiting:\n${APP_BASE_URL}/verify-email?token=${oobCode}`,
-      },
-    });
-
-    const signedIn = await identityToolkit.signInWithPassword(data.email, data.password);
+    };
+    if (usesFirebaseAuthMailer) {
+      await notify(welcome);
+      await identityToolkit
+        .sendOobCode({ requestType: 'VERIFY_EMAIL', idToken: signedIn.idToken, continueUrl: `${APP_BASE_URL}/login` })
+        .catch((err) => console.error('[auth] verification email failed', err.message));
+    } else {
+      const verifyLink = await auth.generateEmailVerificationLink(data.email, { url: `${APP_BASE_URL}/verify-email` });
+      const oobCode = new URL(verifyLink).searchParams.get('oobCode');
+      await notify({
+        ...welcome,
+        email: {
+          to: data.email,
+          subject: 'Welcome to Waradly — verify your email',
+          body: `Welcome to Waradly!\n\nPlease verify your email by visiting:\n${APP_BASE_URL}/verify-email?token=${oobCode}`,
+        },
+      });
+    }
 
     res.status(201).json({
       user: toSelfUserView(user),
@@ -125,6 +136,12 @@ router.post(
 
     if (user.status !== 'active') throw Errors.suspended(user.status, user.status_reason);
     if (!authUser.emailVerified) throw Errors.emailNotVerified();
+    // Verified through Firebase's own email link (not our /verify-email page)? Sync the mirror
+    // copy — RFQ creation checks users.email_verified.
+    if (!user.email_verified) {
+      await updateUser(authUser.uid, { email_verified: true });
+      user.email_verified = true;
+    }
 
     await audit({ actorId: authUser.uid, action: 'auth.login', entityType: 'user', entityId: authUser.uid });
 
@@ -171,13 +188,17 @@ router.post(
     if (!parsed.success) throw Errors.validation(zodFieldErrors(parsed.error));
 
     try {
+      const authUser = await auth.getUserByEmail(parsed.data.email);
+      const notice = { userId: authUser.uid, eventType: 'auth.password_reset_requested', message: 'A password reset was requested for your account.' };
+      if (usesFirebaseAuthMailer) {
+        await notify(notice);
+        await identityToolkit.sendOobCode({ requestType: 'PASSWORD_RESET', email: parsed.data.email, continueUrl: `${APP_BASE_URL}/login` });
+        return res.status(200).json({ ok: true });
+      }
       const link = await auth.generatePasswordResetLink(parsed.data.email, { url: `${APP_BASE_URL}/reset-password` });
       const oobCode = new URL(link).searchParams.get('oobCode');
-      const authUser = await auth.getUserByEmail(parsed.data.email);
       await notify({
-        userId: authUser.uid,
-        eventType: 'auth.password_reset_requested',
-        message: 'A password reset was requested for your account.',
+        ...notice,
         email: {
           to: parsed.data.email,
           subject: 'Reset your Waradly password',

@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+# Signed-in areas: nothing public to index.
+Disallow: /buyer/
+Disallow: /supplier/
+Disallow: /admin/
+Disallow: /messages/
+
+Sitemap: https://waradly-1.web.app/sitemap.xml

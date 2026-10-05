@@ -58,4 +58,10 @@ function confirmEmailVerification(oobCode) {
   return callIdentityToolkit('update', { oobCode });
 }
 
-module.exports = { signInWithPassword, exchangeRefreshToken, resetPassword, confirmEmailVerification };
+/** Has Firebase Auth itself email a verification (needs the user's idToken) or password-reset
+ * (needs only the email) link — delivered by Firebase's own mailer, no custom domain required. */
+function sendOobCode(body) {
+  return callIdentityToolkit('sendOobCode', body);
+}
+
+module.exports = { signInWithPassword, exchangeRefreshToken, resetPassword, confirmEmailVerification, sendOobCode };

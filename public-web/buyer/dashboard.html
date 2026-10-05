@@ -5,13 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Dashboard — Waradly</title>
   <link rel="stylesheet" href="/assets/css/theme.css" />
+  <link rel="icon" type="image/png" href="/assets/img/favicon.png" />
 </head>
 <body>
   <div class="shell">
     <div id="sidebar-slot"></div>
     <main class="content">
       <div class="dash">
-        <header class="dash-header">
+        <header class="dash-header rise">
           <div>
             <h1>Dashboard</h1>
             <p>Manage your requests for quotation, orders, and supplier activity.</p>
@@ -22,7 +23,7 @@
         <section class="kpi-grid" id="stats"></section>
 
         <div class="dash-grid">
-          <section class="panel">
+          <section class="panel rise" style="--i:5">
             <div class="panel-head">
               <h2>Recent RFQs</h2>
               <a class="panel-link" href="/buyer/rfqs.html">View all</a>
@@ -31,7 +32,7 @@
           </section>
 
           <div class="dash-side">
-            <section class="panel">
+            <section class="panel rise" style="--i:6">
               <div class="panel-head">
                 <h2>Recent orders</h2>
                 <a class="panel-link" href="/buyer/orders.html">View all</a>
@@ -85,15 +86,29 @@
         ['/buyer/orders.html', 'truck', 'Active orders', activeOrders, orders ? (disputed ? `${disputed} disputed` : 'In progress') : 'Unavailable'],
         ['/buyer/orders.html', 'check', 'Completed orders', completed, orders ? 'All time' : 'Unavailable'],
       ];
-      document.getElementById('stats').innerHTML = kpis.map(([href, ic, name, value, sub]) => `
-        <a class="kpi" href="${href}">
+      document.getElementById('stats').innerHTML = kpis.map(([href, ic, name, value, sub], i) => `
+        <a class="kpi rise" style="--i:${i + 1}" href="${href}">
           <div>
             <div class="kpi-label">${name}</div>
-            <div class="kpi-value">${show(value)}</div>
+            <div class="kpi-value" data-count="${value ?? ''}">${show(value)}</div>
             <div class="kpi-sub">${sub}</div>
           </div>
           <div class="kpi-icon">${icon(ic)}</div>
         </a>`).join('');
+      // Count the numbers up from 0 (skipped when the user prefers reduced motion).
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.querySelectorAll('.kpi-value[data-count]').forEach((el) => {
+          const target = Number(el.dataset.count);
+          if (!target) return;
+          const start = performance.now();
+          const tick = (now) => {
+            const t = Math.min((now - start) / 900, 1);
+            el.textContent = Math.round(target * (1 - Math.pow(1 - t, 4)));
+            if (t < 1) requestAnimationFrame(tick);
+          };
+          requestAnimationFrame(tick);
+        });
+      }
 
       const rfqEl = document.getElementById('recent-rfqs');
       if (!rfqs) {
