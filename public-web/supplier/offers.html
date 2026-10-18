@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>My Offers — Waradly</title>
   <link rel="stylesheet" href="/assets/css/theme.css" />
+  <script src="/assets/js/i18n.js"></script>
   <link rel="icon" type="image/png" href="/assets/img/favicon.png" />
 </head>
 <body>
@@ -30,7 +31,7 @@
       document.getElementById('list').innerHTML = offers.length
         ? `<table><thead><tr><th>Unit price</th><th>MOQ</th><th>Status</th><th>Submitted</th><th></th></tr></thead><tbody>
             ${offers.map((o) => `<tr>
-              <td>$${o.unit_price}</td><td>${o.moq}</td><td><span class="badge">${o.status}</span></td><td>${Waradly.formatDate(o.submitted_at)}</td>
+              <td>${o.unit_price} EGP</td><td>${o.moq}</td><td><span class="badge">${o.status}</span></td><td>${Waradly.formatDate(o.submitted_at)}</td>
               <td>${editable(o.status) ? `
                 <a class="btn-secondary" href="/supplier/offer-form.html?id=${o.id}">Edit</a>
                 <button class="btn-danger withdraw-btn" data-id="${o.id}">Withdraw</button>` : ''}</td>

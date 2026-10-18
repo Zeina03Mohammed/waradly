@@ -119,7 +119,7 @@ label.field span { display: block; margin-bottom: 0.25rem; font-weight: 500; col
 }
 
 table { width: 100%; border-collapse: collapse; }
-th, td { text-align: left; padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--navy-100); font-size: 0.9rem; }
+th, td { text-align: start; padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--navy-100); font-size: 0.9rem; }
 th { color: var(--navy-400); font-weight: 500; }
 tr:hover td { background: var(--navy-50); }
 
@@ -184,7 +184,7 @@ tr:hover td { background: var(--navy-50); }
 .sidebar nav a:hover svg { opacity: 1; }
 .sidebar nav a.active { background: rgba(200,150,79,0.14); color: #fff; }
 .sidebar nav a.active::before {
-  content: ''; position: absolute; left: 0; top: 0.55rem; bottom: 0.55rem;
+  content: ''; position: absolute; inset-inline-start: 0; top: 0.55rem; bottom: 0.55rem;
   width: 3px; border-radius: 0 3px 3px 0; background: var(--gold-500);
 }
 .sidebar nav a.active svg { opacity: 1; color: var(--gold-400); }
@@ -227,7 +227,7 @@ tr:hover td { background: var(--navy-50); }
   .sidebar {
     position: fixed;
     top: 0;
-    left: 0;
+    inset-inline-start: 0;
     height: 100vh;
     z-index: 60;
     transform: translateX(-100%);
@@ -355,3 +355,24 @@ tr:hover td { background: var(--navy-50); }
   .rise { animation: none; }
   *, *::before, *::after { transition-duration: 0.01ms !important; }
 }
+
+/* Arabic mode (assets/js/i18n.js) — RTL font and the language toggle. */
+html[lang="ar"] body { font-family: 'IBM Plex Sans Arabic', 'Outfit', ui-sans-serif, system-ui, sans-serif; }
+[dir="rtl"] .sidebar nav a.active::before { border-radius: 3px 0 0 3px; }
+@media (max-width: 768px) { [dir="rtl"] .sidebar:not(.open) { transform: translateX(100%); } }
+
+.lang-toggle {
+  display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; flex-shrink: 0;
+  background: transparent; color: inherit; border: 1px solid rgba(255,255,255,0.18); border-radius: 50%;
+  cursor: pointer; transition: background 0.15s ease;
+}
+.lang-toggle:hover { background: rgba(255,255,255,0.08); }
+.l-auth .lang-toggle, .sidebar .lang-toggle, .mobile-topbar .lang-toggle { color: #fff; }
+.mobile-topbar .lang-toggle { margin-inline-start: auto; }
+.sidebar-top { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin-bottom: 1.75rem; }
+.sidebar-top .logo { margin-bottom: 0; }
+.lang-toggle-floating {
+  position: fixed; top: 1rem; inset-inline-end: 1rem; z-index: 50;
+  color: var(--navy-900); background: #fff; border-color: var(--navy-100); box-shadow: var(--shadow-soft);
+}
+.lang-toggle-floating:hover { background: var(--navy-50); }

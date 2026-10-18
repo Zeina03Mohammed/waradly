@@ -64,7 +64,7 @@ class _BuyerRfqOffersScreenState extends State<BuyerRfqOffersScreen> {
                         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text(o['supplier_anonymized_id'] ?? '', style: const TextStyle(fontWeight: FontWeight.bold)), StatusBadge(o['status'] ?? '')]),
                           const SizedBox(height: 4),
-                          Text('Unit price: \$${o['unit_price']}  ·  MOQ: ${o['moq']}'),
+                          Text('Unit price: ${o['unit_price']} EGP  ·  MOQ: ${o['moq']}'),
                           Text('Lead time: ${o['production_lead_time_days']}d  ·  Delivery est: ${o['delivery_time_estimate_days']}d'),
                           if (['SUBMITTED', 'UNDER_REVIEW'].contains(o['status'])) ...[
                             const SizedBox(height: 8),

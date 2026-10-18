@@ -68,7 +68,7 @@ class _SupplierOfferFormScreenState extends State<SupplierOfferFormScreen> {
         padding: const EdgeInsets.all(16),
         children: [
           ErrorText(_error),
-          TextField(controller: _unitPrice, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: const InputDecoration(labelText: 'Unit price (\$)')),
+          TextField(controller: _unitPrice, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: const InputDecoration(labelText: 'Unit price (EGP)')),
           const SizedBox(height: 8),
           TextField(controller: _moq, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: const InputDecoration(labelText: 'MOQ')),
           const SizedBox(height: 8),

@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Offers — Waradly</title>
   <link rel="stylesheet" href="/assets/css/theme.css" />
+  <script src="/assets/js/i18n.js"></script>
   <link rel="icon" type="image/png" href="/assets/img/favicon.png" />
 </head>
 <body>
@@ -30,7 +31,7 @@
         ? `<table><thead><tr><th>Supplier</th><th>RFQ</th><th>Unit price</th><th>Status</th><th>Flag note</th><th></th></tr></thead><tbody>
             ${offers.map((o) => `<tr>
               <td>${Waradly.escapeHtml(o.supplier_anonymized_id)}</td><td>${Waradly.escapeHtml(o.rfq_id)}</td>
-              <td>$${o.unit_price}</td><td><span class="badge">${o.status}</span></td>
+              <td>${o.unit_price} EGP</td><td><span class="badge">${o.status}</span></td>
               <td>${Waradly.escapeHtml(o.admin_flag_note || '—')}</td>
               <td><button class="btn-secondary flag-btn" data-id="${o.id}">Flag</button></td>
             </tr>`).join('')}

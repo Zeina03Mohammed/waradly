@@ -53,7 +53,7 @@ class _SupplierOffersScreenState extends State<SupplierOffersScreen> {
                       child: Padding(
                         padding: const EdgeInsets.all(16),
                         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('\$${o['unit_price']} · MOQ ${o['moq']}'), StatusBadge(o['status'] ?? '')]),
+                          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('${o['unit_price']} EGP · MOQ ${o['moq']}'), StatusBadge(o['status'] ?? '')]),
                           if (editable) ...[
                             const SizedBox(height: 8),
                             Row(children: [

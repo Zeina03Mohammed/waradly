@@ -99,10 +99,14 @@ function mountShell(user, currentPath) {
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
       <a class="logo" href="${HOME_BY_ROLE[user.role]}"><img class="logo-img" src="/assets/img/logo-light.png" alt="Waradly" height="30" /></a>
+      <span class="lang-slot"></span>
     </div>
     <div class="sidebar-backdrop" id="waradly-sidebar-backdrop"></div>
     <aside class="sidebar" id="waradly-sidebar">
-      <a class="logo" href="${HOME_BY_ROLE[user.role]}"><img class="logo-img" src="/assets/img/logo-light.png" alt="Waradly" height="30" /></a>
+      <div class="sidebar-top">
+        <a class="logo" href="${HOME_BY_ROLE[user.role]}"><img class="logo-img" src="/assets/img/logo-light.png" alt="Waradly" height="30" /></a>
+        <span class="lang-slot"></span>
+      </div>
       <div class="sidebar-profile">
         <div class="avatar-circle">${initials}</div>
         <div class="sidebar-profile-text">
@@ -113,6 +117,8 @@ function mountShell(user, currentPath) {
       <nav>${navHtml}</nav>
       <a href="#" id="waradly-logout-btn" class="logout-link">${icon('logout')}<span>Log out</span></a>
     </aside>`;
+
+  slot.querySelectorAll('.lang-slot').forEach((s) => (window.waradlyI18n ? s.replaceWith(window.waradlyI18n.toggleButton()) : s.remove()));
 
   document.getElementById('waradly-logout-btn').addEventListener('click', (e) => {
     e.preventDefault();

@@ -1,0 +1,188 @@
+[debug] [2026-10-18T11:20:54.742Z] ----------------------------------------------------------------------
+[debug] [2026-10-18T11:20:54.752Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\zaina\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js emulators:start --import=.emulator-data --export-on-exit
+[debug] [2026-10-18T11:20:54.753Z] CLI Version:   15.32.0
+[debug] [2026-10-18T11:20:54.753Z] Platform:      win32
+[debug] [2026-10-18T11:20:54.753Z] Node Version:  v24.21.0
+[debug] [2026-10-18T11:20:54.753Z] Detected Agent: unknown
+[debug] [2026-10-18T11:20:54.753Z] Time:          Sun Oct 18 2026 13:20:54 GMT+0200 (GMT+02:00)
+[debug] [2026-10-18T11:20:54.753Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-10-18T11:20:56.322Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-10-18T11:20:56.322Z] > authorizing via signed-in user (zainamabrouk@gmail.com)
+[debug] [2026-10-18T11:20:56.445Z] openjdk version "21.0.12.1" 2026-08-18 LTS
+
+[debug] [2026-10-18T11:20:56.446Z] OpenJDK Runtime Environment Temurin-21.0.12.1+1 (build 21.0.12.1+1-LTS)
+OpenJDK 64-Bit Server VM Temurin-21.0.12.1+1 (build 21.0.12.1+1-LTS, mixed mode, sharing)
+
+[debug] [2026-10-18T11:20:56.454Z] Parsed Java major version: 21
+[info] i  emulators: Starting emulators: auth, functions, firestore, hosting, storage, extensions {"metadata":{"emulator":{"name":"hub"},"message":"Starting emulators: auth, functions, firestore, hosting, storage, extensions"}}
+[debug] [2026-10-18T11:20:56.458Z] Checked if tokens are valid: false, expires at: 1790689433617
+[debug] [2026-10-18T11:20:56.458Z] Checked if tokens are valid: false, expires at: 1790689433617
+[debug] [2026-10-18T11:20:56.459Z] > refreshing access token with scopes: []
+[debug] [2026-10-18T11:20:56.461Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-10-18T11:20:56.461Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-10-18T11:20:56.770Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2026-10-18T11:20:56.770Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-10-18T11:20:56.785Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/waradly-1 [none]
+[debug] [2026-10-18T11:20:57.801Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/waradly-1 200
+[debug] [2026-10-18T11:20:57.801Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/waradly-1 {"projectNumber":"739886061815","projectId":"waradly-1","lifecycleState":"ACTIVE","name":"Waradly","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2026-09-27T07:34:00.272Z"}
+[debug] [2026-10-18T11:20:57.828Z] [logging] Logging Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-10-18T11:20:57.829Z] [auth] Authentication Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-10-18T11:20:57.829Z] [firestore] Firestore Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-10-18T11:20:57.829Z] [firestore.websocket] websocket server for firestore only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-10-18T11:20:57.829Z] [storage] Storage Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-10-18T11:20:57.829Z] assigned listening specs for emulators {"user":{"hosting":[{"address":"0.0.0.0","family":"IPv4","port":5000}],"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000},{"address":"::1","family":"IPv6","port":4000}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}],"auth":[{"address":"127.0.0.1","family":"IPv4","port":9099}],"firestore":[{"address":"127.0.0.1","family":"IPv4","port":8080}],"firestore.websocket":[{"address":"127.0.0.1","family":"IPv4","port":9150}],"storage":[{"address":"127.0.0.1","family":"IPv4","port":9199}]},"metadata":{"message":"assigned listening specs for emulators"}}
+[debug] [2026-10-18T11:20:57.836Z] Write emulator hub locator at C:\Users\zaina\AppData\Local\Temp\hub-waradly-1.json
+[warn] !  emulators: Could not find import/export metadata file, skipping data import! {"metadata":{"emulator":{"name":"hub"},"message":"Could not find import/export metadata file, \u001b[1mskipping data import!\u001b[22m"}}
+[debug] [2026-10-18T11:20:57.846Z] [Extensions] Started Extensions emulator, this is a noop.
+[debug] [2026-10-18T11:20:57.854Z] [functions] Functions Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-10-18T11:20:57.854Z] [eventarc] Eventarc Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-10-18T11:20:57.854Z] [tasks] Cloud Tasks Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-10-18T11:20:57.854Z] late-assigned ports for functions and eventarc emulators {"user":{"hosting":[{"address":"0.0.0.0","family":"IPv4","port":5000}],"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000},{"address":"::1","family":"IPv6","port":4000}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}],"auth":[{"address":"127.0.0.1","family":"IPv4","port":9099}],"firestore":[{"address":"127.0.0.1","family":"IPv4","port":8080}],"firestore.websocket":[{"address":"127.0.0.1","family":"IPv4","port":9150}],"storage":[{"address":"127.0.0.1","family":"IPv4","port":9199}],"functions":[{"address":"127.0.0.1","family":"IPv4","port":5001}],"eventarc":[{"address":"127.0.0.1","family":"IPv4","port":9299}],"tasks":[{"address":"127.0.0.1","family":"IPv4","port":9499}]},"metadata":{"message":"late-assigned ports for functions and eventarc emulators"}}
+[warn] !  functions: The following emulators are not running, calls to these services from the Functions emulator will affect production: apphosting, database, pubsub, dataconnect {"metadata":{"emulator":{"name":"functions"},"message":"The following emulators are not running, calls to these services from the Functions emulator will affect production: \u001b[1mapphosting, database, pubsub, dataconnect\u001b[22m"}}
+[debug] [2026-10-18T11:20:57.875Z] defaultcredentials: writing to file C:\Users\zaina\AppData\Roaming\firebase\zainamabrouk_gmail_com_application_default_credentials.json
+[debug] [2026-10-18T11:20:57.877Z] Setting GAC to C:\Users\zaina\AppData\Roaming\firebase\zainamabrouk_gmail_com_application_default_credentials.json {"metadata":{"emulator":{"name":"functions"},"message":"Setting GAC to C:\\Users\\zaina\\AppData\\Roaming\\firebase\\zainamabrouk_gmail_com_application_default_credentials.json"}}
+[debug] [2026-10-18T11:20:57.878Z] Checked if tokens are valid: true, expires at: 1792326055770
+[debug] [2026-10-18T11:20:57.878Z] Checked if tokens are valid: true, expires at: 1792326055770
+[debug] [2026-10-18T11:20:57.878Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/waradly-1/adminSdkConfig [none]
+[debug] [2026-10-18T11:20:58.871Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/waradly-1/adminSdkConfig 200
+[debug] [2026-10-18T11:20:58.872Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/waradly-1/adminSdkConfig {"projectId":"waradly-1","storageBucket":"waradly-1.firebasestorage.app"}
+[debug] [2026-10-18T11:20:58.893Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"firestore"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2026-10-18T11:20:58.893Z] Ignoring unsupported arg: single_project_mode_error {"metadata":{"emulator":{"name":"firestore"},"message":"Ignoring unsupported arg: single_project_mode_error"}}
+[debug] [2026-10-18T11:20:58.893Z] Starting Firestore Emulator with command {"binary":"java","args":["-Dgoogle.cloud_firestore.debug_log_level=FINE","-Duser.language=en","-jar","C:\\Users\\zaina\\.cache\\firebase\\emulators\\cloud-firestore-emulator-v1.22.0.jar","--host","127.0.0.1","--port",8080,"--websocket_port",9150,"--database-edition","standard","--project_id","waradly-1","--rules","C:\\Users\\zaina\\Projects\\waradly\\firestore.rules","--single_project_mode",true,"--functions_emulator","127.0.0.1:5001"],"optionalArgs":["port","webchannel_port","host","rules","websocket_port","database-edition","functions_emulator","seed_from_export","project_id","single_project_mode"],"joinArgs":false,"shell":false,"port":8080} {"metadata":{"emulator":{"name":"firestore"},"message":"Starting Firestore Emulator with command {\"binary\":\"java\",\"args\":[\"-Dgoogle.cloud_firestore.debug_log_level=FINE\",\"-Duser.language=en\",\"-jar\",\"C:\\\\Users\\\\zaina\\\\.cache\\\\firebase\\\\emulators\\\\cloud-firestore-emulator-v1.22.0.jar\",\"--host\",\"127.0.0.1\",\"--port\",8080,\"--websocket_port\",9150,\"--database-edition\",\"standard\",\"--project_id\",\"waradly-1\",\"--rules\",\"C:\\\\Users\\\\zaina\\\\Projects\\\\waradly\\\\firestore.rules\",\"--single_project_mode\",true,\"--functions_emulator\",\"127.0.0.1:5001\"],\"optionalArgs\":[\"port\",\"webchannel_port\",\"host\",\"rules\",\"websocket_port\",\"database-edition\",\"functions_emulator\",\"seed_from_export\",\"project_id\",\"single_project_mode\"],\"joinArgs\":false,\"shell\":false,\"port\":8080}"}}
+[info] i  firestore: Firestore Emulator logging to firestore-debug.log {"metadata":{"emulator":{"name":"firestore"},"message":"Firestore Emulator logging to \u001b[1mfirestore-debug.log\u001b[22m"}}
+[debug] [2026-10-18T11:21:00.504Z] Oct 18, 2026 1:21:00 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketServer start
+INFO: Started WebSocket server on ws://127.0.0.1:9150
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Oct 18, 2026 1:21:00 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketServer start\r\nINFO: Started WebSocket server on ws://127.0.0.1:9150\r\n"}}
+[debug] [2026-10-18T11:21:00.563Z] 
+API endpoint: http:// {"metadata":{"emulator":{"name":"firestore"},"message":"\nAPI endpoint: http://"}}
+[debug] [2026-10-18T11:21:00.564Z] 127.0.0.1:8080
+Database Edition: STANDARD
+Database Mode: CLOUD_FIRESTORE
+
+If you are using a library that supports the FIRESTORE_EMULATOR_HOST environment variable, run:
+
+   export FIRESTORE_EMULATOR_HOST=127.0.0.1:8080
+
+If you are running a Firestore in Datastore Mode project, run:
+
+   export DATASTORE_EMULATOR_HOST=127.0.0.1:8080
+
+Note: Support for Datastore Mode is in preview. If you encounter any bugs please file at https://github.com/firebase/firebase-tools/issues.
+Dev App Server is now running.
+
+ {"metadata":{"emulator":{"name":"firestore"},"message":"127.0.0.1:8080\nDatabase Edition: STANDARD\nDatabase Mode: CLOUD_FIRESTORE\n\nIf you are using a library that supports the FIRESTORE_EMULATOR_HOST environment variable, run:\r\n\n   export FIRESTORE_EMULATOR_HOST=127.0.0.1:8080\n\nIf you are running a Firestore in Datastore Mode project, run:\r\n\n   export DATASTORE_EMULATOR_HOST=127.0.0.1:8080\n\nNote: Support for Datastore Mode is in preview. If you encounter any bugs please file at https://github.com/firebase/firebase-tools/issues.\r\nDev App Server is now running.\n\r\n"}}
+[info] +  firestore: Firestore Emulator was started in standard edition. {"metadata":{"emulator":{"name":"firestore"},"message":"Firestore Emulator was started in standard edition."}}
+[info] +  firestore: Firestore Emulator UI websocket is running on 9150. {"metadata":{"emulator":{"name":"firestore"},"message":"Firestore Emulator UI websocket is running on 9150."}}
+[debug] [2026-10-18T11:21:06.245Z] Ignoring unsupported arg: port {"metadata":{"emulator":{"name":"storage"},"message":"Ignoring unsupported arg: port"}}
+[debug] [2026-10-18T11:21:07.579Z] Temp file directory for storage emulator: C:\Users\zaina\AppData\Local\Temp/firebase/storage/blobs {"metadata":{"emulator":{"name":"storage"},"message":"Temp file directory for storage emulator: C:\\Users\\zaina\\AppData\\Local\\Temp/firebase/storage/blobs"}}
+[debug] [2026-10-18T11:21:07.586Z] Checked if tokens are valid: true, expires at: 1792326055770
+[debug] [2026-10-18T11:21:07.586Z] Checked if tokens are valid: true, expires at: 1792326055770
+[debug] [2026-10-18T11:21:07.587Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/waradly-1/sites 
+[debug] [2026-10-18T11:21:09.113Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/waradly-1/sites 200
+[debug] [2026-10-18T11:21:09.113Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/waradly-1/sites {"sites":[{"name":"projects/waradly-1/sites/waradly-1","defaultUrl":"https://waradly-1.web.app","type":"DEFAULT_SITE"}]}
+[debug] [2026-10-18T11:21:09.114Z] Checked if tokens are valid: true, expires at: 1792326055770
+[debug] [2026-10-18T11:21:09.114Z] Checked if tokens are valid: true, expires at: 1792326055770
+[debug] [2026-10-18T11:21:09.114Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/waradly-1/webApps/-/config [none]
+[debug] [2026-10-18T11:21:10.447Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/waradly-1/webApps/-/config 200
+[debug] [2026-10-18T11:21:10.447Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/waradly-1/webApps/-/config {"projectId":"waradly-1","appId":"1:739886061815:web:e64d636214c463b560dbf2","storageBucket":"waradly-1.firebasestorage.app","apiKey":"AIzaSyAwJbIIYWSJdM3NsU1QW_MtPureMBzL07w","authDomain":"waradly-1.firebaseapp.com","messagingSenderId":"739886061815","measurementId":"G-WFN2NKJPM3","projectNumber":"739886061815","version":"2"}
+[debug] [2026-10-18T11:21:10.503Z] Checked if tokens are valid: true, expires at: 1792326055770
+[debug] [2026-10-18T11:21:10.503Z] Checked if tokens are valid: true, expires at: 1792326055770
+[debug] [2026-10-18T11:21:10.503Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/waradly-1 [none]
+[debug] [2026-10-18T11:21:10.808Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/waradly-1 200
+[debug] [2026-10-18T11:21:10.808Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/waradly-1 {"projectId":"waradly-1","projectNumber":"739886061815","displayName":"Waradly","name":"projects/waradly-1","resources":{"hostingSite":"waradly-1"},"state":"ACTIVE","labels":{"firebase":"enabled","firebase/storage-default-bucket":"created"},"etag":"1_51ee8f69-6b95-4090-a717-8b1c27d1f2e9"}
+[info] i  hosting[waradly-1]: Serving hosting files from: public-web {"metadata":{"emulator":{"name":"hosting"},"message":"Serving hosting files from: \u001b[1mpublic-web\u001b[22m"}}
+[info] +  hosting[waradly-1]: Local server: http://0.0.0.0:5000 {"metadata":{"emulator":{"name":"hosting"},"message":"Local server: \u001b[4m\u001b[1mhttp://0.0.0.0:5000\u001b[22m\u001b[24m"}}
+[debug] [2026-10-18T11:21:10.973Z] [Extensions] Connecting Extensions emulator, this is a noop.
+[info] i  functions: Watching "C:\Users\zaina\Projects\waradly\functions" for Cloud Functions... {"metadata":{"emulator":{"name":"functions"},"message":"Watching \"C:\\Users\\zaina\\Projects\\waradly\\functions\" for Cloud Functions..."}}
+[debug] [2026-10-18T11:21:10.977Z] Validating nodejs source
+[warn] !  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[warn] !  functions: Please note that there will be breaking changes when you upgrade. 
+[debug] [2026-10-18T11:21:17.374Z] > [functions] package.json contents: {
+  "name": "waradly-functions",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Waradly backend — plain Node.js/Express on Firebase Cloud Functions",
+  "main": "index.js",
+  "engines": {
+    "node": "22"
+  },
+  "scripts": {
+    "serve": "firebase emulators:start --only functions,firestore,auth,storage",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@simplewebauthn/server": "^14.0.2",
+    "busboy": "^1.6.0",
+    "cors": "^2.8.5",
+    "express": "^4.21.0",
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^5.1.1",
+    "pdf-lib": "^1.17.1",
+    "sharp": "^0.33.5",
+    "zod": "^3.23.8"
+  }
+}
+[debug] [2026-10-18T11:21:17.375Z] Building nodejs source
+[debug] [2026-10-18T11:21:17.375Z] Failed to find version of module node: reached end of search path C:\Users\zaina\Projects\waradly\functions\node_modules
+[warn] !  functions: Your requested "node" version "22" doesn't match your global version "24". Using node@24 from host. 
+[info] i  functions: Loaded environment variables from functions\.env.waradly-1 
+[debug] [2026-10-18T11:21:17.382Z] Could not find functions.yaml. Must use http discovery
+[debug] [2026-10-18T11:21:17.393Z] Found firebase-functions binary at 'C:\Users\zaina\Projects\waradly\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8678
+
+[debug] [2026-10-18T11:21:19.133Z] Got response from /__/functions.yaml {"endpoints":{"api":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"api"},"expireRfqs":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"scheduleTrigger":{"schedule":"every 1 hours","retryConfig":{"retryCount":null,"maxDoublings":null,"maxRetrySeconds":null,"minBackoffSeconds":null,"maxBackoffSeconds":null},"timeZone":null},"entryPoint":"expireRfqs"}},"specVersion":"v1alpha1","requiredAPIs":[{"api":"cloudscheduler.googleapis.com","reason":"Needed for scheduled functions."}],"extensions":{}}
+[debug] [2026-10-18T11:21:20.792Z] Oct 18, 2026 1:21:20 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler initChannel
+INFO: Connected to new websocket client
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Oct 18, 2026 1:21:20 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler initChannel\r\nINFO: Connected to new websocket client\r\n"}}
+[debug] [2026-10-18T11:21:22.177Z] defaultcredentials: writing to file C:\Users\zaina\AppData\Roaming\firebase\zainamabrouk_gmail_com_application_default_credentials.json
+[debug] [2026-10-18T11:21:22.178Z] Setting GAC to C:\Users\zaina\AppData\Roaming\firebase\zainamabrouk_gmail_com_application_default_credentials.json {"metadata":{"emulator":{"name":"functions"},"message":"Setting GAC to C:\\Users\\zaina\\AppData\\Roaming\\firebase\\zainamabrouk_gmail_com_application_default_credentials.json"}}
+[info] +  functions: Loaded functions definitions from source: api, expireRfqs. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: api, expireRfqs."}}
+[info] +  functions[us-central1-api]: http function initialized (http://127.0.0.1:5001/waradly-1/us-central1/api). {"metadata":{"emulator":{"name":"functions"},"message":"\u001b[1mhttp\u001b[22m function initialized (http://127.0.0.1:5001/waradly-1/us-central1/api)."}}
+[info] i  functions[us-central1-expireRfqs]: function ignored because the pubsub emulator does not exist or is not running. {"metadata":{"emulator":{"name":"functions"},"message":"function ignored because the pubsub emulator does not exist or is not running."}}
+[debug] [2026-10-18T11:21:22.192Z] Could not find VSCode notification endpoint: TypeError: fetch failed. If you are not running the Firebase SQL Connect VSCode extension, this is expected and not an issue.
+[info] 
+┌─────────────────────────────────────────────────────────────┐
+│ ✔  All emulators ready! It is now safe to connect your app. │
+│ i  View Emulator UI at http://127.0.0.1:4000/               │
+└─────────────────────────────────────────────────────────────┘
+
+┌────────────────┬────────────────┬──────────────────────────────────┐
+│ Emulator       │ Host:Port      │ View in Emulator UI              │
+├────────────────┼────────────────┼──────────────────────────────────┤
+│ Authentication │ 127.0.0.1:9099 │ http://127.0.0.1:4000/auth       │
+├────────────────┼────────────────┼──────────────────────────────────┤
+│ Functions      │ 127.0.0.1:5001 │ http://127.0.0.1:4000/functions  │
+├────────────────┼────────────────┼──────────────────────────────────┤
+│ Firestore      │ 127.0.0.1:8080 │ http://127.0.0.1:4000/firestore  │
+├────────────────┼────────────────┼──────────────────────────────────┤
+│ Hosting        │ 0.0.0.0:5000   │ n/a                              │
+├────────────────┼────────────────┼──────────────────────────────────┤
+│ Storage        │ 127.0.0.1:9199 │ http://127.0.0.1:4000/storage    │
+├────────────────┼────────────────┼──────────────────────────────────┤
+│ Extensions     │ 127.0.0.1:5001 │ http://127.0.0.1:4000/extensions │
+└────────────────┴────────────────┴──────────────────────────────────┘
+  Emulator Hub host: 127.0.0.1 port: 4400
+  Other reserved ports: 4500, 9150
+┌─────────────────────────┬───────────────┬─────────────────────┐
+│ Extension Instance Name │ Extension Ref │ View in Emulator UI │
+└─────────────────────────┴───────────────┴─────────────────────┘
+Issues? Report them at https://github.com/firebase/firebase-tools/issues and attach the *-debug.log files.
+ 
+[debug] [2026-10-18T11:21:24.767Z] Oct 18, 2026 1:21:24 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler channelClosed
+INFO: Websocket client disconnected
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Oct 18, 2026 1:21:24 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler channelClosed\r\nINFO: Websocket client disconnected\r\n"}}
+[debug] [2026-10-18T11:21:24.767Z] Oct 18, 2026 1:21:24 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler initChannel
+INFO: Connected to new websocket client
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Oct 18, 2026 1:21:24 PM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler initChannel\r\nINFO: Connected to new websocket client\r\n"}}
+[info] i  hosting: 127.0.0.1 - - [18/Oct/2026:11:21:25 +0000] "GET / HTTP/1.1" 200 - "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.140.0 Chrome/150.0.7871.250 Electron/43.7.3 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"127.0.0.1 - - [18/Oct/2026:11:21:25 +0000] \"GET / HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.140.0 Chrome/150.0.7871.250 Electron/43.7.3 Safari/537.36\""}}
+[info] i  hosting: 127.0.0.1 - - [18/Oct/2026:11:21:25 +0000] "GET /assets/css/theme.css HTTP/1.1" 200 - "http://localhost:5000/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.140.0 Chrome/150.0.7871.250 Electron/43.7.3 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"127.0.0.1 - - [18/Oct/2026:11:21:25 +0000] \"GET /assets/css/theme.css HTTP/1.1\" 200 - \"http://localhost:5000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.140.0 Chrome/150.0.7871.250 Electron/43.7.3 Safari/537.36\""}}
+[info] i  hosting: 127.0.0.1 - - [18/Oct/2026:11:21:25 +0000] "GET /assets/js/i18n.js HTTP/1.1" 200 - "http://localhost:5000/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.140.0 Chrome/150.0.7871.250 Electron/43.7.3 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"127.0.0.1 - - [18/Oct/2026:11:21:25 +0000] \"GET /assets/js/i18n.js HTTP/1.1\" 200 - \"http://localhost:5000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.140.0 Chrome/150.0.7871.250 Electron/43.7.3 Safari/537.36\""}}
+[info] i  hosting: 127.0.0.1 - - [18/Oct/2026:11:21:25 +0000] "GET /assets/img/logo-light.png HTTP/1.1" 200 35422 "http://localhost:5000/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.140.0 Chrome/150.0.7871.250 Electron/43.7.3 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"127.0.0.1 - - [18/Oct/2026:11:21:25 +0000] \"GET /assets/img/logo-light.png HTTP/1.1\" 200 35422 \"http://localhost:5000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.140.0 Chrome/150.0.7871.250 Electron/43.7.3 Safari/537.36\""}}
+[info] i  hosting: 127.0.0.1 - - [18/Oct/2026:11:21:25 +0000] "GET /assets/img/logo-full-dark.png HTTP/1.1" 200 93049 "http://localhost:5000/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.140.0 Chrome/150.0.7871.250 Electron/43.7.3 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"127.0.0.1 - - [18/Oct/2026:11:21:25 +0000] \"GET /assets/img/logo-full-dark.png HTTP/1.1\" 200 93049 \"http://localhost:5000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.140.0 Chrome/150.0.7871.250 Electron/43.7.3 Safari/537.36\""}}
+[info] i  hosting: 127.0.0.1 - - [18/Oct/2026:11:21:25 +0000] "GET /assets/fonts/outfit-latin.woff2 HTTP/1.1" 200 32292 "http://localhost:5000/assets/css/theme.css" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.140.0 Chrome/150.0.7871.250 Electron/43.7.3 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"127.0.0.1 - - [18/Oct/2026:11:21:25 +0000] \"GET /assets/fonts/outfit-latin.woff2 HTTP/1.1\" 200 32292 \"http://localhost:5000/assets/css/theme.css\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.140.0 Chrome/150.0.7871.250 Electron/43.7.3 Safari/537.36\""}}
+[info] i  hosting: 127.0.0.1 - - [18/Oct/2026:11:21:25 +0000] "GET /assets/img/favicon.png HTTP/1.1" 200 14030 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.140.0 Chrome/150.0.7871.250 Electron/43.7.3 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"127.0.0.1 - - [18/Oct/2026:11:21:25 +0000] \"GET /assets/img/favicon.png HTTP/1.1\" 200 14030 \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.140.0 Chrome/150.0.7871.250 Electron/43.7.3 Safari/537.36\""}}
+[info] i  hosting: 127.0.0.1 - - [18/Oct/2026:11:21:41 +0000] "GET / HTTP/1.1" 200 - "http://localhost:5000/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.140.0 Chrome/150.0.7871.250 Electron/43.7.3 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"127.0.0.1 - - [18/Oct/2026:11:21:41 +0000] \"GET / HTTP/1.1\" 200 - \"http://localhost:5000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.140.0 Chrome/150.0.7871.250 Electron/43.7.3 Safari/537.36\""}}
+[info] i  hosting: 127.0.0.1 - - [18/Oct/2026:11:27:24 +0000] "GET / HTTP/1.1" 200 - "http://localhost:5000/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.140.0 Chrome/150.0.7871.250 Electron/43.7.3 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"127.0.0.1 - - [18/Oct/2026:11:27:24 +0000] \"GET / HTTP/1.1\" 200 - \"http://localhost:5000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.140.0 Chrome/150.0.7871.250 Electron/43.7.3 Safari/537.36\""}}
+[info] i  hosting: 127.0.0.1 - - [18/Oct/2026:11:27:24 +0000] "GET /assets/css/theme.css HTTP/1.1" 200 - "http://localhost:5000/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.140.0 Chrome/150.0.7871.250 Electron/43.7.3 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"127.0.0.1 - - [18/Oct/2026:11:27:24 +0000] \"GET /assets/css/theme.css HTTP/1.1\" 200 - \"http://localhost:5000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.140.0 Chrome/150.0.7871.250 Electron/43.7.3 Safari/537.36\""}}
+[info] i  hosting: 127.0.0.1 - - [18/Oct/2026:11:27:24 +0000] "GET /assets/js/i18n.js HTTP/1.1" 200 - "http://localhost:5000/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.140.0 Chrome/150.0.7871.250 Electron/43.7.3 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"127.0.0.1 - - [18/Oct/2026:11:27:24 +0000] \"GET /assets/js/i18n.js HTTP/1.1\" 200 - \"http://localhost:5000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.140.0 Chrome/150.0.7871.250 Electron/43.7.3 Safari/537.36\""}}

@@ -18,7 +18,7 @@ function formatDate(value) {
   if (!value) return '—';
   const date = typeof value === 'object' && value._seconds !== undefined ? new Date(value._seconds * 1000) : new Date(value);
   if (Number.isNaN(date.getTime())) return '—';
-  return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+  return date.toLocaleDateString(document.documentElement.lang === 'ar' ? 'ar-EG-u-nu-latn' : undefined, { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
 function showError(containerId, err) {
