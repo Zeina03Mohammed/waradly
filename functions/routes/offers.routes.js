@@ -125,8 +125,10 @@ router.patch(
     const competingOffers = competingSnap.docs.filter((d) => d.id !== offer.id);
 
     await db.runTransaction(async (tx) => {
-      const orderSnap = await tx.get(orderRef);
-      if (orderSnap.exists) throw Object.assign(new Error('already awarded'), { code: 'already-awarded' });
+      const [orderSnap, rfqSnap] = await Promise.all([tx.get(orderRef), tx.get(rfqRef)]);
+      if (orderSnap.exists) throw Errors.conflict('This RFQ has already been awarded.');
+      // Re-read inside the tx so the hourly expireRfqs job can't expire it underneath us.
+      if (!canTransitionRfq(rfqSnap.data().status, 'AWARDED')) throw Errors.conflict('This RFQ cannot be awarded from its current status.');
 
       tx.update(offerRef, { status: 'ACCEPTED', updated_at: new Date() });
       for (const doc of competingOffers) tx.update(doc.ref, { status: 'REJECTED', updated_at: new Date() });

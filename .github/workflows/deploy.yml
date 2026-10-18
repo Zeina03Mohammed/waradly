@@ -1,0 +1,48 @@
+name: Test and deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            functions/package-lock.json
+
+      - run: npm ci
+      - run: npm test
+      - run: npm ci
+        working-directory: functions
+      - run: npm test
+        working-directory: functions
+
+      # Everything below only runs on main, never for PRs.
+      # functions/.env.waradly-1 is gitignored — rebuild it from repo secrets.
+      - name: Write functions env
+        if: github.ref == 'refs/heads/main'
+        working-directory: functions
+        run: |
+          cat > .env.waradly-1 <<EOF
+          WEB_API_KEY=${{ secrets.WEB_API_KEY }}
+          APP_BASE_URL=https://www.warradly.co
+          RESEND_API_KEY=${{ secrets.RESEND_API_KEY }}
+          EMAIL_FROM=Waradly <onboarding@resend.dev>
+          EOF
+
+      - uses: google-github-actions/auth@v2
+        if: github.ref == 'refs/heads/main'
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Deploy
+        if: github.ref == 'refs/heads/main'
+        run: npx firebase-tools@latest deploy --only functions,hosting,firestore,storage --project waradly-1 --non-interactive --force

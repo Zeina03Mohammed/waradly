@@ -37,7 +37,8 @@ async function sendEmail({ to, subject, body }) {
     method: 'POST',
     headers: { Authorization: `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({ from: EMAIL_FROM, to, subject, text: body, html: toHtml(subject, body) }),
-  });
+    signal: AbortSignal.timeout(10_000),
+  }).catch((err) => ({ ok: false, status: err.name, text: async () => err.message })); // timeout/network: log, don't fail the request
   if (!res.ok) {
     console.error('[email:resend] send failed', res.status, await res.text().catch(() => ''));
   }

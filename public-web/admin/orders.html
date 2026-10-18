@@ -28,7 +28,8 @@
       if (!user) return;
       Waradly.mountShell(user, '/admin/orders.html');
 
-      const { orders } = await Waradly.api('/api/admin/orders');
+      const { orders, has_more } = await Waradly.api('/api/admin/orders');
+      if (has_more) document.getElementById('list').insertAdjacentHTML('beforebegin', `<p class="muted">Showing the latest ${orders.length} orders.</p>`);
       document.getElementById('list').innerHTML = orders.length
         ? `<table><thead><tr><th>Order</th><th>Buyer</th><th>Supplier</th><th>Status</th></tr></thead><tbody>
             ${orders.map((o) => `<tr onclick="location.href='/admin/order-detail.html?id=${o.id}'" style="cursor:pointer;">

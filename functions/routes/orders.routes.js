@@ -19,6 +19,7 @@ const { getOrganizationByOwner, getOrganizationById } = require('../services/org
 const { getRfqById, createRfq } = require('../services/rfqService');
 const { serializeOrderFor } = require('../masking/order');
 const { allFilesOwnedBy } = require('../services/fileOwnershipService');
+const { latest } = require('../http/listLimit');
 const { audit } = require('../services/auditService');
 const { notify } = require('../services/notifyService');
 
@@ -41,16 +42,18 @@ router.get(
   '/',
   asyncHandler(async (req, res) => {
     let orders;
+    let has_more = false;
     if (req.user.role === 'admin') {
-      const snap = await db.collection('orders').get();
-      orders = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      const result = await latest(db.collection('orders'));
+      orders = result.docs.map((d) => ({ id: d.id, ...d.data() }));
+      has_more = result.has_more;
     } else {
       const org = await getOrganizationByOwner(req.user.id);
       if (!org) throw Errors.forbidden();
       orders = org.type === 'buyer' ? await listOrdersForBuyer(org.id) : await listOrdersForSupplier(org.id);
     }
     const relation = req.user.role === 'admin' ? 'admin' : 'participant';
-    res.json({ orders: orders.map((o) => serializeOrderFor(relation, o)) });
+    res.json({ orders: orders.map((o) => serializeOrderFor(relation, o)), has_more });
   }),
 );
 

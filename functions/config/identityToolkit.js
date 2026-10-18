@@ -17,7 +17,7 @@ function baseUrl(service) {
 
 async function callIdentityToolkit(path, body) {
   const url = `${baseUrl('identitytoolkit.googleapis.com')}/v1/accounts:${path}?key=${apiKey}`;
-  const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: AbortSignal.timeout(10_000) });
   const data = await res.json();
   if (!res.ok) {
     const message = data?.error?.message || 'auth request failed';
@@ -40,6 +40,7 @@ async function exchangeRefreshToken(refreshToken) {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({ grant_type: 'refresh_token', refresh_token: refreshToken }),
+    signal: AbortSignal.timeout(10_000),
   });
   const data = await res.json();
   if (!res.ok) {

@@ -122,7 +122,8 @@ router.post(
     let signedIn;
     try {
       signedIn = await identityToolkit.signInWithPassword(email, password);
-    } catch {
+    } catch (err) {
+      if (!err.identityToolkitError) throw err; // timeout/network — not a wrong password, don't count it
       const { lockedOut } = await recordFailedAttempt(authUser.uid, user);
       await audit({ actorId: authUser.uid, action: 'auth.login_failed', entityType: 'user', entityId: authUser.uid });
       if (lockedOut) {

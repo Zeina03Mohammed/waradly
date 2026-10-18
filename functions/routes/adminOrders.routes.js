@@ -3,6 +3,7 @@ const { z } = require('zod');
 const { db } = require('../config/firebase');
 const { Errors } = require('../http/errors');
 const { asyncHandler } = require('../http/errorHandler');
+const { latest } = require('../http/listLimit');
 const { authenticate } = require('../middleware/authenticate');
 const { requireRole } = require('../middleware/requireRole');
 const { zodFieldErrors } = require('../validation/auth');
@@ -26,8 +27,8 @@ router.get(
     if (req.query.buyer_id) query = query.where('buyer_id', '==', req.query.buyer_id);
     if (req.query.supplier_id) query = query.where('supplier_id', '==', req.query.supplier_id);
 
-    const snap = await query.get();
-    res.json({ orders: snap.docs.map((d) => serializeOrderFor('admin', { id: d.id, ...d.data() })) });
+    const { docs, has_more } = await latest(query, { filtered: Boolean(req.query.status || req.query.buyer_id || req.query.supplier_id) });
+    res.json({ orders: docs.map((d) => serializeOrderFor('admin', { id: d.id, ...d.data() })), has_more });
   }),
 );
 

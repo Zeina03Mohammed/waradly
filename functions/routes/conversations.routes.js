@@ -2,6 +2,7 @@ const { Router } = require('express');
 const { db } = require('../config/firebase');
 const { Errors } = require('../http/errors');
 const { asyncHandler } = require('../http/errorHandler');
+const { latest } = require('../http/listLimit');
 const { authenticate } = require('../middleware/authenticate');
 const { requireRole } = require('../middleware/requireRole');
 const { createConversationSchema, sendMessageSchema } = require('../validation/message');
@@ -26,8 +27,8 @@ router.get(
   '/',
   asyncHandler(async (req, res) => {
     if (req.user.role === 'admin') {
-      const snap = await db.collection('conversations').get();
-      return res.json({ conversations: snap.docs.map((d) => ({ id: d.id, ...d.data() })) });
+      const { docs, has_more } = await latest(db.collection('conversations'));
+      return res.json({ conversations: docs.map((d) => ({ id: d.id, ...d.data() })), has_more });
     }
     const org = await getOrganizationByOwner(req.user.id);
     if (!org) throw Errors.forbidden();
