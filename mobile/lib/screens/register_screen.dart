@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../api_client.dart';
 import '../theme.dart';
+import '../widgets/common.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -70,7 +71,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               if (_role == 'supplier') ...[
                 const SizedBox(height: 12),
                 const Text(
-                  'Tip: on the Waradly website you can also complete a one-time Face ID identity check for supplier accounts.',
+                  'Tip: on the Warradly website you can also complete a one-time Face ID identity check for supplier accounts.',
                   style: TextStyle(color: navy400),
                 ),
               ],
@@ -119,6 +120,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               controlAffinity: ListTileControlAffinity.leading,
               contentPadding: EdgeInsets.zero,
             ),
+            const LegalLinks(),
             const SizedBox(height: 12),
             ElevatedButton(
               onPressed: _submitting ? null : _submit,

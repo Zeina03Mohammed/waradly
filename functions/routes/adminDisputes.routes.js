@@ -52,7 +52,7 @@ router.post(
           eventType: 'dispute.opened',
           message: `A dispute was opened on your order: ${parsed.data.category}`,
           link: `/orders/${order.id}`,
-          email: { subject: 'A dispute was opened on your Waradly order', body: `A dispute was opened: ${parsed.data.category}\n\n${parsed.data.description}` },
+          email: { subject: 'A dispute was opened on your Warradly order', body: `A dispute was opened: ${parsed.data.category}\n\n${parsed.data.description}` },
         });
       }
     }
@@ -103,7 +103,7 @@ router.patch(
           eventType: 'dispute.resolved',
           message: `Your dispute was resolved: ${parsed.data.outcome}`,
           link: `/orders/${order.id}`,
-          email: { subject: 'Your Waradly dispute was resolved', body: `Your dispute was resolved: ${parsed.data.outcome}${parsed.data.notes ? `\n\n${parsed.data.notes}` : ''}` },
+          email: { subject: 'Your Warradly dispute was resolved', body: `Your dispute was resolved: ${parsed.data.outcome}${parsed.data.notes ? `\n\n${parsed.data.notes}` : ''}` },
         });
       }
     }

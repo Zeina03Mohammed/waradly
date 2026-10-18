@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Profile — Waradly</title>
+  <title>Profile — Warradly</title>
   <link rel="stylesheet" href="/assets/css/theme.css" />
   <script src="/assets/js/i18n.js"></script>
   <link rel="icon" type="image/png" href="/assets/img/favicon.png" />
@@ -39,6 +39,13 @@
           <label class="field"><span>Exact address (internal use only)</span><input class="input" id="exact_address" /></label>
           <button class="btn-primary" type="submit">Save changes</button>
         </form>
+        <h2 style="font-size:1.1rem; font-weight:600; margin-top:2rem;">Delete account</h2>
+        <form id="delete-form" class="card">
+          <p class="muted mb-4">This permanently deletes your login, profile and uploaded files, cancels your open RFQs and withdraws your open offers. You can't delete your account while an order is in progress. This cannot be undone.</p>
+          <p id="delete-error" class="error-text mb-4" style="display:none;"></p>
+          <label class="field"><span>Password</span><input class="input" type="password" id="delete-password" required /></label>
+          <button class="btn-danger" type="submit">Delete my account</button>
+        </form>
       </div>
     </main>
   </div>
@@ -53,7 +60,7 @@
     async function renderAvatar() {
       if (currentUser.has_avatar) {
         const img = document.getElementById('avatar-img');
-        const ok = await Waradly.loadAvatarInto(img, currentUser.id);
+        const ok = await Warradly.loadAvatarInto(img, currentUser.id);
         if (ok) {
           img.style.display = 'block';
           document.getElementById('avatar-initials').style.display = 'none';
@@ -65,13 +72,13 @@
     }
 
     (async () => {
-      currentUser = await Waradly.requireRole('supplier');
+      currentUser = await Warradly.requireRole('supplier');
       if (!currentUser) return;
-      Waradly.mountShell(currentUser, '/supplier/profile.html');
+      Warradly.mountShell(currentUser, '/supplier/profile.html');
       document.getElementById('username').value = currentUser.username || '';
       renderAvatar();
 
-      const { organization } = await Waradly.api('/api/organizations/me');
+      const { organization } = await Warradly.api('/api/organizations/me');
       document.getElementById('legal_name').value = organization.legal_name || '';
       document.getElementById('country').value = organization.country || '';
       document.getElementById('general_region').value = organization.general_region || '';
@@ -86,29 +93,29 @@
       try {
         const formData = new FormData();
         formData.append('file', file);
-        await Waradly.api('/api/users/me/avatar', { method: 'POST', body: formData, isFormData: true });
+        await Warradly.api('/api/users/me/avatar', { method: 'POST', body: formData, isFormData: true });
         currentUser.has_avatar = true;
         renderAvatar();
       } catch (err) {
-        Waradly.showError('error', err);
+        Warradly.showError('error', err);
       }
     });
 
     document.getElementById('save-username-btn').addEventListener('click', async () => {
-      Waradly.clearError('error');
+      Warradly.clearError('error');
       try {
-        await Waradly.api('/api/users/me', { method: 'PATCH', body: { username: document.getElementById('username').value } });
+        await Warradly.api('/api/users/me', { method: 'PATCH', body: { username: document.getElementById('username').value } });
       } catch (err) {
-        Waradly.showError('error', err);
+        Warradly.showError('error', err);
       }
     });
 
     document.getElementById('org-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      Waradly.clearError('error');
-      Waradly.clearError('success');
+      Warradly.clearError('error');
+      Warradly.clearError('success');
       try {
-        await Waradly.api('/api/organizations/me', {
+        await Warradly.api('/api/organizations/me', {
           method: 'PATCH',
           body: {
             legal_name: document.getElementById('legal_name').value,
@@ -121,7 +128,18 @@
         document.getElementById('success').textContent = 'Profile updated.';
         document.getElementById('success').style.display = 'block';
       } catch (err) {
-        Waradly.showError('error', err);
+        Warradly.showError('error', err);
+      }
+    });
+    document.getElementById('delete-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!confirm('Permanently delete your account? This cannot be undone.')) return;
+      try {
+        await Warradly.api('/api/users/me', { method: 'DELETE', body: { password: document.getElementById('delete-password').value } });
+        Warradly.clearTokens();
+        window.location.assign('/');
+      } catch (err) {
+        Warradly.showError('delete-error', err);
       }
     });
   </script>

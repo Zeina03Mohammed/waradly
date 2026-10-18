@@ -87,10 +87,10 @@ async function api(path, options = {}) {
   return data;
 }
 
-window.Waradly = window.Waradly || {};
-window.Waradly.api = api;
-window.Waradly.ApiError = ApiError;
-window.Waradly.getAccessToken = getAccessToken;
-window.Waradly.getRefreshToken = getRefreshToken;
-window.Waradly.setTokens = setTokens;
-window.Waradly.clearTokens = clearTokens;
+window.Warradly = window.Warradly || {};
+window.Warradly.api = api;
+window.Warradly.ApiError = ApiError;
+window.Warradly.getAccessToken = getAccessToken;
+window.Warradly.getRefreshToken = getRefreshToken;
+window.Warradly.setTokens = setTokens;
+window.Warradly.clearTokens = clearTokens;

@@ -6,10 +6,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// Express API, no client-side Firebase SDK needed on either client. Login/register are plain
 /// REST calls; the server does the Firebase Auth work on our behalf.
 ///
-/// On a real device this must point at the deployed Function/Hosting URL; 10.0.2.2 is the
-/// Android emulator's alias for the host machine's localhost, used only for local dev against
-/// the Firebase emulator suite.
-const String apiBaseUrl = String.fromEnvironment('API_BASE_URL', defaultValue: 'http://127.0.0.1:5000/api');
+/// Defaults to production so a plain `flutter build` is store-ready. For local dev against the
+/// Firebase emulator suite, override it: `--dart-define=API_BASE_URL=http://10.0.2.2:5000/api`
+/// (10.0.2.2 is the Android emulator's alias for the host machine's localhost).
+const String apiBaseUrl = String.fromEnvironment('API_BASE_URL', defaultValue: 'https://www.warradly.co/api');
 
 class ApiException implements Exception {
   final int status;
@@ -104,7 +104,7 @@ class ApiClient {
         case 'PATCH':
           return http.patch(uri, headers: headers, body: body != null ? jsonEncode(body) : null);
         case 'DELETE':
-          return http.delete(uri, headers: headers);
+          return http.delete(uri, headers: headers, body: body != null ? jsonEncode(body) : null);
         default:
           return http.get(uri, headers: headers);
       }

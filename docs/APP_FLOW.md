@@ -1,6 +1,6 @@
-# Waradly — App Flow
+# Warradly — App Flow
 
-How each type of user moves through Waradly, page by page, with the API call behind each step. Diagrams use Mermaid (they render on GitHub and in VS Code's Markdown preview with a Mermaid extension).
+How each type of user moves through Warradly, page by page, with the API call behind each step. Diagrams use Mermaid (they render on GitHub and in VS Code's Markdown preview with a Mermaid extension).
 
 | | |
 |---|---|

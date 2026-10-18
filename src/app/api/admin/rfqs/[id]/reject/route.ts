@@ -57,7 +57,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
       link: `/buyer/rfqs/${rfq.id}`,
       email: {
         to: owner.email,
-        subject: 'Your Waradly RFQ was rejected',
+        subject: 'Your Warradly RFQ was rejected',
         body: `Your RFQ "${rfq.title}" was rejected by Admin.\n\nReason: ${parsed.data.reason}\n\nYou can edit and resubmit it from your RFQ details page.`,
       },
     });

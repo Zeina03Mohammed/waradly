@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Order — Waradly</title>
+  <title>Order — Warradly</title>
   <link rel="stylesheet" href="/assets/css/theme.css" />
   <script src="/assets/js/i18n.js"></script>
   <link rel="icon" type="image/png" href="/assets/img/favicon.png" />
@@ -23,10 +23,10 @@
   <script src="/assets/js/shell.js"></script>
   <script src="/assets/js/util.js"></script>
   <script>
-    const orderId = Waradly.qs('id');
+    const orderId = Warradly.qs('id');
 
     async function render() {
-      const { order } = await Waradly.api(`/api/orders/${orderId}`);
+      const { order } = await Warradly.api(`/api/orders/${orderId}`);
       let actions = '';
       if (order.status === 'PAYMENT_CONFIRMED') actions = `<button class="btn-primary" id="start-btn">Mark production started</button>`;
       if (order.status === 'PRODUCTION') {
@@ -54,19 +54,19 @@
     }
 
     async function act(action, method = 'PATCH') {
-      Waradly.clearError('error');
+      Warradly.clearError('error');
       try {
-        await Waradly.api(`/api/orders/${orderId}/${action}`, { method, body: method === 'POST' ? {} : undefined });
+        await Warradly.api(`/api/orders/${orderId}/${action}`, { method, body: method === 'POST' ? {} : undefined });
         render();
       } catch (err) {
-        Waradly.showError('error', err);
+        Warradly.showError('error', err);
       }
     }
 
     (async () => {
-      const user = await Waradly.requireRole('supplier');
+      const user = await Warradly.requireRole('supplier');
       if (!user) return;
-      Waradly.mountShell(user, '/supplier/orders.html');
+      Warradly.mountShell(user, '/supplier/orders.html');
       await render();
     })();
   </script>

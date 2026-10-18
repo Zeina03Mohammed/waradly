@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Profile — Waradly</title>
+  <title>Profile — Warradly</title>
   <link rel="stylesheet" href="/assets/css/theme.css" />
   <script src="/assets/js/i18n.js"></script>
   <link rel="icon" type="image/png" href="/assets/img/favicon.png" />
@@ -41,7 +41,7 @@
     async function renderAvatar() {
       if (currentUser.has_avatar) {
         const img = document.getElementById('avatar-img');
-        const ok = await Waradly.loadAvatarInto(img, currentUser.id);
+        const ok = await Warradly.loadAvatarInto(img, currentUser.id);
         if (ok) {
           img.style.display = 'block';
           document.getElementById('avatar-initials').style.display = 'none';
@@ -53,9 +53,9 @@
     }
 
     (async () => {
-      currentUser = await Waradly.requireRole('admin');
+      currentUser = await Warradly.requireRole('admin');
       if (!currentUser) return;
-      Waradly.mountShell(currentUser, '/admin/profile.html');
+      Warradly.mountShell(currentUser, '/admin/profile.html');
       document.getElementById('username').value = currentUser.username || '';
       renderAvatar();
     })();
@@ -67,20 +67,20 @@
       try {
         const formData = new FormData();
         formData.append('file', file);
-        await Waradly.api('/api/users/me/avatar', { method: 'POST', body: formData, isFormData: true });
+        await Warradly.api('/api/users/me/avatar', { method: 'POST', body: formData, isFormData: true });
         currentUser.has_avatar = true;
         renderAvatar();
       } catch (err) {
-        Waradly.showError('error', err);
+        Warradly.showError('error', err);
       }
     });
 
     document.getElementById('save-username-btn').addEventListener('click', async () => {
-      Waradly.clearError('error');
+      Warradly.clearError('error');
       try {
-        await Waradly.api('/api/users/me', { method: 'PATCH', body: { username: document.getElementById('username').value } });
+        await Warradly.api('/api/users/me', { method: 'PATCH', body: { username: document.getElementById('username').value } });
       } catch (err) {
-        Waradly.showError('error', err);
+        Warradly.showError('error', err);
       }
     });
   </script>

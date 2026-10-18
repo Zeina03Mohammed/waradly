@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Offers — Waradly</title>
+  <title>Offers — Warradly</title>
   <link rel="stylesheet" href="/assets/css/theme.css" />
   <script src="/assets/js/i18n.js"></script>
   <link rel="icon" type="image/png" href="/assets/img/favicon.png" />
@@ -25,14 +25,14 @@
   <script src="/assets/js/shell.js"></script>
   <script src="/assets/js/util.js"></script>
   <script>
-    const rfqId = Waradly.qs('id');
+    const rfqId = Warradly.qs('id');
 
     async function render() {
-      const { offers } = await Waradly.api(`/api/rfqs/${rfqId}/offers`);
+      const { offers } = await Warradly.api(`/api/rfqs/${rfqId}/offers`);
       document.getElementById('list').innerHTML = offers.length
         ? `<table><thead><tr><th>Supplier</th><th>Unit price</th><th>MOQ</th><th>Lead time</th><th>Delivery est.</th><th>Status</th><th></th></tr></thead><tbody>
             ${offers.map((o) => `<tr>
-              <td>${Waradly.escapeHtml(o.supplier_anonymized_id)}</td>
+              <td>${Warradly.escapeHtml(o.supplier_anonymized_id)}</td>
               <td>${o.unit_price} EGP</td><td>${o.moq}</td><td>${o.production_lead_time_days}d</td><td>${o.delivery_time_estimate_days}d</td>
               <td><span class="badge">${o.status}</span></td>
               <td>${o.status === 'SUBMITTED' || o.status === 'UNDER_REVIEW' ? `<button class="btn-primary accept-btn" data-id="${o.id}">Accept</button>` : ''}</td>
@@ -43,21 +43,21 @@
       document.querySelectorAll('.accept-btn').forEach((btn) => {
         btn.addEventListener('click', async () => {
           if (!confirm('Accept this offer? This will reject all other offers and create an order.')) return;
-          Waradly.clearError('error');
+          Warradly.clearError('error');
           try {
-            const data = await Waradly.api(`/api/offers/${btn.dataset.id}/accept`, { method: 'PATCH' });
+            const data = await Warradly.api(`/api/offers/${btn.dataset.id}/accept`, { method: 'PATCH' });
             window.location.assign(`/buyer/order-detail.html?id=${data.order_id}`);
           } catch (err) {
-            Waradly.showError('error', err);
+            Warradly.showError('error', err);
           }
         });
       });
     }
 
     (async () => {
-      const user = await Waradly.requireRole('buyer');
+      const user = await Warradly.requireRole('buyer');
       if (!user) return;
-      Waradly.mountShell(user, '/buyer/rfqs.html');
+      Warradly.mountShell(user, '/buyer/rfqs.html');
       await render();
     })();
   </script>

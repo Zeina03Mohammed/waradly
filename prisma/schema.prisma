@@ -1,4 +1,4 @@
-// Waradly MVP schema — implements SPEC.md Section 3 exactly.
+// Warradly MVP schema — implements SPEC.md Section 3 exactly.
 // NOTE: `disputes` is not enumerated as its own table in Section 3, but Sections 2, 7.13,
 // 10, and 16 all require dispute open/resolve with fields (order, raised_by, category,
 // description, status, resolution outcome/notes) that Section 3's other tables don't carry.

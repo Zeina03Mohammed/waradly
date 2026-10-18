@@ -73,7 +73,7 @@ router.patch(
         eventType: 'rfq.rejected',
         message: `Your RFQ "${rfq.title}" was rejected: ${parsed.data.reason}`,
         link: `/buyer/rfqs/${rfq.id}`,
-        email: { subject: 'Your Waradly RFQ was rejected', body: `Your RFQ "${rfq.title}" was rejected.\n\nReason: ${parsed.data.reason}` },
+        email: { subject: 'Your Warradly RFQ was rejected', body: `Your RFQ "${rfq.title}" was rejected.\n\nReason: ${parsed.data.reason}` },
       });
     }
 

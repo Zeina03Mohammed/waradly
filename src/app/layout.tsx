@@ -7,7 +7,7 @@ import { RegisterServiceWorker } from '@/components/RegisterServiceWorker';
 const outfit = Outfit({ subsets: ['latin'], variable: '--font-outfit', display: 'swap' });
 
 export const metadata: Metadata = {
-  title: 'Waradly',
+  title: 'Warradly',
   description: 'B2B procurement marketplace',
   manifest: '/manifest.json',
   icons: {
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'Waradly',
+    title: 'Warradly',
   },
 };
 

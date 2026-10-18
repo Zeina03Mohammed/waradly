@@ -1,8 +1,8 @@
-# Waradly — Technical Requirements Document (TRD)
+# Warradly — Technical Requirements Document (TRD)
 
 | | |
 |---|---|
-| **Product** | Waradly — B2B procurement marketplace |
+| **Product** | Warradly — B2B procurement marketplace |
 | **Environment** | Production: `https://www.warradly.co` (Firebase project `waradly-1`; `warradly.co` and `waradly-1.web.app` also serve it) |
 | **Last updated** | 30 September 2026 |
 | **Related docs** | [APP_FLOW.md](APP_FLOW.md) · [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) · [TESTING.md](TESTING.md) · [SPEC.md](../SPEC.md) (business rules) |
@@ -13,13 +13,13 @@ Status labels: **Live** = in production · **Planned** = agreed, not built · **
 
 ## 1. Purpose and scope
 
-This document defines *how* Waradly is built: architecture, data model, API, state machines, security and non-functional requirements. Business rules (what the product must do and why) live in [SPEC.md](../SPEC.md); where the two differ, the running code in `functions/` and `public-web/` is the source of truth for current behaviour.
+This document defines *how* Warradly is built: architecture, data model, API, state machines, security and non-functional requirements. Business rules (what the product must do and why) live in [SPEC.md](../SPEC.md); where the two differ, the running code in `functions/` and `public-web/` is the source of truth for current behaviour.
 
 In scope: the website (`public-web/`), the backend (`functions/`), the Flutter mobile app (`mobile/`), Firebase configuration, and third-party integrations.
 
 ## 2. System overview
 
-A buyer posts a Request for Quotation (RFQ). Waradly's admin team reviews it and distributes it to verified suppliers approved for that category. Suppliers submit competing offers; the buyer accepts one, which creates an order. Admin manages the order through payment, production, hub, quality check and delivery; it closes with a rating. **Buyers and suppliers never see each other's real identity or contact details.**
+A buyer posts a Request for Quotation (RFQ). Warradly's admin team reviews it and distributes it to verified suppliers approved for that category. Suppliers submit competing offers; the buyer accepts one, which creates an order. Admin manages the order through payment, production, hub, quality check and delivery; it closes with a rating. **Buyers and suppliers never see each other's real identity or contact details.**
 
 ### 2.1 Architecture
 

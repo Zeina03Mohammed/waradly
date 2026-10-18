@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Categories — Waradly</title>
+  <title>Categories — Warradly</title>
   <link rel="stylesheet" href="/assets/css/theme.css" />
   <script src="/assets/js/i18n.js"></script>
   <link rel="icon" type="image/png" href="/assets/img/favicon.png" />
@@ -34,11 +34,11 @@
   <script src="/assets/js/util.js"></script>
   <script>
     async function render() {
-      const { categories } = await Waradly.api('/api/categories');
+      const { categories } = await Warradly.api('/api/categories');
       document.getElementById('list').innerHTML = categories.length
         ? `<table><thead><tr><th>Name</th><th>Status</th><th></th></tr></thead><tbody>
             ${categories.map((c) => `<tr>
-              <td>${Waradly.escapeHtml(c.name)}</td><td><span class="badge">${c.status}</span></td>
+              <td>${Warradly.escapeHtml(c.name)}</td><td><span class="badge">${c.status}</span></td>
               <td>
                 ${c.status === 'coming_soon' ? `<button class="btn-secondary activate-btn" data-id="${c.id}">Activate</button>` : `<button class="btn-secondary deactivate-btn" data-id="${c.id}">Deactivate</button>`}
                 <button class="btn-danger delete-btn" data-id="${c.id}">Delete</button>
@@ -53,43 +53,43 @@
     }
 
     async function act(id, action) {
-      Waradly.clearError('error');
+      Warradly.clearError('error');
       try {
-        await Waradly.api(`/api/admin/categories/${id}/${action}`, { method: 'PATCH' });
+        await Warradly.api(`/api/admin/categories/${id}/${action}`, { method: 'PATCH' });
         render();
       } catch (err) {
-        Waradly.showError('error', err);
+        Warradly.showError('error', err);
       }
     }
 
     async function del(id) {
       if (!confirm('Delete this category?')) return;
-      Waradly.clearError('error');
+      Warradly.clearError('error');
       try {
-        await Waradly.api(`/api/admin/categories/${id}`, { method: 'DELETE' });
+        await Warradly.api(`/api/admin/categories/${id}`, { method: 'DELETE' });
         render();
       } catch (err) {
-        Waradly.showError('error', err);
+        Warradly.showError('error', err);
       }
     }
 
     document.getElementById('add-btn').addEventListener('click', async () => {
       const name = document.getElementById('new-name').value.trim();
       if (!name) return;
-      Waradly.clearError('error');
+      Warradly.clearError('error');
       try {
-        await Waradly.api('/api/admin/categories', { method: 'POST', body: { name } });
+        await Warradly.api('/api/admin/categories', { method: 'POST', body: { name } });
         document.getElementById('new-name').value = '';
         render();
       } catch (err) {
-        Waradly.showError('error', err);
+        Warradly.showError('error', err);
       }
     });
 
     (async () => {
-      const user = await Waradly.requireRole('admin');
+      const user = await Warradly.requireRole('admin');
       if (!user) return;
-      Waradly.mountShell(user, '/admin/categories.html');
+      Warradly.mountShell(user, '/admin/categories.html');
       await render();
     })();
   </script>

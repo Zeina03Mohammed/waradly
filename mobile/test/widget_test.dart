@@ -7,10 +7,10 @@ void main() {
     // No stored tokens -> _RootRouter should resolve straight to LoginScreen.
     SharedPreferences.setMockInitialValues({});
 
-    await tester.pumpWidget(const WaradlyApp());
+    await tester.pumpWidget(const WarradlyApp());
     await tester.pumpAndSettle();
 
-    expect(find.text('Waradly'), findsOneWidget);
+    expect(find.text('Warradly'), findsOneWidget);
     expect(find.text('Log in'), findsOneWidget);
     expect(find.text('No account yet? Register'), findsOneWidget);
   });

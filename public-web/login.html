@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Log in — Waradly B2B Procurement Marketplace</title>
-  <meta name="description" content="Log in to Waradly to manage your RFQs, compare supplier offers and track your orders." />
+  <title>Log in — Warradly B2B Procurement Marketplace</title>
+  <meta name="description" content="Log in to Warradly to manage your RFQs, compare supplier offers and track your orders." />
   <link rel="canonical" href="https://www.warradly.co/login" />
   <link rel="stylesheet" href="/assets/css/theme.css" />
   <script src="/assets/js/i18n.js"></script>
@@ -12,7 +12,7 @@
 </head>
 <body>
   <main class="page">
-    <a class="auth-logo" href="/"><img src="/assets/img/logo-dark.png" alt="Waradly" height="38" /></a>
+    <a class="auth-logo" href="/"><img src="/assets/img/logo-dark.png?v=2" alt="Warradly" height="38" /></a>
     <h1 class="page-title">Log in</h1>
     <p id="error" class="error-text mb-4" style="display:none;"></p>
 
@@ -46,30 +46,30 @@
   <script src="/assets/js/util.js"></script>
   <script>
     (async () => {
-      const user = await Waradly.getCurrentUser();
-      if (user) window.location.replace(Waradly.DASHBOARD_BY_ROLE[user.role] || '/');
+      const user = await Warradly.getCurrentUser();
+      if (user) window.location.replace(Warradly.DASHBOARD_BY_ROLE[user.role] || '/');
     })();
 
     document.getElementById('login-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      Waradly.clearError('error');
+      Warradly.clearError('error');
       const btn = document.getElementById('submit-btn');
       btn.disabled = true;
       btn.textContent = 'Logging in…';
       try {
-        const data = await Waradly.api('/api/auth/login', {
+        const data = await Warradly.api('/api/auth/login', {
           method: 'POST',
           body: { email: document.getElementById('email').value, password: document.getElementById('password').value },
         });
-        Waradly.setTokens(data.access_token, data.refresh_token);
-        window.location.assign(Waradly.DASHBOARD_BY_ROLE[data.user.role] || '/');
+        Warradly.setTokens(data.access_token, data.refresh_token);
+        window.location.assign(Warradly.DASHBOARD_BY_ROLE[data.user.role] || '/');
       } catch (err) {
-        if (err instanceof Waradly.ApiError && err.code === 'FORBIDDEN' && err.data && err.data.status) {
+        if (err instanceof Warradly.ApiError && err.code === 'FORBIDDEN' && err.data && err.data.status) {
           document.getElementById('suspension-title').textContent = 'Account ' + err.data.status;
           document.getElementById('suspension-reason').textContent = err.data.reason || 'No reason was recorded.';
           document.getElementById('suspension-modal').style.display = 'flex';
         } else {
-          Waradly.showError('error', err);
+          Warradly.showError('error', err);
         }
       } finally {
         btn.disabled = false;

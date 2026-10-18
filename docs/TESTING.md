@@ -1,6 +1,6 @@
-# Waradly — Testing
+# Warradly — Testing
 
-How to test Waradly: what exists today, how to run things locally, what to automate first, and the manual checklists to run before every deploy.
+How to test Warradly: what exists today, how to run things locally, what to automate first, and the manual checklists to run before every deploy.
 
 | | |
 |---|---|
@@ -104,7 +104,7 @@ test('contact details in messages are redacted', () => {
 
 test('registration rejects weak passwords and missing terms', () => {
   const base = {
-    email: 'Buyer@Example.com', phone: '+201001234567', username: 'buyer', password: 'Waradly2026',
+    email: 'Buyer@Example.com', phone: '+201001234567', username: 'buyer', password: 'Warradly2026',
     role: 'buyer', legal_name: 'Acme', country: 'Egypt', general_region: 'Cairo', terms_accepted: true,
   };
   assert.equal(registerSchema.safeParse(base).success, true);

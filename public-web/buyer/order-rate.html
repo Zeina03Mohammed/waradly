@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Rate order — Waradly</title>
+  <title>Rate order — Warradly</title>
   <link rel="stylesheet" href="/assets/css/theme.css" />
   <script src="/assets/js/i18n.js"></script>
   <link rel="icon" type="image/png" href="/assets/img/favicon.png" />
@@ -29,26 +29,26 @@
   <script src="/assets/js/shell.js"></script>
   <script src="/assets/js/util.js"></script>
   <script>
-    const orderId = Waradly.qs('id');
+    const orderId = Warradly.qs('id');
     (async () => {
-      const user = await Waradly.requireRole('buyer');
+      const user = await Warradly.requireRole('buyer');
       if (!user) return;
-      Waradly.mountShell(user, '/buyer/orders.html');
+      Warradly.mountShell(user, '/buyer/orders.html');
     })();
 
     document.getElementById('form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      Waradly.clearError('error');
+      Warradly.clearError('error');
       const btn = document.getElementById('submit-btn');
       btn.disabled = true;
       try {
-        await Waradly.api(`/api/orders/${orderId}/rate`, {
+        await Warradly.api(`/api/orders/${orderId}/rate`, {
           method: 'POST',
           body: { score: Number(document.getElementById('score').value), comment: document.getElementById('comment').value || undefined },
         });
         window.location.assign(`/buyer/order-detail.html?id=${orderId}`);
       } catch (err) {
-        Waradly.showError('error', err);
+        Warradly.showError('error', err);
         btn.disabled = false;
       }
     });

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Messages — Waradly</title>
+  <title>Messages — Warradly</title>
   <link rel="stylesheet" href="/assets/css/theme.css" />
   <script src="/assets/js/i18n.js"></script>
   <link rel="icon" type="image/png" href="/assets/img/favicon.png" />
@@ -29,40 +29,40 @@
   <script src="/assets/js/shell.js"></script>
   <script src="/assets/js/util.js"></script>
   <script>
-    const conversationId = Waradly.qs('id');
+    const conversationId = Warradly.qs('id');
     let user = null;
 
     async function render() {
-      const { messages } = await Waradly.api(`/api/conversations/${conversationId}/messages`);
+      const { messages } = await Warradly.api(`/api/conversations/${conversationId}/messages`);
       document.getElementById('thread').innerHTML = messages.length
         ? messages.map((m) => `
             <div style="align-self:${m.sender_id === user.id ? 'flex-end' : 'flex-start'}; max-width:70%;">
               <div style="background:${m.sender_id === user.id ? 'var(--navy-900)' : 'var(--navy-50)'}; color:${m.sender_id === user.id ? '#fff' : 'inherit'}; padding:0.5rem 0.75rem; border-radius:0.75rem;">
-                ${Waradly.escapeHtml(m.content)}
+                ${Warradly.escapeHtml(m.content)}
               </div>
-              <div class="muted" style="font-size:0.75rem;">${Waradly.formatDate(m.created_at)}${m.flagged ? ' · flagged for review' : ''}</div>
+              <div class="muted" style="font-size:0.75rem;">${Warradly.formatDate(m.created_at)}${m.flagged ? ' · flagged for review' : ''}</div>
             </div>`).join('')
         : '<p class="muted">No messages yet.</p>';
     }
 
     (async () => {
-      user = await Waradly.getCurrentUser();
+      user = await Warradly.getCurrentUser();
       if (!user) { window.location.assign('/login.html'); return; }
-      Waradly.mountShell(user, '');
+      Warradly.mountShell(user, '');
       if (user.role !== 'admin') document.getElementById('send-form').style.display = 'flex';
       await render();
     })();
 
     document.getElementById('send-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      Waradly.clearError('error');
+      Warradly.clearError('error');
       const input = document.getElementById('content');
       try {
-        await Waradly.api(`/api/conversations/${conversationId}/messages`, { method: 'POST', body: { content: input.value } });
+        await Warradly.api(`/api/conversations/${conversationId}/messages`, { method: 'POST', body: { content: input.value } });
         input.value = '';
         await render();
       } catch (err) {
-        Waradly.showError('error', err);
+        Warradly.showError('error', err);
       }
     });
   </script>

@@ -33,7 +33,7 @@ export async function notifyEligibleSuppliers(rfq: { id: string; title: string; 
       link: `/supplier/rfqs/${rfq.id}`,
       email: {
         to: owner.email,
-        subject: 'New RFQ available on Waradly',
+        subject: 'New RFQ available on Warradly',
         body: `A new RFQ matching your approved category is now open for offers: "${rfq.title}".`,
       },
     });

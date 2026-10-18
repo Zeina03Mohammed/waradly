@@ -6,9 +6,9 @@
 const DASHBOARD_BY_ROLE = { buyer: '/buyer/dashboard.html', supplier: '/supplier/rfqs.html', admin: '/admin/index.html' };
 
 async function getCurrentUser() {
-  if (!Waradly.getAccessToken()) return null;
+  if (!Warradly.getAccessToken()) return null;
   try {
-    const data = await Waradly.api('/api/users/me');
+    const data = await Warradly.api('/api/users/me');
     return data.user;
   } catch {
     return null;
@@ -32,16 +32,16 @@ async function requireRole(...roles) {
 
 async function logout() {
   try {
-    await Waradly.api('/api/auth/logout', { method: 'POST' });
+    await Warradly.api('/api/auth/logout', { method: 'POST' });
   } catch {
     // ignore — clear local tokens regardless
   }
-  Waradly.clearTokens();
+  Warradly.clearTokens();
   window.location.assign('/login.html');
 }
 
-window.Waradly = window.Waradly || {};
-window.Waradly.getCurrentUser = getCurrentUser;
-window.Waradly.requireRole = requireRole;
-window.Waradly.logout = logout;
-window.Waradly.DASHBOARD_BY_ROLE = DASHBOARD_BY_ROLE;
+window.Warradly = window.Warradly || {};
+window.Warradly.getCurrentUser = getCurrentUser;
+window.Warradly.requireRole = requireRole;
+window.Warradly.logout = logout;
+window.Warradly.DASHBOARD_BY_ROLE = DASHBOARD_BY_ROLE;

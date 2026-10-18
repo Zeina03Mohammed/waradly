@@ -58,7 +58,7 @@ router.patch(
         userId: senderId,
         eventType: 'message_flag.action_taken',
         message: `A message you sent was flagged: ${parsed.data.action}.`,
-        email: { subject: 'Waradly account notice', body: `A message you sent was flagged for containing contact information. Action taken: ${parsed.data.action}.` },
+        email: { subject: 'Warradly account notice', body: `A message you sent was flagged for containing contact information. Action taken: ${parsed.data.action}.` },
       });
     }
 

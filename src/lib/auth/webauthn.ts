@@ -4,7 +4,7 @@
 const APP_BASE_URL = process.env.APP_BASE_URL ?? 'http://localhost:3000';
 const ORIGIN_URL = new URL(APP_BASE_URL);
 
-export const RP_NAME = 'Waradly';
+export const RP_NAME = 'Warradly';
 export const RP_ID = ORIGIN_URL.hostname;
 export const ORIGIN = ORIGIN_URL.origin;
 

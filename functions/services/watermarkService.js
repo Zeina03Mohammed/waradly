@@ -2,7 +2,7 @@ const sharp = require('sharp');
 const { PDFDocument, rgb, degrees, StandardFonts } = require('pdf-lib');
 const { MAX_IMAGE_PIXELS, MAX_PDF_PAGES } = require('../config/fileConstraints');
 
-const WATERMARK_TEXT = 'WARADLY CONFIDENTIAL';
+const WATERMARK_TEXT = 'WARRADLY CONFIDENTIAL';
 
 /** Port of src/lib/files/watermark.ts — a static diagonal overlay, generated once at upload for
  * identity-risk RFQ attachments (SPEC.md Section 12). No OCR, no per-view dynamic rendering. */

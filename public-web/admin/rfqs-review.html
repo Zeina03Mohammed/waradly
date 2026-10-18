@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>RFQ Review — Waradly</title>
+  <title>RFQ Review — Warradly</title>
   <link rel="stylesheet" href="/assets/css/theme.css" />
   <script src="/assets/js/i18n.js"></script>
   <link rel="icon" type="image/png" href="/assets/img/favicon.png" />
@@ -26,12 +26,12 @@
   <script src="/assets/js/util.js"></script>
   <script>
     async function render() {
-      const { rfqs } = await Waradly.api('/api/admin/rfqs/review');
+      const { rfqs } = await Warradly.api('/api/admin/rfqs/review');
       document.getElementById('list').innerHTML = rfqs.length
         ? `<table><thead><tr><th>Title</th><th>Category</th><th>Status</th><th></th></tr></thead><tbody>
             ${rfqs.map((r) => `<tr>
-              <td><a href="/admin/rfq-distribution.html?id=${r.id}">${Waradly.escapeHtml(r.title)}</a></td>
-              <td>${Waradly.escapeHtml(r.category_name || '—')}</td>
+              <td><a href="/admin/rfq-distribution.html?id=${r.id}">${Warradly.escapeHtml(r.title)}</a></td>
+              <td>${Warradly.escapeHtml(r.category_name || '—')}</td>
               <td><span class="badge">${r.status}</span></td>
               <td>
                 <button class="btn-secondary approve-btn" data-id="${r.id}">Approve</button>
@@ -46,31 +46,31 @@
     }
 
     async function approve(id) {
-      Waradly.clearError('error');
+      Warradly.clearError('error');
       try {
-        await Waradly.api(`/api/admin/rfqs/${id}/approve`, { method: 'PATCH' });
+        await Warradly.api(`/api/admin/rfqs/${id}/approve`, { method: 'PATCH' });
         render();
       } catch (err) {
-        Waradly.showError('error', err);
+        Warradly.showError('error', err);
       }
     }
 
     async function reject(id) {
       const reason = prompt('Rejection reason:');
       if (!reason) return;
-      Waradly.clearError('error');
+      Warradly.clearError('error');
       try {
-        await Waradly.api(`/api/admin/rfqs/${id}/reject`, { method: 'PATCH', body: { reason } });
+        await Warradly.api(`/api/admin/rfqs/${id}/reject`, { method: 'PATCH', body: { reason } });
         render();
       } catch (err) {
-        Waradly.showError('error', err);
+        Warradly.showError('error', err);
       }
     }
 
     (async () => {
-      const user = await Waradly.requireRole('admin');
+      const user = await Warradly.requireRole('admin');
       if (!user) return;
-      Waradly.mountShell(user, '/admin/rfqs-review.html');
+      Warradly.mountShell(user, '/admin/rfqs-review.html');
       await render();
     })();
   </script>

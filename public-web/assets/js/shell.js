@@ -1,6 +1,6 @@
 /* Sidebar nav — plain-JS port of Shell.tsx's per-role NAV map, redesigned as icon+grouped
  * sections (a flat 11-item list for admin read as an overwhelming wall of text). Call
- * Waradly.mountShell(user, currentPath) after requireRole() resolves; it injects into
+ * Warradly.mountShell(user, currentPath) after requireRole() resolves; it injects into
  * #sidebar-slot, which every protected page includes. Same markup renders the desktop sidebar
  * and the mobile slide-out drawer — only the CSS (see theme.css) differs between them. */
 
@@ -98,13 +98,13 @@ function mountShell(user, currentPath) {
       <button class="hamburger" id="waradly-sidebar-toggle" type="button" aria-label="Open menu">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
-      <a class="logo" href="${HOME_BY_ROLE[user.role]}"><img class="logo-img" src="/assets/img/logo-light.png" alt="Waradly" height="30" /></a>
+      <a class="logo" href="${HOME_BY_ROLE[user.role]}"><img class="logo-img" src="/assets/img/logo-light.png?v=2" alt="Warradly" height="30" /></a>
       <span class="lang-slot"></span>
     </div>
     <div class="sidebar-backdrop" id="waradly-sidebar-backdrop"></div>
     <aside class="sidebar" id="waradly-sidebar">
       <div class="sidebar-top">
-        <a class="logo" href="${HOME_BY_ROLE[user.role]}"><img class="logo-img" src="/assets/img/logo-light.png" alt="Waradly" height="30" /></a>
+        <a class="logo" href="${HOME_BY_ROLE[user.role]}"><img class="logo-img" src="/assets/img/logo-light.png?v=2" alt="Warradly" height="30" /></a>
         <span class="lang-slot"></span>
       </div>
       <div class="sidebar-profile">
@@ -122,7 +122,7 @@ function mountShell(user, currentPath) {
 
   document.getElementById('waradly-logout-btn').addEventListener('click', (e) => {
     e.preventDefault();
-    Waradly.logout();
+    Warradly.logout();
   });
 
   const sidebar = document.getElementById('waradly-sidebar');
@@ -140,6 +140,6 @@ function mountShell(user, currentPath) {
   sidebar.querySelectorAll('a').forEach((a) => a.addEventListener('click', closeSidebar));
 }
 
-window.Waradly = window.Waradly || {};
-window.Waradly.mountShell = mountShell;
-window.Waradly.icon = icon;
+window.Warradly = window.Warradly || {};
+window.Warradly.mountShell = mountShell;
+window.Warradly.icon = icon;

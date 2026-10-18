@@ -134,7 +134,7 @@ router.post(
         eventType: 'order.sample_submitted',
         message: 'A sample is ready for your review.',
         link: `/buyer/orders/${order.id}`,
-        email: { subject: 'A Waradly sample is ready for review', body: 'A sample has been submitted for your order and is ready for your review.' },
+        email: { subject: 'A Warradly sample is ready for review', body: 'A sample has been submitted for your order and is ready for your review.' },
       });
     }
 
@@ -166,7 +166,7 @@ router.patch(
         message: parsed.data.approved ? 'Your sample was approved — resume production.' : 'Your sample was rejected.',
         link: `/supplier/orders/${order.id}`,
         email: {
-          subject: parsed.data.approved ? 'Your Waradly sample was approved' : 'Your Waradly sample was rejected',
+          subject: parsed.data.approved ? 'Your Warradly sample was approved' : 'Your Warradly sample was rejected',
           body: parsed.data.approved ? 'Your sample was approved — you may resume production.' : `Your sample was rejected.${parsed.data.note ? ` Note: ${parsed.data.note}` : ''}`,
         },
       });

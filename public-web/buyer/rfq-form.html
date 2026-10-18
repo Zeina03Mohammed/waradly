@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>RFQ — Waradly</title>
+  <title>RFQ — Warradly</title>
   <link rel="stylesheet" href="/assets/css/theme.css" />
   <script src="/assets/js/i18n.js"></script>
   <link rel="icon" type="image/png" href="/assets/img/favicon.png" />
@@ -57,16 +57,16 @@
   <script src="/assets/js/shell.js"></script>
   <script src="/assets/js/util.js"></script>
   <script>
-    const rfqId = Waradly.qs('id');
+    const rfqId = Warradly.qs('id');
     let currentStatus = 'DRAFT';
 
     function addItemRow(item) {
       const row = document.createElement('div');
       row.className = 'flex gap-2 mb-2 item-row';
       row.innerHTML = `
-        <input class="input" placeholder="Item name" value="${Waradly.escapeHtml(item?.item_name || '')}" data-field="item_name" />
+        <input class="input" placeholder="Item name" value="${Warradly.escapeHtml(item?.item_name || '')}" data-field="item_name" />
         <input class="input" type="number" placeholder="Qty" style="max-width:100px;" value="${item?.quantity ?? ''}" data-field="quantity" />
-        <input class="input" placeholder="Unit" style="max-width:100px;" value="${Waradly.escapeHtml(item?.unit || '')}" data-field="unit" />
+        <input class="input" placeholder="Unit" style="max-width:100px;" value="${Warradly.escapeHtml(item?.unit || '')}" data-field="unit" />
         <button type="button" class="btn-secondary" onclick="this.parentElement.remove()">Remove</button>`;
       document.getElementById('items').appendChild(row);
     }
@@ -110,13 +110,13 @@
     }
 
     (async () => {
-      const user = await Waradly.requireRole('buyer');
+      const user = await Warradly.requireRole('buyer');
       if (!user) return;
-      Waradly.mountShell(user, '/buyer/rfqs.html');
+      Warradly.mountShell(user, '/buyer/rfqs.html');
 
       if (rfqId) {
         document.getElementById('page-title').textContent = 'Edit RFQ';
-        const { rfq } = await Waradly.api(`/api/rfqs/${rfqId}`);
+        const { rfq } = await Warradly.api(`/api/rfqs/${rfqId}`);
         currentStatus = rfq.status;
         document.getElementById('title').value = rfq.title || '';
         document.getElementById('category').value = rfq.category_name || '';
@@ -136,41 +136,41 @@
         if (['DRAFT', 'SUBMITTED'].includes(currentStatus)) document.getElementById('submit-rfq-btn').style.display = 'inline-flex';
         if (!['DRAFT', 'SUBMITTED'].includes(currentStatus)) {
           [...document.querySelectorAll('#form input, #form textarea, #form button')].forEach((el) => (el.disabled = true));
-          Waradly.showError('error', new Error('This RFQ can no longer be edited.'));
+          Warradly.showError('error', new Error('This RFQ can no longer be edited.'));
         }
       }
     })();
 
     document.getElementById('form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      Waradly.clearError('error');
-      Waradly.clearError('success');
+      Warradly.clearError('error');
+      Warradly.clearError('success');
       const btn = document.getElementById('save-btn');
       btn.disabled = true;
       try {
         if (rfqId) {
-          await Waradly.api(`/api/rfqs/${rfqId}`, { method: 'PATCH', body: collectPayload() });
+          await Warradly.api(`/api/rfqs/${rfqId}`, { method: 'PATCH', body: collectPayload() });
           document.getElementById('success').textContent = 'Saved.';
           document.getElementById('success').style.display = 'block';
         } else {
-          const { rfq } = await Waradly.api('/api/rfqs', { method: 'POST', body: collectPayload() });
+          const { rfq } = await Warradly.api('/api/rfqs', { method: 'POST', body: collectPayload() });
           window.location.assign(`/buyer/rfq-form.html?id=${rfq.id}`);
         }
       } catch (err) {
-        Waradly.showError('error', err);
+        Warradly.showError('error', err);
       } finally {
         btn.disabled = false;
       }
     });
 
     document.getElementById('submit-rfq-btn').addEventListener('click', async () => {
-      Waradly.clearError('error');
+      Warradly.clearError('error');
       try {
-        await Waradly.api(`/api/rfqs/${rfqId}`, { method: 'PATCH', body: collectPayload() });
-        await Waradly.api(`/api/rfqs/${rfqId}/submit`, { method: 'PATCH' });
+        await Warradly.api(`/api/rfqs/${rfqId}`, { method: 'PATCH', body: collectPayload() });
+        await Warradly.api(`/api/rfqs/${rfqId}/submit`, { method: 'PATCH' });
         window.location.assign(`/buyer/rfq-detail.html?id=${rfqId}`);
       } catch (err) {
-        Waradly.showError('error', err);
+        Warradly.showError('error', err);
       }
     });
   </script>

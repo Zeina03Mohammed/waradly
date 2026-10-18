@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Dashboard — Waradly</title>
+  <title>Dashboard — Warradly</title>
   <link rel="stylesheet" href="/assets/css/theme.css" />
   <script src="/assets/js/i18n.js"></script>
   <link rel="icon" type="image/png" href="/assets/img/favicon.png" />
@@ -52,11 +52,11 @@
   <script src="/assets/js/util.js"></script>
   <script>
     (async () => {
-      const user = await Waradly.requireRole('buyer');
+      const user = await Warradly.requireRole('buyer');
       if (!user) return;
-      Waradly.mountShell(user, '/buyer/dashboard.html');
+      Warradly.mountShell(user, '/buyer/dashboard.html');
 
-      const { icon, escapeHtml: esc, formatDate } = Waradly;
+      const { icon, escapeHtml: esc, formatDate } = Warradly;
       const label = (s) => (s ? s.charAt(0) + s.slice(1).toLowerCase().replace(/_/g, ' ') : '—');
 
       const RFQ_CLOSED = ['CLOSED', 'CANCELLED', 'REJECTED', 'EXPIRED'];
@@ -68,7 +68,7 @@
       document.getElementById('create-rfq-btn').insertAdjacentHTML('afterbegin', icon('plus', 18));
 
       // Orders are secondary here — if they fail, the RFQ side of the dashboard still renders.
-      const [rfqRes, orderRes] = await Promise.allSettled([Waradly.api('/api/rfqs'), Waradly.api('/api/orders')]);
+      const [rfqRes, orderRes] = await Promise.allSettled([Warradly.api('/api/rfqs'), Warradly.api('/api/orders')]);
       const rfqs = rfqRes.status === 'fulfilled' ? rfqRes.value.rfqs : null;
       const orders = orderRes.status === 'fulfilled' ? orderRes.value.orders : null;
 

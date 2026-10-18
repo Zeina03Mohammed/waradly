@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Disputes — Waradly</title>
+  <title>Disputes — Warradly</title>
   <link rel="stylesheet" href="/assets/css/theme.css" />
   <script src="/assets/js/i18n.js"></script>
   <link rel="icon" type="image/png" href="/assets/img/favicon.png" />
@@ -26,11 +26,11 @@
   <script src="/assets/js/util.js"></script>
   <script>
     async function render() {
-      const { disputes } = await Waradly.api('/api/admin/disputes');
+      const { disputes } = await Warradly.api('/api/admin/disputes');
       document.getElementById('list').innerHTML = disputes.length
         ? `<table><thead><tr><th>Category</th><th>Description</th><th>Order</th><th>Status</th><th></th></tr></thead><tbody>
             ${disputes.map((d) => `<tr>
-              <td>${Waradly.escapeHtml(d.category)}</td><td>${Waradly.escapeHtml(d.description)}</td>
+              <td>${Warradly.escapeHtml(d.category)}</td><td>${Warradly.escapeHtml(d.description)}</td>
               <td><a href="/admin/order-detail.html?id=${d.order_id}">${d.order_id}</a></td>
               <td><span class="badge">${d.status}</span></td>
               <td>${d.status === 'open' ? `
@@ -47,21 +47,21 @@
       document.querySelectorAll('.resolve-btn').forEach((btn) => {
         btn.addEventListener('click', async () => {
           const select = document.querySelector(`.outcome-select[data-id="${btn.dataset.id}"]`);
-          Waradly.clearError('error');
+          Warradly.clearError('error');
           try {
-            await Waradly.api(`/api/admin/disputes/${btn.dataset.id}/resolve`, { method: 'PATCH', body: { outcome: select.value } });
+            await Warradly.api(`/api/admin/disputes/${btn.dataset.id}/resolve`, { method: 'PATCH', body: { outcome: select.value } });
             render();
           } catch (err) {
-            Waradly.showError('error', err);
+            Warradly.showError('error', err);
           }
         });
       });
     }
 
     (async () => {
-      const user = await Waradly.requireRole('admin');
+      const user = await Warradly.requireRole('admin');
       if (!user) return;
-      Waradly.mountShell(user, '/admin/disputes.html');
+      Warradly.mountShell(user, '/admin/disputes.html');
       await render();
     })();
   </script>

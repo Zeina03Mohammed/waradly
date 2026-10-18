@@ -78,7 +78,7 @@ router.patch(
         eventType: 'order.payment_confirmed',
         message: 'Your payment has been confirmed.',
         link: `/buyer/orders/${order.id}`,
-        email: { subject: 'Your Waradly payment was confirmed', body: 'Your payment has been confirmed. The supplier can now begin production.' },
+        email: { subject: 'Your Warradly payment was confirmed', body: 'Your payment has been confirmed. The supplier can now begin production.' },
       });
     }
     if (supplierOrg) {
@@ -87,7 +87,7 @@ router.patch(
         eventType: 'order.payment_confirmed',
         message: 'Payment has been confirmed — you may begin production.',
         link: `/supplier/orders/${order.id}`,
-        email: { subject: 'Waradly order payment confirmed', body: 'Payment has been confirmed for your order — you may begin production.' },
+        email: { subject: 'Warradly order payment confirmed', body: 'Payment has been confirmed for your order — you may begin production.' },
       });
     }
 
@@ -140,7 +140,7 @@ router.patch(
     // SPEC.md Section 14 — "Delivered" is High priority; every other forced transition stays
     // in-app only.
     const emailPayload =
-      parsed.data.status === 'DELIVERED' ? { subject: 'Your Waradly order has been delivered', body: message } : null;
+      parsed.data.status === 'DELIVERED' ? { subject: 'Your Warradly order has been delivered', body: message } : null;
     if (buyerOrg) await notify({ userId: buyerOrg.owner_uid, eventType: 'order.status_forced', message, link: `/buyer/orders/${order.id}`, email: emailPayload });
     if (supplierOrg) await notify({ userId: supplierOrg.owner_uid, eventType: 'order.status_forced', message, link: `/supplier/orders/${order.id}`, email: emailPayload });
 

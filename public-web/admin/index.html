@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Admin Dashboard — Waradly</title>
+  <title>Admin Dashboard — Warradly</title>
   <link rel="stylesheet" href="/assets/css/theme.css" />
   <script src="/assets/js/i18n.js"></script>
   <link rel="icon" type="image/png" href="/assets/img/favicon.png" />
@@ -27,11 +27,11 @@
   <script src="/assets/js/util.js"></script>
   <script>
     (async () => {
-      const user = await Waradly.requireRole('admin');
+      const user = await Warradly.requireRole('admin');
       if (!user) return;
-      Waradly.mountShell(user, '/admin/index.html');
+      Warradly.mountShell(user, '/admin/index.html');
 
-      const stats = await Waradly.api('/api/admin/dashboard');
+      const stats = await Warradly.api('/api/admin/dashboard');
       const card = (label, value, href) => `<a class="card" href="${href}" style="flex:1;min-width:160px;text-decoration:none;color:inherit;">
         <div class="muted">${label}</div><div style="font-size:1.5rem;font-weight:600;">${value}</div></a>`;
       document.getElementById('stats').innerHTML =

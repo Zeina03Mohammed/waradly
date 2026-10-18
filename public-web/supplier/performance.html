@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Performance — Waradly</title>
+  <title>Performance — Warradly</title>
   <link rel="stylesheet" href="/assets/css/theme.css" />
   <script src="/assets/js/i18n.js"></script>
   <link rel="icon" type="image/png" href="/assets/img/favicon.png" />
@@ -25,15 +25,15 @@
   <script src="/assets/js/util.js"></script>
   <script>
     (async () => {
-      const user = await Waradly.requireRole('supplier');
+      const user = await Warradly.requireRole('supplier');
       if (!user) return;
-      Waradly.mountShell(user, '/supplier/performance.html');
+      Warradly.mountShell(user, '/supplier/performance.html');
 
-      const { supplier } = await Waradly.api('/api/suppliers/me');
+      const { supplier } = await Warradly.api('/api/suppliers/me');
       document.getElementById('stats').innerHTML = `
         <div class="card" style="flex:1;"><div class="muted">Completed orders</div><div style="font-size:1.5rem;font-weight:600;">${supplier.completed_orders_count}</div></div>
         <div class="card" style="flex:1;"><div class="muted">Average rating</div><div style="font-size:1.5rem;font-weight:600;">${supplier.average_rating ?? '—'}</div></div>
-        <div class="card" style="flex:1;"><div class="muted">Anonymized ID</div><div style="font-size:1.5rem;font-weight:600;">${Waradly.escapeHtml(supplier.anonymized_id)}</div></div>
+        <div class="card" style="flex:1;"><div class="muted">Anonymized ID</div><div style="font-size:1.5rem;font-weight:600;">${Warradly.escapeHtml(supplier.anonymized_id)}</div></div>
       `;
     })();
   </script>

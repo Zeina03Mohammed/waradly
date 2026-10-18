@@ -167,14 +167,14 @@ router.patch(
         eventType: 'offer.accepted',
         message: `Your offer on "${rfq.title}" was accepted!`,
         link: `/supplier/orders/${rfq.id}`,
-        email: { subject: 'Your Waradly offer was accepted', body: `Your offer on "${rfq.title}" was accepted.` },
+        email: { subject: 'Your Warradly offer was accepted', body: `Your offer on "${rfq.title}" was accepted.` },
       });
       await notify({
         userId: winnerOrg.owner_uid,
         eventType: 'order.created',
         message: `An order has been created for "${rfq.title}".`,
         link: `/supplier/orders/${rfq.id}`,
-        email: { subject: 'Your Waradly order has been created', body: `An order has been created for "${rfq.title}". Log in to view next steps.` },
+        email: { subject: 'Your Warradly order has been created', body: `An order has been created for "${rfq.title}". Log in to view next steps.` },
       });
     }
     for (const doc of competingOffers) {
@@ -186,7 +186,7 @@ router.patch(
       eventType: 'order.created',
       message: `Your order for "${rfq.title}" has been created.`,
       link: `/buyer/orders/${rfq.id}`,
-      email: { subject: 'Your Waradly order has been created', body: `Your order for "${rfq.title}" has been created. Please follow the payment instructions agreed with the Waradly team to proceed.` },
+      email: { subject: 'Your Warradly order has been created', body: `Your order for "${rfq.title}" has been created. Please follow the payment instructions agreed with the Warradly team to proceed.` },
     });
 
     res.json({ order_id: rfq.id });

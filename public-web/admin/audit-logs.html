@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Audit Log — Waradly</title>
+  <title>Audit Log — Warradly</title>
   <link rel="stylesheet" href="/assets/css/theme.css" />
   <script src="/assets/js/i18n.js"></script>
   <link rel="icon" type="image/png" href="/assets/img/favicon.png" />
@@ -34,13 +34,13 @@
       if (document.getElementById('entity-type').value) params.set('entity_type', document.getElementById('entity-type').value);
       if (document.getElementById('actor-id').value) params.set('actor_id', document.getElementById('actor-id').value);
 
-      const { audit_logs } = await Waradly.api(`/api/admin/audit-logs?${params.toString()}`);
+      const { audit_logs } = await Warradly.api(`/api/admin/audit-logs?${params.toString()}`);
       document.getElementById('list').innerHTML = audit_logs.length
         ? `<table><thead><tr><th>Action</th><th>Entity</th><th>When</th></tr></thead><tbody>
             ${audit_logs.map((l) => `<tr>
-              <td>${Waradly.escapeHtml(l.action)}</td>
-              <td>${Waradly.escapeHtml(l.entity_type)} — ${Waradly.escapeHtml(l.entity_label || l.entity_id)}</td>
-              <td>${Waradly.formatDate(l.created_at)}</td>
+              <td>${Warradly.escapeHtml(l.action)}</td>
+              <td>${Warradly.escapeHtml(l.entity_type)} — ${Warradly.escapeHtml(l.entity_label || l.entity_id)}</td>
+              <td>${Warradly.formatDate(l.created_at)}</td>
             </tr>`).join('')}
           </tbody></table>`
         : '<p class="muted">No audit log entries match.</p>';
@@ -48,9 +48,9 @@
     document.getElementById('filter-btn').addEventListener('click', render);
 
     (async () => {
-      const user = await Waradly.requireRole('admin');
+      const user = await Warradly.requireRole('admin');
       if (!user) return;
-      Waradly.mountShell(user, '/admin/audit-logs.html');
+      Warradly.mountShell(user, '/admin/audit-logs.html');
       await render();
     })();
   </script>

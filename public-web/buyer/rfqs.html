@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>My RFQs — Waradly</title>
+  <title>My RFQs — Warradly</title>
   <link rel="stylesheet" href="/assets/css/theme.css" />
   <script src="/assets/js/i18n.js"></script>
   <link rel="icon" type="image/png" href="/assets/img/favicon.png" />
@@ -28,16 +28,16 @@
   <script src="/assets/js/util.js"></script>
   <script>
     (async () => {
-      const user = await Waradly.requireRole('buyer');
+      const user = await Warradly.requireRole('buyer');
       if (!user) return;
-      Waradly.mountShell(user, '/buyer/rfqs.html');
+      Warradly.mountShell(user, '/buyer/rfqs.html');
 
-      const { rfqs } = await Waradly.api('/api/rfqs');
+      const { rfqs } = await Warradly.api('/api/rfqs');
       document.getElementById('list').innerHTML = rfqs.length
         ? `<table><thead><tr><th>Title</th><th>Category</th><th>Status</th><th>Created</th></tr></thead><tbody>
             ${rfqs.map((r) => `<tr onclick="location.href='/buyer/rfq-detail.html?id=${r.id}'" style="cursor:pointer;">
-              <td>${Waradly.escapeHtml(r.title)}</td><td>${Waradly.escapeHtml(r.category_name || '—')}</td>
-              <td><span class="badge">${r.status}</span></td><td>${Waradly.formatDate(r.created_at)}</td>
+              <td>${Warradly.escapeHtml(r.title)}</td><td>${Warradly.escapeHtml(r.category_name || '—')}</td>
+              <td><span class="badge">${r.status}</span></td><td>${Warradly.formatDate(r.created_at)}</td>
             </tr>`).join('')}
           </tbody></table>`
         : '<p class="muted">No RFQs yet.</p>';

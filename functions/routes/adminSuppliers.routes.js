@@ -62,7 +62,7 @@ router.patch(
       message: verified ? 'Your supplier account has been verified.' : 'Your supplier verification was rejected.',
       link: '/supplier/verification',
       email: {
-        subject: verified ? 'Your Waradly supplier account is verified' : 'Your Waradly supplier verification was rejected',
+        subject: verified ? 'Your Warradly supplier account is verified' : 'Your Warradly supplier verification was rejected',
         body: verified
           ? 'Your supplier account has been verified. You can now apply for categories and receive RFQs.'
           : `Your supplier verification was rejected.${parsed.data.rejection_reason ? ` Reason: ${parsed.data.rejection_reason}` : ''}`,

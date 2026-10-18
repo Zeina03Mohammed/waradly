@@ -70,7 +70,7 @@ router.post(
     const welcome = {
       userId: uid,
       eventType: 'account.created',
-      message: 'Welcome to Waradly — please verify your email to get started.',
+      message: 'Welcome to Warradly — please verify your email to get started.',
       link: '/verify-email',
     };
     if (usesFirebaseAuthMailer) {
@@ -85,8 +85,8 @@ router.post(
         ...welcome,
         email: {
           to: data.email,
-          subject: 'Welcome to Waradly — verify your email',
-          body: `Welcome to Waradly!\n\nPlease verify your email by visiting:\n${APP_BASE_URL}/verify-email?token=${oobCode}`,
+          subject: 'Welcome to Warradly — verify your email',
+          body: `Welcome to Warradly!\n\nPlease verify your email by visiting:\n${APP_BASE_URL}/verify-email?token=${oobCode}`,
         },
       });
     }
@@ -202,7 +202,7 @@ router.post(
         ...notice,
         email: {
           to: parsed.data.email,
-          subject: 'Reset your Waradly password',
+          subject: 'Reset your Warradly password',
           body: `Reset your password by visiting:\n${APP_BASE_URL}/reset-password?token=${oobCode}`,
         },
       });

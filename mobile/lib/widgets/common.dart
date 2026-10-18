@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../theme.dart';
 
 class StatusBadge extends StatelessWidget {
@@ -50,4 +51,18 @@ String formatDate(dynamic value) {
   }
   if (date == null) return '—';
   return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+}
+
+/// Terms + Privacy Policy links — the stores require the privacy policy to be reachable in-app.
+class LegalLinks extends StatelessWidget {
+  const LegalLinks({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    Widget link(String label, String path) => TextButton(
+          onPressed: () => launchUrl(Uri.parse('https://www.warradly.co$path'), mode: LaunchMode.externalApplication),
+          child: Text(label),
+        );
+    return Wrap(alignment: WrapAlignment.center, children: [link('Terms', '/terms'), link('Privacy Policy', '/privacy')]);
+  }
 }

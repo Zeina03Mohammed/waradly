@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Supplier Verification — Waradly</title>
+  <title>Supplier Verification — Warradly</title>
   <link rel="stylesheet" href="/assets/css/theme.css" />
   <script src="/assets/js/i18n.js"></script>
   <link rel="icon" type="image/png" href="/assets/img/favicon.png" />
@@ -26,11 +26,11 @@
   <script src="/assets/js/util.js"></script>
   <script>
     async function render() {
-      const { documents } = await Waradly.api('/api/admin/suppliers/verification');
+      const { documents } = await Warradly.api('/api/admin/suppliers/verification');
       document.getElementById('list').innerHTML = documents.length
         ? `<table><thead><tr><th>Org</th><th>Document type</th><th>File</th><th></th></tr></thead><tbody>
             ${documents.map((d) => `<tr>
-              <td>${Waradly.escapeHtml(d.org_id)}</td><td>${Waradly.escapeHtml(d.document_type)}</td>
+              <td>${Warradly.escapeHtml(d.org_id)}</td><td>${Warradly.escapeHtml(d.document_type)}</td>
               <td><a href="#" class="view-file" data-id="${d.file_id}">View</a></td>
               <td>
                 <button class="btn-secondary approve-btn" data-org="${d.org_id}">Approve</button>
@@ -44,10 +44,10 @@
         a.addEventListener('click', async (e) => {
           e.preventDefault();
           try {
-            const { url } = await Waradly.api(`/api/files/${a.dataset.id}/original`);
+            const { url } = await Warradly.api(`/api/files/${a.dataset.id}/original`);
             window.open(url, '_blank');
           } catch (err) {
-            Waradly.showError('error', err);
+            Warradly.showError('error', err);
           }
         });
       });
@@ -59,19 +59,19 @@
     }
 
     async function decide(orgId, status, rejection_reason) {
-      Waradly.clearError('error');
+      Warradly.clearError('error');
       try {
-        await Waradly.api(`/api/admin/suppliers/${orgId}/verification`, { method: 'PATCH', body: { status, rejection_reason } });
+        await Warradly.api(`/api/admin/suppliers/${orgId}/verification`, { method: 'PATCH', body: { status, rejection_reason } });
         render();
       } catch (err) {
-        Waradly.showError('error', err);
+        Warradly.showError('error', err);
       }
     }
 
     (async () => {
-      const user = await Waradly.requireRole('admin');
+      const user = await Warradly.requireRole('admin');
       if (!user) return;
-      Waradly.mountShell(user, '/admin/suppliers-verification.html');
+      Warradly.mountShell(user, '/admin/suppliers-verification.html');
       await render();
     })();
   </script>

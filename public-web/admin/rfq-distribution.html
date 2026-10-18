@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>RFQ Distribution — Waradly</title>
+  <title>RFQ Distribution — Warradly</title>
   <link rel="stylesheet" href="/assets/css/theme.css" />
   <script src="/assets/js/i18n.js"></script>
   <link rel="icon" type="image/png" href="/assets/img/favicon.png" />
@@ -41,26 +41,26 @@
   <script src="/assets/js/shell.js"></script>
   <script src="/assets/js/util.js"></script>
   <script>
-    const rfqId = Waradly.qs('id');
+    const rfqId = Warradly.qs('id');
 
     async function renderOverrides() {
-      const { overrides } = await Waradly.api(`/api/admin/rfqs/${rfqId}/distribution`);
+      const { overrides } = await Warradly.api(`/api/admin/rfqs/${rfqId}/distribution`);
       document.getElementById('overrides').innerHTML = overrides.length
         ? `<table><thead><tr><th>Supplier org</th><th>Included</th></tr></thead><tbody>
-            ${overrides.map((o) => `<tr><td>${Waradly.escapeHtml(o.supplier_org_id)}</td><td>${o.included ? 'Yes' : 'No'}</td></tr>`).join('')}
+            ${overrides.map((o) => `<tr><td>${Warradly.escapeHtml(o.supplier_org_id)}</td><td>${o.included ? 'Yes' : 'No'}</td></tr>`).join('')}
           </tbody></table>`
         : '<p class="muted">No overrides set.</p>';
     }
 
     (async () => {
-      const user = await Waradly.requireRole('admin');
+      const user = await Warradly.requireRole('admin');
       if (!user) return;
-      Waradly.mountShell(user, '/admin/rfqs-review.html');
+      Warradly.mountShell(user, '/admin/rfqs-review.html');
 
-      const { rfq } = await Waradly.api(`/api/rfqs/${rfqId}`);
+      const { rfq } = await Warradly.api(`/api/rfqs/${rfqId}`);
       document.getElementById('rfq-info').innerHTML = `
         <div class="flex justify-between items-center mb-4">
-          <h1 class="page-title" style="margin:0;">${Waradly.escapeHtml(rfq.title)}</h1>
+          <h1 class="page-title" style="margin:0;">${Warradly.escapeHtml(rfq.title)}</h1>
           <span class="badge">${rfq.status}</span>
         </div>`;
       document.getElementById('notes').value = rfq.admin_notes || '';
@@ -68,24 +68,24 @@
     })();
 
     document.getElementById('save-notes-btn').addEventListener('click', async () => {
-      Waradly.clearError('error');
+      Warradly.clearError('error');
       try {
-        await Waradly.api(`/api/admin/rfqs/${rfqId}/notes`, { method: 'PATCH', body: { notes: document.getElementById('notes').value } });
+        await Warradly.api(`/api/admin/rfqs/${rfqId}/notes`, { method: 'PATCH', body: { notes: document.getElementById('notes').value } });
       } catch (err) {
-        Waradly.showError('error', err);
+        Warradly.showError('error', err);
       }
     });
 
     document.getElementById('add-override-btn').addEventListener('click', async () => {
-      Waradly.clearError('error');
+      Warradly.clearError('error');
       try {
-        await Waradly.api(`/api/admin/rfqs/${rfqId}/distribution`, {
+        await Warradly.api(`/api/admin/rfqs/${rfqId}/distribution`, {
           method: 'PATCH',
           body: { supplier_org_id: document.getElementById('supplier-org-id').value, included: document.getElementById('included').value === 'true' },
         });
         await renderOverrides();
       } catch (err) {
-        Waradly.showError('error', err);
+        Warradly.showError('error', err);
       }
     });
   </script>

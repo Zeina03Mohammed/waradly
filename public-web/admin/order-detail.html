@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Order — Waradly</title>
+  <title>Order — Warradly</title>
   <link rel="stylesheet" href="/assets/css/theme.css" />
   <script src="/assets/js/i18n.js"></script>
   <link rel="icon" type="image/png" href="/assets/img/favicon.png" />
@@ -43,44 +43,44 @@
   <script src="/assets/js/shell.js"></script>
   <script src="/assets/js/util.js"></script>
   <script>
-    const orderId = Waradly.qs('id');
+    const orderId = Warradly.qs('id');
 
     async function render() {
-      const { order, status_history } = await Waradly.api(`/api/admin/orders/${orderId}`);
+      const { order, status_history } = await Warradly.api(`/api/admin/orders/${orderId}`);
       document.getElementById('content').innerHTML = `
         <div class="flex justify-between items-center mb-4">
           <h1 class="page-title" style="margin:0;">Order ${orderId}</h1>
           <span class="badge">${order.status}</span>
         </div>
         <div class="card">
-          <p><strong>Buyer org:</strong> ${Waradly.escapeHtml(order.buyer_id)}</p>
-          <p><strong>Supplier org:</strong> ${Waradly.escapeHtml(order.supplier_id)}</p>
+          <p><strong>Buyer org:</strong> ${Warradly.escapeHtml(order.buyer_id)}</p>
+          <p><strong>Supplier org:</strong> ${Warradly.escapeHtml(order.supplier_id)}</p>
           <p><strong>Sample required:</strong> ${order.sample_required ? 'Yes' : 'No'}</p>
         </div>
         ${order.status === 'PENDING_PAYMENT' ? `<button class="btn-primary mb-4" id="confirm-payment-btn">Confirm payment received</button>` : ''}
         <div class="card">
           <h3 style="margin-top:0;">History</h3>
-          ${status_history.map((h) => `<p class="muted">${h.from_status ? h.from_status + ' → ' : ''}${h.to_status} — ${Waradly.formatDate(h.changed_at)}${h.note ? ' (' + Waradly.escapeHtml(h.note) + ')' : ''}</p>`).join('')}
+          ${status_history.map((h) => `<p class="muted">${h.from_status ? h.from_status + ' → ' : ''}${h.to_status} — ${Warradly.formatDate(h.changed_at)}${h.note ? ' (' + Warradly.escapeHtml(h.note) + ')' : ''}</p>`).join('')}
         </div>
       `;
       document.getElementById('notes').value = order.admin_notes || '';
 
       const confirmBtn = document.getElementById('confirm-payment-btn');
       if (confirmBtn) confirmBtn.addEventListener('click', async () => {
-        Waradly.clearError('error');
+        Warradly.clearError('error');
         try {
-          await Waradly.api(`/api/admin/orders/${orderId}/confirm-payment`, { method: 'PATCH' });
+          await Warradly.api(`/api/admin/orders/${orderId}/confirm-payment`, { method: 'PATCH' });
           render();
         } catch (err) {
-          Waradly.showError('error', err);
+          Warradly.showError('error', err);
         }
       });
     }
 
     document.getElementById('force-btn').addEventListener('click', async () => {
-      Waradly.clearError('error');
+      Warradly.clearError('error');
       try {
-        await Waradly.api(`/api/admin/orders/${orderId}/status`, {
+        await Warradly.api(`/api/admin/orders/${orderId}/status`, {
           method: 'PATCH',
           body: {
             status: document.getElementById('new-status').value,
@@ -90,23 +90,23 @@
         });
         render();
       } catch (err) {
-        Waradly.showError('error', err);
+        Warradly.showError('error', err);
       }
     });
 
     document.getElementById('save-notes-btn').addEventListener('click', async () => {
-      Waradly.clearError('error');
+      Warradly.clearError('error');
       try {
-        await Waradly.api(`/api/admin/orders/${orderId}/notes`, { method: 'PATCH', body: { notes: document.getElementById('notes').value } });
+        await Warradly.api(`/api/admin/orders/${orderId}/notes`, { method: 'PATCH', body: { notes: document.getElementById('notes').value } });
       } catch (err) {
-        Waradly.showError('error', err);
+        Warradly.showError('error', err);
       }
     });
 
     (async () => {
-      const user = await Waradly.requireRole('admin');
+      const user = await Warradly.requireRole('admin');
       if (!user) return;
-      Waradly.mountShell(user, '/admin/orders.html');
+      Warradly.mountShell(user, '/admin/orders.html');
       await render();
     })();
   </script>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Capabilities — Waradly</title>
+  <title>Capabilities — Warradly</title>
   <link rel="stylesheet" href="/assets/css/theme.css" />
   <script src="/assets/js/i18n.js"></script>
   <link rel="icon" type="image/png" href="/assets/img/favicon.png" />
@@ -28,8 +28,8 @@
   <script>
     async function render() {
       const [{ categories: allCategories }, { categories: applications }] = await Promise.all([
-        Waradly.api('/api/categories'),
-        Waradly.api('/api/suppliers/categories'),
+        Warradly.api('/api/categories'),
+        Warradly.api('/api/suppliers/categories'),
       ]);
       const appliedIds = new Map(applications.map((a) => [a.category_id, a]));
 
@@ -38,7 +38,7 @@
           const app = appliedIds.get(c.id);
           const status = app ? (app.approved ? 'approved' : 'pending') : null;
           return `<tr>
-            <td>${Waradly.escapeHtml(c.name)}</td>
+            <td>${Warradly.escapeHtml(c.name)}</td>
             <td>${status ? `<span class="badge">${status}</span>` : '—'}</td>
             <td>${!app ? `<button class="btn-secondary apply-btn" data-id="${c.id}">Apply</button>` : ''}</td>
           </tr>`;
@@ -47,21 +47,21 @@
 
       document.querySelectorAll('.apply-btn').forEach((btn) => {
         btn.addEventListener('click', async () => {
-          Waradly.clearError('error');
+          Warradly.clearError('error');
           try {
-            await Waradly.api('/api/suppliers/categories', { method: 'POST', body: { category_id: btn.dataset.id } });
+            await Warradly.api('/api/suppliers/categories', { method: 'POST', body: { category_id: btn.dataset.id } });
             render();
           } catch (err) {
-            Waradly.showError('error', err);
+            Warradly.showError('error', err);
           }
         });
       });
     }
 
     (async () => {
-      const user = await Waradly.requireRole('supplier');
+      const user = await Warradly.requireRole('supplier');
       if (!user) return;
-      Waradly.mountShell(user, '/supplier/categories.html');
+      Warradly.mountShell(user, '/supplier/categories.html');
       await render();
     })();
   </script>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Available RFQs — Waradly</title>
+  <title>Available RFQs — Warradly</title>
   <link rel="stylesheet" href="/assets/css/theme.css" />
   <script src="/assets/js/i18n.js"></script>
   <link rel="icon" type="image/png" href="/assets/img/favicon.png" />
@@ -25,17 +25,17 @@
   <script src="/assets/js/util.js"></script>
   <script>
     (async () => {
-      const user = await Waradly.requireRole('supplier');
+      const user = await Warradly.requireRole('supplier');
       if (!user) return;
-      Waradly.mountShell(user, '/supplier/rfqs.html');
+      Warradly.mountShell(user, '/supplier/rfqs.html');
 
       let rfqs;
       try {
-        ({ rfqs } = await Waradly.api('/api/rfqs'));
+        ({ rfqs } = await Warradly.api('/api/rfqs'));
       } catch (err) {
         const list = document.getElementById('list');
         list.innerHTML = '<p class="error-text"></p>';
-        list.firstChild.textContent = err instanceof Waradly.ApiError && err.status === 403
+        list.firstChild.textContent = err instanceof Warradly.ApiError && err.status === 403
           ? "Your account isn't set up as a supplier organization, so RFQs can't be shown."
           : (err.message || 'Couldn\'t load RFQs. Refresh to try again.');
         return;
@@ -43,8 +43,8 @@
       document.getElementById('list').innerHTML = rfqs.length
         ? `<table><thead><tr><th>Title</th><th>Category</th><th>Region</th><th>Offer deadline</th><th>Status</th></tr></thead><tbody>
             ${rfqs.map((r) => `<tr onclick="location.href='/supplier/rfq-detail.html?id=${r.id}'" style="cursor:pointer;">
-              <td>${Waradly.escapeHtml(r.title)}</td><td>${Waradly.escapeHtml(r.category_name || '—')}</td>
-              <td>${Waradly.escapeHtml(r.buyer_general_region || '—')}</td><td>${Waradly.formatDate(r.offer_deadline_at)}</td>
+              <td>${Warradly.escapeHtml(r.title)}</td><td>${Warradly.escapeHtml(r.category_name || '—')}</td>
+              <td>${Warradly.escapeHtml(r.buyer_general_region || '—')}</td><td>${Warradly.formatDate(r.offer_deadline_at)}</td>
               <td><span class="badge">${r.status}</span></td>
             </tr>`).join('')}
           </tbody></table>`

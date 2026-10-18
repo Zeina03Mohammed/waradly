@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Create a Free Account — Waradly for Buyers & Suppliers</title>
-  <meta name="description" content="Join Waradly as a buyer to source custom products through RFQs, or as a supplier to receive qualified requests from businesses." />
+  <title>Create a Free Account — Warradly for Buyers & Suppliers</title>
+  <meta name="description" content="Join Warradly as a buyer to source custom products through RFQs, or as a supplier to receive qualified requests from businesses." />
   <link rel="canonical" href="https://www.warradly.co/register" />
   <link rel="stylesheet" href="/assets/css/theme.css" />
   <script src="/assets/js/i18n.js"></script>
@@ -12,7 +12,7 @@
 </head>
 <body>
   <main class="page" id="register-view">
-    <a class="auth-logo" href="/"><img src="/assets/img/logo-dark.png" alt="Waradly" height="38" /></a>
+    <a class="auth-logo" href="/"><img src="/assets/img/logo-dark.png?v=2" alt="Warradly" height="38" /></a>
     <h1 class="page-title">Create an account</h1>
 
     <div class="flex mb-4" style="border:1px solid var(--navy-100); border-radius:0.5rem; overflow:hidden;">
@@ -36,7 +36,7 @@
 
       <label class="flex gap-2" style="align-items:flex-start; font-size:0.875rem; margin-bottom:1rem;">
         <input type="checkbox" id="terms_accepted" style="margin-top:0.2rem;" />
-        <span>I confirm I am at least 18 years old and registering on behalf of a business, and I agree to the Terms, Anti-Circumvention Policy, and Privacy Policy.</span>
+        <span>I confirm I am at least 18 years old and registering on behalf of a business, and I agree to the <a href="/terms" target="_blank">Terms</a>, <a href="/terms#anti-circumvention" target="_blank">Anti-Circumvention Policy</a>, and <a href="/privacy" target="_blank">Privacy Policy</a>.</span>
       </label>
 
       <button class="btn-primary w-full" type="submit" id="submit-btn">Create account</button>
@@ -94,9 +94,9 @@
 
     document.getElementById('register-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      Waradly.clearError('error');
+      Warradly.clearError('error');
       if (document.getElementById('password').value !== document.getElementById('confirm_password').value) {
-        Waradly.showError('error', new Error('Passwords do not match.'));
+        Warradly.showError('error', new Error('Passwords do not match.'));
         return;
       }
       const btn = document.getElementById('submit-btn');
@@ -104,7 +104,7 @@
       btn.textContent = 'Creating account…';
       try {
         const email = document.getElementById('email').value;
-        const data = await Waradly.api('/api/auth/register', {
+        const data = await Warradly.api('/api/auth/register', {
           method: 'POST',
           body: {
             email,
@@ -130,7 +130,7 @@
           document.getElementById('go-to-login').style.display = 'inline-flex';
         }
       } catch (err) {
-        Waradly.showError('error', err);
+        Warradly.showError('error', err);
       } finally {
         btn.disabled = false;
         btn.textContent = 'Create account';
@@ -146,14 +146,14 @@
       try {
         const formData = new FormData();
         formData.append('file', file);
-        await Waradly.api('/api/users/me/avatar', { method: 'POST', body: formData, isFormData: true, token: enrollmentToken });
+        await Warradly.api('/api/users/me/avatar', { method: 'POST', body: formData, isFormData: true, token: enrollmentToken });
         photoUploaded = true;
         document.getElementById('photo-done').style.display = 'block';
         document.getElementById('photo-upload-btn').style.display = 'none';
         document.getElementById('webauthn-step').style.display = 'block';
         checkWebauthnSupport();
       } catch (err) {
-        errEl.textContent = err instanceof Waradly.ApiError ? err.message : 'Could not upload photo.';
+        errEl.textContent = err instanceof Warradly.ApiError ? err.message : 'Could not upload photo.';
         errEl.style.display = 'block';
       }
     });
@@ -172,14 +172,14 @@
       btn.disabled = true;
       btn.textContent = 'Verifying…';
       try {
-        const optionsJSON = await Waradly.api('/api/auth/webauthn/register-options', { method: 'POST', token: enrollmentToken });
+        const optionsJSON = await Warradly.api('/api/auth/webauthn/register-options', { method: 'POST', token: enrollmentToken });
         const response = await window.SimpleWebAuthnBrowser.startRegistration({ optionsJSON });
-        await Waradly.api('/api/auth/webauthn/register-verify', { method: 'POST', body: { response }, token: enrollmentToken });
+        await Warradly.api('/api/auth/webauthn/register-verify', { method: 'POST', body: { response }, token: enrollmentToken });
         document.getElementById('webauthn-done').style.display = 'block';
         btn.style.display = 'none';
         document.getElementById('go-to-login').style.display = 'inline-flex';
       } catch (err) {
-        errEl.textContent = err instanceof Waradly.ApiError ? err.message : 'Could not verify this device.';
+        errEl.textContent = err instanceof Warradly.ApiError ? err.message : 'Could not verify this device.';
         errEl.style.display = 'block';
         btn.disabled = false;
         btn.textContent = 'Verify with Face ID (required)';

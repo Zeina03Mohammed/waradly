@@ -2,7 +2,7 @@ import sharp from 'sharp';
 import { PDFDocument, rgb, degrees, StandardFonts } from 'pdf-lib';
 import { MAX_IMAGE_PIXELS, MAX_PDF_PAGES } from '@/lib/files/constraints';
 
-const WATERMARK_TEXT = 'WARADLY CONFIDENTIAL';
+const WATERMARK_TEXT = 'WARRADLY CONFIDENTIAL';
 
 /** Simple static diagonal text overlay — SPEC.md Section 12 ("no OCR involved").
  * `limitInputPixels` makes sharp refuse to decode a decompression-bomb-style image (a small

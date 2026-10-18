@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>User — Waradly</title>
+  <title>User — Warradly</title>
   <link rel="stylesheet" href="/assets/css/theme.css" />
   <script src="/assets/js/i18n.js"></script>
   <link rel="icon" type="image/png" href="/assets/img/favicon.png" />
@@ -24,25 +24,25 @@
   <script src="/assets/js/util.js"></script>
   <script>
     (async () => {
-      const admin = await Waradly.requireRole('admin');
+      const admin = await Warradly.requireRole('admin');
       if (!admin) return;
-      Waradly.mountShell(admin, '/admin/users.html');
+      Warradly.mountShell(admin, '/admin/users.html');
 
-      const userId = Waradly.qs('id');
-      const { user, organization } = await Waradly.api(`/api/admin/users/${userId}`);
+      const userId = Warradly.qs('id');
+      const { user, organization } = await Warradly.api(`/api/admin/users/${userId}`);
       document.getElementById('content').innerHTML = `
-        <h1 class="page-title">${Waradly.escapeHtml(user.email)}</h1>
+        <h1 class="page-title">${Warradly.escapeHtml(user.email)}</h1>
         <div class="card">
           <p><strong>Role:</strong> ${user.role}</p>
-          <p><strong>Status:</strong> <span class="badge">${user.status}</span>${user.status_reason ? ' — ' + Waradly.escapeHtml(user.status_reason) : ''}</p>
-          <p><strong>Username:</strong> ${Waradly.escapeHtml(user.username || '—')}</p>
+          <p><strong>Status:</strong> <span class="badge">${user.status}</span>${user.status_reason ? ' — ' + Warradly.escapeHtml(user.status_reason) : ''}</p>
+          <p><strong>Username:</strong> ${Warradly.escapeHtml(user.username || '—')}</p>
           <p><strong>Failed login attempts:</strong> ${user.failed_login_attempts}</p>
-          <p><strong>Created:</strong> ${Waradly.formatDate(user.created_at)}</p>
+          <p><strong>Created:</strong> ${Warradly.formatDate(user.created_at)}</p>
         </div>
         ${organization ? `<div class="card">
           <h3 style="margin-top:0;">Organization</h3>
-          <p><strong>Legal name:</strong> ${Waradly.escapeHtml(organization.legal_name)}</p>
-          <p><strong>Country / region:</strong> ${Waradly.escapeHtml(organization.country)} / ${Waradly.escapeHtml(organization.general_region)}</p>
+          <p><strong>Legal name:</strong> ${Warradly.escapeHtml(organization.legal_name)}</p>
+          <p><strong>Country / region:</strong> ${Warradly.escapeHtml(organization.country)} / ${Warradly.escapeHtml(organization.general_region)}</p>
         </div>` : ''}
         <a class="btn-secondary" href="/admin/users.html">Back to users</a>
       `;

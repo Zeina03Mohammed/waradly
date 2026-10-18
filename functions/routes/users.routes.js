@@ -9,6 +9,8 @@ const { parseMultipart } = require('../middleware/parseMultipart');
 const { getUserById, updateUser } = require('../services/userService');
 const { toSelfUserView } = require('../masking/user');
 const { usernameSchema, zodFieldErrors } = require('../validation/auth');
+const identityToolkit = require('../config/identityToolkit');
+const { deleteAccount } = require('../services/accountService');
 
 const router = Router();
 
@@ -46,6 +48,28 @@ router.patch(
     await updateUser(req.user.id, { username: parsed.data.username });
     const updated = await getUserById(req.user.id);
     res.json({ user: toSelfUserView(updated) });
+  }),
+);
+
+/** Account deletion (required by App Store / Play Store). Re-checks the password so a stolen
+ * session token alone can't wipe an account. */
+router.delete(
+  '/me',
+  authenticate,
+  asyncHandler(async (req, res) => {
+    const parsed = z.object({ password: z.string().min(1, 'Password is required.') }).safeParse(req.body);
+    if (!parsed.success) throw Errors.validation(zodFieldErrors(parsed.error));
+
+    try {
+      await identityToolkit.signInWithPassword(req.user.email, parsed.data.password);
+    } catch (err) {
+      if (!err.identityToolkitError) throw err;
+      throw Errors.validation({ password: 'Incorrect password.' });
+    }
+
+    const { blocked } = await deleteAccount(req.user);
+    if (blocked) throw Errors.conflict('You have orders in progress. Finish or cancel them before deleting your account.');
+    res.status(204).send();
   }),
 );
 

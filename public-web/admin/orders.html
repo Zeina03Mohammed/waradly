@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Orders — Waradly</title>
+  <title>Orders — Warradly</title>
   <link rel="stylesheet" href="/assets/css/theme.css" />
   <script src="/assets/js/i18n.js"></script>
   <link rel="icon" type="image/png" href="/assets/img/favicon.png" />
@@ -25,16 +25,16 @@
   <script src="/assets/js/util.js"></script>
   <script>
     (async () => {
-      const user = await Waradly.requireRole('admin');
+      const user = await Warradly.requireRole('admin');
       if (!user) return;
-      Waradly.mountShell(user, '/admin/orders.html');
+      Warradly.mountShell(user, '/admin/orders.html');
 
-      const { orders, has_more } = await Waradly.api('/api/admin/orders');
+      const { orders, has_more } = await Warradly.api('/api/admin/orders');
       if (has_more) document.getElementById('list').insertAdjacentHTML('beforebegin', `<p class="muted">Showing the latest ${orders.length} orders.</p>`);
       document.getElementById('list').innerHTML = orders.length
         ? `<table><thead><tr><th>Order</th><th>Buyer</th><th>Supplier</th><th>Status</th></tr></thead><tbody>
             ${orders.map((o) => `<tr onclick="location.href='/admin/order-detail.html?id=${o.id}'" style="cursor:pointer;">
-              <td>${o.id}</td><td>${Waradly.escapeHtml(o.buyer_id)}</td><td>${Waradly.escapeHtml(o.supplier_id)}</td>
+              <td>${o.id}</td><td>${Warradly.escapeHtml(o.buyer_id)}</td><td>${Warradly.escapeHtml(o.supplier_id)}</td>
               <td><span class="badge">${o.status}</span></td>
             </tr>`).join('')}
           </tbody></table>`

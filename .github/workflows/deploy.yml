@@ -35,7 +35,7 @@ jobs:
           WEB_API_KEY=${{ secrets.WEB_API_KEY }}
           APP_BASE_URL=https://www.warradly.co
           RESEND_API_KEY=${{ secrets.RESEND_API_KEY }}
-          EMAIL_FROM=Waradly <onboarding@resend.dev>
+          EMAIL_FROM=Warradly <onboarding@resend.dev>
           EOF
 
       - uses: google-github-actions/auth@v2

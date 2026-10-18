@@ -7,7 +7,7 @@ import { SKIP_AUTH, useAuth } from '@/lib/client/AuthProvider';
 import { Avatar } from '@/components/Avatar';
 
 function Logo() {
-  return <Image src="/logo-icon.png" alt="Waradly" width={72} height={72} className="rounded-lg" />;
+  return <Image src="/logo-icon.png" alt="Warradly" width={72} height={72} className="rounded-lg" />;
 }
 
 function displayName(user: { username: string | null; email: string }): string {

@@ -87,12 +87,12 @@ export async function POST(request: NextRequest) {
     await notify({
       userId: result.user.id,
       eventType: 'account.created',
-      message: 'Welcome to Waradly — please verify your email to get started.',
+      message: 'Welcome to Warradly — please verify your email to get started.',
       link: '/verify-email',
       email: {
         to: result.user.email,
-        subject: 'Welcome to Waradly — verify your email',
-        body: `Welcome to Waradly!\n\nPlease verify your email by visiting:\n${verifyLink}\n\nThis link expires in 24 hours.`,
+        subject: 'Welcome to Warradly — verify your email',
+        body: `Welcome to Warradly!\n\nPlease verify your email by visiting:\n${verifyLink}\n\nThis link expires in 24 hours.`,
       },
     });
 

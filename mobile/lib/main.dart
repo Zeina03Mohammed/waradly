@@ -7,16 +7,16 @@ import 'screens/buyer/buyer_home_shell.dart';
 import 'screens/supplier/supplier_home_shell.dart';
 
 void main() {
-  runApp(const WaradlyApp());
+  runApp(const WarradlyApp());
 }
 
-class WaradlyApp extends StatelessWidget {
-  const WaradlyApp({super.key});
+class WarradlyApp extends StatelessWidget {
+  const WarradlyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Waradly',
+      title: 'Warradly',
       theme: waradlyTheme,
       debugShowCheckedModeBanner: false,
       home: const _RootRouter(),

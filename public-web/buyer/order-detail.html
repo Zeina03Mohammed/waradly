@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Order — Waradly</title>
+  <title>Order — Warradly</title>
   <link rel="stylesheet" href="/assets/css/theme.css" />
   <script src="/assets/js/i18n.js"></script>
   <link rel="icon" type="image/png" href="/assets/img/favicon.png" />
@@ -23,10 +23,10 @@
   <script src="/assets/js/shell.js"></script>
   <script src="/assets/js/util.js"></script>
   <script>
-    const orderId = Waradly.qs('id');
+    const orderId = Warradly.qs('id');
 
     async function render() {
-      const { order } = await Waradly.api(`/api/orders/${orderId}`);
+      const { order } = await Warradly.api(`/api/orders/${orderId}`);
       const sampleAction = order.status === 'SAMPLE_REVIEW'
         ? `<div class="card"><h3 style="margin-top:0;">Sample review</h3>
             <button class="btn-primary" id="approve-sample">Approve sample</button>
@@ -61,29 +61,29 @@
       if (reorderBtn) {
         reorderBtn.addEventListener('click', async () => {
           try {
-            const data = await Waradly.api(`/api/orders/${orderId}/reorder`, { method: 'POST' });
+            const data = await Warradly.api(`/api/orders/${orderId}/reorder`, { method: 'POST' });
             window.location.assign(`/buyer/rfq-form.html?id=${data.rfq_id}`);
           } catch (err) {
-            Waradly.showError('error', err);
+            Warradly.showError('error', err);
           }
         });
       }
     }
 
     async function decideSample(approved) {
-      Waradly.clearError('error');
+      Warradly.clearError('error');
       try {
-        await Waradly.api(`/api/orders/${orderId}/samples/decision`, { method: 'PATCH', body: { approved } });
+        await Warradly.api(`/api/orders/${orderId}/samples/decision`, { method: 'PATCH', body: { approved } });
         render();
       } catch (err) {
-        Waradly.showError('error', err);
+        Warradly.showError('error', err);
       }
     }
 
     (async () => {
-      const user = await Waradly.requireRole('buyer');
+      const user = await Warradly.requireRole('buyer');
       if (!user) return;
-      Waradly.mountShell(user, '/buyer/orders.html');
+      Warradly.mountShell(user, '/buyer/orders.html');
       await render();
     })();
   </script>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Orders — Waradly</title>
+  <title>Orders — Warradly</title>
   <link rel="stylesheet" href="/assets/css/theme.css" />
   <script src="/assets/js/i18n.js"></script>
   <link rel="icon" type="image/png" href="/assets/img/favicon.png" />
@@ -25,15 +25,15 @@
   <script src="/assets/js/util.js"></script>
   <script>
     (async () => {
-      const user = await Waradly.requireRole('supplier');
+      const user = await Warradly.requireRole('supplier');
       if (!user) return;
-      Waradly.mountShell(user, '/supplier/orders.html');
+      Warradly.mountShell(user, '/supplier/orders.html');
 
-      const { orders } = await Waradly.api('/api/orders');
+      const { orders } = await Warradly.api('/api/orders');
       document.getElementById('list').innerHTML = orders.length
         ? `<table><thead><tr><th>Order</th><th>Status</th><th>Created</th></tr></thead><tbody>
             ${orders.map((o) => `<tr onclick="location.href='/supplier/order-detail.html?id=${o.id}'" style="cursor:pointer;">
-              <td>${o.id}</td><td><span class="badge">${o.status}</span></td><td>${Waradly.formatDate(o.created_at)}</td>
+              <td>${o.id}</td><td><span class="badge">${o.status}</span></td><td>${Warradly.formatDate(o.created_at)}</td>
             </tr>`).join('')}
           </tbody></table>`
         : '<p class="muted">No orders yet.</p>';

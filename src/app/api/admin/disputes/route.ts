@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
       link: `/orders/${order.id}`,
       email: {
         to: owner.email,
-        subject: 'A dispute was opened on your Waradly order',
+        subject: 'A dispute was opened on your Warradly order',
         body: `A dispute was opened on your order for "${order.rfq.title}". Admin will review and follow up.`,
       },
     });

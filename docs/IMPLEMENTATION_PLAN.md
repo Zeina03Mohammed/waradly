@@ -1,4 +1,4 @@
-# Waradly — Implementation Plan
+# Warradly — Implementation Plan
 
 What is left to build, in order, with the files each task touches and how to know it's done.
 
@@ -16,7 +16,7 @@ Every task follows the same loop: build → test (per [TESTING.md](TESTING.md)) 
 | Area | What exists |
 |---|---|
 | Platform | Buyer, supplier and admin flows end to end: RFQs, offers, orders, disputes, ratings, messaging, notifications, audit log |
-| Website | Landing page, redesigned buyer dashboard, Watermelon-style design, Waradly logo and favicon on every page |
+| Website | Landing page, redesigned buyer dashboard, Watermelon-style design, Warradly logo and favicon on every page |
 | Email | Verification/reset emails reach every inbox via Firebase's mailer; branded HTML for Resend emails |
 | UX | Field-level error messages on every form; supplier RFQ page no longer hangs on errors |
 | Compliance | Self-hosted font; 18+ business confirmation at sign-up |
@@ -35,7 +35,7 @@ Must be done before real users sign up.
 | 1.2 | **Legal pages.** Terms, Privacy Policy, Anti-Circumvention Policy (text from a lawyer). Link them from the sign-up checkbox and the landing footer. | New `public-web/terms.html`, `privacy.html`, `anti-circumvention.html`; `register.html`; `index.html` footer; add to `sitemap.xml` | Pages live; links open from the checkbox and footer |
 | 1.3 | **Custom domain.** Buy a domain, connect it in Firebase Hosting, then update `APP_BASE_URL`, canonical tags, `sitemap.xml`, `robots.txt`, and add the domain to Search Console. | Firebase console; `functions/.env.waradly-1`; public HTML heads; SEO files | Site loads on the domain with SSL; old URL still works |
 | 1.4 | **Email from own domain.** Verify the domain in Resend (SPF, DKIM, DMARC), set `EMAIL_FROM=no-reply@<domain>`. Emails switch to Resend automatically. | Resend dashboard; `functions/.env.waradly-1` | Test email lands in the Gmail inbox, not spam, with a clickable button |
-| 1.5 | **Firebase console settings.** Auth email action URL → `https://<domain>/verify-email`; sender name "Waradly". Blaze budget alert. | Firebase / Google Cloud console | Verification link opens the Waradly page; budget alert configured |
+| 1.5 | **Firebase console settings.** Auth email action URL → `https://<domain>/verify-email`; sender name "Warradly". Blaze budget alert. | Firebase / Google Cloud console | Verification link opens the Warradly page; budget alert configured |
 | 1.6 | **First admin + category.** Create the admin account (set `role: "admin"` on its `users` doc) and activate at least one product category. | Firestore console | Admin can log in; suppliers can apply for the category |
 | 1.7 | **Search Console.** Submit `sitemap.xml`; request indexing for the home page. | Search Console | Sitemap status "Success" |
 

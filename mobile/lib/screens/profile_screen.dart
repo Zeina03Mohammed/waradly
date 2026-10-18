@@ -79,7 +79,50 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _logout() async {
     await AuthService.instance.logout();
     if (!mounted) return;
-    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (_) => const WaradlyApp()), (route) => false);
+    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (_) => const WarradlyApp()), (route) => false);
+  }
+
+  Future<void> _deleteAccount() async {
+    final password = TextEditingController();
+    String? dialogError;
+    final deleted = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialog) => AlertDialog(
+          title: const Text('Delete account?'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('This permanently deletes your login, profile and uploaded files, cancels your open RFQs and withdraws your open offers. This cannot be undone.'),
+              const SizedBox(height: 12),
+              TextField(controller: password, obscureText: true, decoration: const InputDecoration(labelText: 'Password')),
+              if (dialogError != null) Padding(padding: const EdgeInsets.only(top: 8), child: Text(dialogError!, style: const TextStyle(color: Colors.red))),
+            ],
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+            TextButton(
+              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              onPressed: () async {
+                try {
+                  await ApiClient.instance.request('/users/me', method: 'DELETE', body: {'password': password.text});
+                  if (ctx.mounted) Navigator.pop(ctx, true);
+                } on ApiException catch (e) {
+                  setDialog(() => dialogError = e.fields['password'] ?? e.message);
+                }
+              },
+              child: const Text('Delete'),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (deleted != true) return;
+    await ApiClient.instance.clearTokens();
+    AuthService.instance.currentUser = null;
+    if (!mounted) return;
+    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (_) => const WarradlyApp()), (route) => false);
   }
 
   @override
@@ -131,6 +174,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ],
           const SizedBox(height: 24),
           OutlinedButton(onPressed: _logout, child: const Text('Log out')),
+          if (widget.role != 'admin') ...[
+            const SizedBox(height: 8),
+            TextButton(
+              onPressed: _deleteAccount,
+              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              child: const Text('Delete account'),
+            ),
+          ],
+          const SizedBox(height: 8),
+          const LegalLinks(),
         ],
       ),
     );

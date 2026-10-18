@@ -59,7 +59,7 @@
 
   const AR = {
     // Brand / shell / navigation
-    'Waradly': 'Waradly',
+    'Warradly': 'Warradly',
     'Dashboard': 'لوحة التحكم',
     'My RFQs': 'طلبات التسعير',
     'Available RFQs': 'طلبات التسعير المتاحة',
@@ -89,7 +89,7 @@
     'Loading…': 'جارٍ التحميل…',
 
     // Landing page
-    'Waradly — B2B Procurement Marketplace for Custom Sourcing': 'Waradly — سوق مشتريات للشركات للتوريد حسب الطلب',
+    'Warradly — B2B Procurement Marketplace for Custom Sourcing': 'Warradly — سوق مشتريات للشركات للتوريد حسب الطلب',
     'Sections': 'الأقسام',
     'Footer': 'تذييل الصفحة',
     'How it works': 'كيف يعمل',
@@ -120,7 +120,7 @@
     'Supplier identities stay private until the platform connects you.': 'تبقى هويات الموردين سرية حتى تربطكم المنصة.',
     'RFQ approved': 'تمت الموافقة على الطلب',
     'Sent to eligible suppliers': 'أُرسل إلى الموردين المؤهلين',
-    'Why Waradly': 'لماذا Waradly',
+    'Why Warradly': 'لماذا Warradly',
     'Verified suppliers': 'موردون موثّقون',
     'Every supplier is identity-checked and approved per category.': 'يتم التحقق من هوية كل مورّد واعتماده لكل فئة.',
     'Reviewed RFQs': 'طلبات تسعير مُراجَعة',
@@ -130,8 +130,8 @@
     'Managed orders': 'طلبات مُدارة',
     'Tracked step by step from payment to delivery.': 'متابعة خطوة بخطوة من الدفع حتى التسليم.',
     'From request to delivered order in four steps': 'من الطلب إلى التسليم في أربع خطوات',
-    'One request replaces dozens of emails and calls. Waradly handles the matching and the follow-up.':
-      'طلب واحد يغنيك عن عشرات الرسائل والمكالمات. تتولى Waradly المطابقة والمتابعة.',
+    'One request replaces dozens of emails and calls. Warradly handles the matching and the follow-up.':
+      'طلب واحد يغنيك عن عشرات الرسائل والمكالمات. تتولى Warradly المطابقة والمتابعة.',
     'Post an RFQ': 'انشر طلب تسعير',
     'Describe the product, quantity, specs and delivery deadline. Attach drawings or references.':
       'صِف المنتج والكمية والمواصفات وموعد التسليم. أرفق الرسومات أو المراجع.',
@@ -175,11 +175,11 @@
     'Ready to source smarter?': 'مستعد للتوريد بذكاء أكبر؟',
     'Create a free account and post your first request for quotation in minutes.': 'أنشئ حسابًا مجانيًا وانشر أول طلب تسعير خلال دقائق.',
     'Sign up free': 'سجّل مجانًا',
-    'Waradly — Solutions that grow with you': 'Waradly — حلول تنمو معك',
+    'Warradly — Solutions that grow with you': 'Warradly — حلول تنمو معك',
 
     // Auth pages
-    'Log in — Waradly B2B Procurement Marketplace': 'تسجيل الدخول — Waradly سوق المشتريات للشركات',
-    'Create a Free Account — Waradly for Buyers & Suppliers': 'أنشئ حسابًا مجانيًا — Waradly للمشترين والموردين',
+    'Log in — Warradly B2B Procurement Marketplace': 'تسجيل الدخول — Warradly سوق المشتريات للشركات',
+    'Create a Free Account — Warradly for Buyers & Suppliers': 'أنشئ حسابًا مجانيًا — Warradly للمشترين والموردين',
     'Email': 'البريد الإلكتروني',
     'Password': 'كلمة المرور',
     'No account yet?': 'ليس لديك حساب؟',
@@ -264,11 +264,11 @@
     'Rate this order': 'قيّم هذا الطلب',
     'Reorder': 'إعادة الطلب',
     'View tracking': 'عرض التتبع',
-    'Rate order — Waradly': 'تقييم الطلب — Waradly',
+    'Rate order — Warradly': 'تقييم الطلب — Warradly',
     'Score (1–5)': 'التقييم (1–5)',
     'Comment (optional)': 'تعليق (اختياري)',
     'Submit rating': 'إرسال التقييم',
-    'Order tracking — Waradly': 'تتبع الطلب — Waradly',
+    'Order tracking — Warradly': 'تتبع الطلب — Warradly',
     'Order tracking': 'تتبع الطلب',
     'No history yet.': 'لا يوجد سجل بعد.',
     'Company Profile': 'ملف الشركة',
@@ -314,8 +314,26 @@
     'Delivery est.': 'التسليم المتوقع',
     'Accept': 'قبول',
     'Accept this offer? This will reject all other offers and create an order.': 'قبول هذا العرض؟ سيتم رفض جميع العروض الأخرى وإنشاء طلب.',
-    'My RFQs — Waradly': 'طلبات التسعير — Waradly',
+    'My RFQs — Warradly': 'طلبات التسعير — Warradly',
     'Uncategorised': 'بدون فئة',
+
+    // Account deletion + legal pages
+    'Delete account': 'حذف الحساب',
+    'Delete my account': 'حذف حسابي',
+    "This permanently deletes your login, profile and uploaded files, cancels your open RFQs and withdraws your open offers. You can't delete your account while an order is in progress. This cannot be undone.":
+      'سيؤدي ذلك إلى حذف بيانات الدخول والملف الشخصي والملفات المرفوعة نهائيًا، وإلغاء طلبات التسعير المفتوحة وسحب العروض المفتوحة. لا يمكنك حذف حسابك أثناء وجود طلب قيد التنفيذ. لا يمكن التراجع عن ذلك.',
+    'Permanently delete your account? This cannot be undone.': 'حذف حسابك نهائيًا؟ لا يمكن التراجع عن ذلك.',
+    'Incorrect password.': 'كلمة المرور غير صحيحة.',
+    'You have orders in progress. Finish or cancel them before deleting your account.': 'لديك طلبات قيد التنفيذ. أكملها أو ألغها قبل حذف حسابك.',
+    'Privacy': 'الخصوصية',
+    'Terms': 'الشروط',
+    'Privacy Policy': 'سياسة الخصوصية',
+    'Terms of Service': 'شروط الخدمة',
+    'Anti-Circumvention Policy': 'سياسة منع التحايل',
+    'I confirm I am at least 18 years old and registering on behalf of a business, and I agree to the':
+      'أؤكد أن عمري 18 عامًا على الأقل وأنني أسجّل نيابة عن شركة، وأوافق على',
+    ',': '،',
+    ', and': '، و',
 
     // Supplier
     'Apply for the product categories you can supply. An admin reviews each application.': 'قدّم على فئات المنتجات التي يمكنك توريدها. يراجع المسؤول كل طلب.',
@@ -459,16 +477,16 @@
     'Ban user': 'حظر المستخدم',
     'No reason was recorded.': 'لم يُسجَّل سبب.',
 
-    // Page titles not covered by the "X — Waradly" rule below
-    'Admin Dashboard — Waradly': 'لوحة تحكم المسؤول — Waradly',
-    'Order — Waradly': 'الطلب — Waradly',
-    'RFQ — Waradly': 'طلب التسعير — Waradly',
-    'RFQ Distribution — Waradly': 'توزيع طلب التسعير — Waradly',
-    'User — Waradly': 'المستخدم — Waradly',
-    'Offer — Waradly': 'العرض — Waradly',
-    'Forgot password — Waradly': 'نسيت كلمة المرور — Waradly',
-    'Reset password — Waradly': 'إعادة تعيين كلمة المرور — Waradly',
-    'Verify email — Waradly': 'التحقق من البريد — Waradly',
+    // Page titles not covered by the "X — Warradly" rule below
+    'Admin Dashboard — Warradly': 'لوحة تحكم المسؤول — Warradly',
+    'Order — Warradly': 'الطلب — Warradly',
+    'RFQ — Warradly': 'طلب التسعير — Warradly',
+    'RFQ Distribution — Warradly': 'توزيع طلب التسعير — Warradly',
+    'User — Warradly': 'المستخدم — Warradly',
+    'Offer — Warradly': 'العرض — Warradly',
+    'Forgot password — Warradly': 'نسيت كلمة المرور — Warradly',
+    'Reset password — Warradly': 'إعادة تعيين كلمة المرور — Warradly',
+    'Verify email — Warradly': 'التحقق من البريد — Warradly',
 
     // Statuses shown in badges
     'DRAFT': 'مسودة',
@@ -577,7 +595,7 @@
 
   const STATUS_VERB = { suspended: 'إيقاف', banned: 'حظر' };
   const PATTERNS = [
-    [/^(.+) — Waradly$/, (m, x) => `${AR[x] || x} — Waradly`],
+    [/^(.+) — Warradly$/, (m, x) => `${AR[x] || x} — Warradly`],
     [/^Order (\S+)$/, 'الطلب $1'],
     [/^(\d+) receiving offers$/, '$1 تتلقى عروضًا'],
     [/^(\d+) in draft$/, '$1 مسودة'],

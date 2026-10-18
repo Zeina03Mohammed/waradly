@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 /// Same navy/gold palette as public-web/assets/css/theme.css — kept as an explicit ColorScheme
 /// below (not ColorScheme.fromSeed) because the seeded generator derives its own tonal surfaces/
 /// containers from one seed color, which is exactly what made this look like "a generic Material
-/// app" instead of Waradly: matching hex values in, but a different color-generation system
+/// app" instead of Warradly: matching hex values in, but a different color-generation system
 /// under the hood drifted the actual rendered surfaces away from them.
 const navy900 = Color(0xFF0E1826);
 const navy700 = Color(0xFF152337);

@@ -26,10 +26,10 @@ function showError(containerId, err) {
   if (!el) return;
   // Field-level validation errors carry the useful detail ("Password must be at least 8
   // characters.") — show those instead of the generic "Validation failed.".
-  const fieldMessages = err instanceof Waradly.ApiError ? Object.values(err.fields || {}).filter(Boolean) : [];
+  const fieldMessages = err instanceof Warradly.ApiError ? Object.values(err.fields || {}).filter(Boolean) : [];
   el.textContent = fieldMessages.length
     ? fieldMessages.join('\n')
-    : err instanceof Waradly.ApiError ? err.message : 'Something went wrong.';
+    : err instanceof Warradly.ApiError ? err.message : 'Something went wrong.';
   el.style.whiteSpace = 'pre-line';
   el.style.display = 'block';
 }
@@ -53,7 +53,7 @@ function qs(name) {
  * Avatar.tsx component needed for the same reason). */
 async function loadAvatarInto(imgEl, userId) {
   try {
-    const token = Waradly.getAccessToken();
+    const token = Warradly.getAccessToken();
     const res = await fetch(`/api/users/${userId}/avatar`, { headers: token ? { Authorization: `Bearer ${token}` } : {} });
     if (!res.ok) return false;
     const blob = await res.blob();
@@ -64,10 +64,10 @@ async function loadAvatarInto(imgEl, userId) {
   }
 }
 
-window.Waradly = window.Waradly || {};
-window.Waradly.escapeHtml = escapeHtml;
-window.Waradly.formatDate = formatDate;
-window.Waradly.showError = showError;
-window.Waradly.clearError = clearError;
-window.Waradly.qs = qs;
-window.Waradly.loadAvatarInto = loadAvatarInto;
+window.Warradly = window.Warradly || {};
+window.Warradly.escapeHtml = escapeHtml;
+window.Warradly.formatDate = formatDate;
+window.Warradly.showError = showError;
+window.Warradly.clearError = clearError;
+window.Warradly.qs = qs;
+window.Warradly.loadAvatarInto = loadAvatarInto;

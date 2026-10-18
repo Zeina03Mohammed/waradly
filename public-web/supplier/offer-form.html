@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Offer — Waradly</title>
+  <title>Offer — Warradly</title>
   <link rel="stylesheet" href="/assets/css/theme.css" />
   <script src="/assets/js/i18n.js"></script>
   <link rel="icon" type="image/png" href="/assets/img/favicon.png" />
@@ -42,8 +42,8 @@
   <script src="/assets/js/shell.js"></script>
   <script src="/assets/js/util.js"></script>
   <script>
-    const offerId = Waradly.qs('id');
-    const rfqId = Waradly.qs('rfq_id');
+    const offerId = Warradly.qs('id');
+    const rfqId = Warradly.qs('rfq_id');
 
     function collectPayload() {
       return {
@@ -61,13 +61,13 @@
     }
 
     (async () => {
-      const user = await Waradly.requireRole('supplier');
+      const user = await Warradly.requireRole('supplier');
       if (!user) return;
-      Waradly.mountShell(user, '/supplier/offers.html');
+      Warradly.mountShell(user, '/supplier/offers.html');
 
       if (offerId) {
         document.getElementById('page-title').textContent = 'Edit offer';
-        const { offer } = await Waradly.api(`/api/offers/${offerId}`);
+        const { offer } = await Warradly.api(`/api/offers/${offerId}`);
         document.getElementById('unit_price').value = offer.unit_price;
         document.getElementById('moq').value = offer.moq;
         document.getElementById('production_lead_time_days').value = offer.production_lead_time_days;
@@ -83,19 +83,19 @@
 
     document.getElementById('form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      Waradly.clearError('error');
+      Warradly.clearError('error');
       const btn = document.getElementById('submit-btn');
       btn.disabled = true;
       try {
         if (offerId) {
-          await Waradly.api(`/api/offers/${offerId}`, { method: 'PATCH', body: collectPayload() });
+          await Warradly.api(`/api/offers/${offerId}`, { method: 'PATCH', body: collectPayload() });
           window.location.assign('/supplier/offers.html');
         } else {
-          await Waradly.api(`/api/rfqs/${rfqId}/offers`, { method: 'POST', body: collectPayload() });
+          await Warradly.api(`/api/rfqs/${rfqId}/offers`, { method: 'POST', body: collectPayload() });
           window.location.assign('/supplier/offers.html');
         }
       } catch (err) {
-        Waradly.showError('error', err);
+        Warradly.showError('error', err);
         btn.disabled = false;
       }
     });
