@@ -7,7 +7,7 @@ What is left to build, in order, with the files each task touches and how to kno
 | **Last updated** | 30 September 2026 |
 | **Related docs** | [TRD.md](TRD.md) · [APP_FLOW.md](APP_FLOW.md) · [TESTING.md](TESTING.md) |
 
-Every task follows the same loop: build → test (per [TESTING.md](TESTING.md)) → `firebase deploy --only "functions,hosting"` → check on `waradly-1.web.app`.
+Every task follows the same loop: build → test (per [TESTING.md](TESTING.md)) → `firebase deploy --only "functions,hosting"` → check on `www.warradly.co`.
 
 ---
 

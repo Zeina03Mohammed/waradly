@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Product** | Waradly — B2B procurement marketplace |
-| **Environment** | Production: `https://waradly-1.web.app` (Firebase project `waradly-1`) |
+| **Environment** | Production: `https://www.warradly.co` (Firebase project `waradly-1`; `warradly.co` and `waradly-1.web.app` also serve it) |
 | **Last updated** | 30 September 2026 |
 | **Related docs** | [APP_FLOW.md](APP_FLOW.md) · [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) · [TESTING.md](TESTING.md) · [SPEC.md](../SPEC.md) (business rules) |
 
@@ -275,7 +275,7 @@ Any active state from `OFFER_SELECTED` to `PRODUCTION` can go to `CANCELLED`; an
 | Variable | Purpose |
 |---|---|
 | `WEB_API_KEY` | Identity Toolkit REST calls (public by design) |
-| `APP_BASE_URL` | Builds links in emails (`https://waradly-1.web.app`) |
+| `APP_BASE_URL` | Builds links in emails (`https://www.warradly.co`) |
 | `RESEND_API_KEY` | Resend email API |
 | `EMAIL_FROM` | Sender address; `@resend.dev` means sandbox |
 | `PAYMOB_SECRET_KEY`, `PAYMOB_PUBLIC_KEY`, `PAYMOB_INTEGRATION_IDS`, `PAYMOB_HMAC_SECRET` | **Planned** — supplier subscription |

@@ -47,7 +47,7 @@ Notes:
 - To make a local admin: register any user, then in the Emulator UI set `role` to `admin` on its `users` document.
 
 ### 2.2 Production
-`https://waradly-1.web.app`. Test there only with clearly named test accounts (e.g. `yourname+buyer1@gmail.com`) and delete test data afterwards. Never test payments with real cards before Paymob's sandbox has passed.
+`https://www.warradly.co`. Test there only with clearly named test accounts (e.g. `yourname+buyer1@gmail.com`) and delete test data afterwards. Never test payments with real cards before Paymob's sandbox has passed.
 
 ## 3. Automated tests
 
@@ -203,8 +203,8 @@ firebase deploy --only "functions,hosting"
 ```
 If it fails with "Timeout after 10000", run it again; if it repeats, set `$env:FUNCTIONS_DISCOVERY_TIMEOUT=60` first.
 
-**Smoke test after deploying (5 minutes, on waradly-1.web.app)**
-- [ ] `https://waradly-1.web.app/api/health` responds
+**Smoke test after deploying (5 minutes, on www.warradly.co)**
+- [ ] `https://www.warradly.co/api/health` responds
 - [ ] Landing page, login and register load; logo and favicon show
 - [ ] Log in as buyer, supplier and admin — each dashboard loads data
 - [ ] `sitemap.xml` and `robots.txt` load

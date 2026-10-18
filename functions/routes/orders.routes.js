@@ -18,6 +18,7 @@ const {
 const { getOrganizationByOwner, getOrganizationById } = require('../services/organizationService');
 const { getRfqById, createRfq } = require('../services/rfqService');
 const { serializeOrderFor } = require('../masking/order');
+const { allFilesOwnedBy } = require('../services/fileOwnershipService');
 const { audit } = require('../services/auditService');
 const { notify } = require('../services/notifyService');
 
@@ -116,6 +117,9 @@ router.post(
     if (!order.sample_required || order.status !== 'PRODUCTION') throw Errors.conflict('This order is not awaiting a sample submission.');
 
     const evidenceFileId = req.body?.evidence_file_id || null;
+    if (evidenceFileId && (typeof evidenceFileId !== 'string' || !(await allFilesOwnedBy([evidenceFileId], req.user.id)))) {
+      throw Errors.validation({ evidence_file_id: 'File not found, or not uploaded by you.' });
+    }
     await setOrderStatus(order.id, 'SAMPLE_REVIEW', { changedBy: req.user.id, evidenceFileId });
     await audit({ actorId: req.user.id, action: 'order.sample_submitted', entityType: 'order', entityId: order.id });
 

@@ -41,8 +41,11 @@ function clearError(containerId) {
   el.style.display = 'none';
 }
 
+/** Every param we read (ids, oobCode tokens, mode) is [A-Za-z0-9_-] — anything else is dropped,
+ * since pages interpolate ids into innerHTML and a crafted link would otherwise be reflected XSS. */
 function qs(name) {
-  return new URLSearchParams(window.location.search).get(name);
+  const value = new URLSearchParams(window.location.search).get(name);
+  return value && /^[A-Za-z0-9_-]+$/.test(value) ? value : null;
 }
 
 /** The avatar endpoint requires a bearer token, which a plain <img src> can't send — fetch the

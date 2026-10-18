@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const { errorHandler } = require('./http/errorHandler');
+const { Errors } = require('./http/errors');
 const healthRoutes = require('./routes/health.routes');
 const authRoutes = require('./routes/auth.routes');
 const webauthnRoutes = require('./routes/webauthn.routes');
@@ -29,6 +30,15 @@ const api = express.Router();
 
 app.use(cors({ origin: true }));
 app.use(express.json());
+
+// Firestore's equivalent of NoSQL injection: an id containing "/" (e.g. "abc%2Fitems%2Fxyz" in
+// the path, or "abc/items/xyz" in a body *_id field) makes db.collection(c).doc(id) resolve to a
+// different document. Real ids are never allowed a slash, so reject any request that carries one.
+app.use((req, res, next) => {
+  const badBodyId = Object.entries(req.body || {}).some(([k, v]) => /_ids?$/.test(k) && [].concat(v).some((x) => typeof x === 'string' && x.includes('/')));
+  if (/%2f|%5c/i.test(req.path) || badBodyId) return next(Errors.notFound());
+  next();
+});
 
 // Everything lives under /api — Firebase Hosting's rewrite ("/api/**" -> this function) forwards
 // the full incoming path including the /api prefix, so the Express side has to expect it too.

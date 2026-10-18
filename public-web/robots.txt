@@ -6,4 +6,4 @@ Disallow: /supplier/
 Disallow: /admin/
 Disallow: /messages/
 
-Sitemap: https://waradly-1.web.app/sitemap.xml
+Sitemap: https://www.warradly.co/sitemap.xml
